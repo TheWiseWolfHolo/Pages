@@ -3,285 +3,897 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>WolfHolo · 麦田与旅途</title>
+    <title>WolfHolo</title>
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600&family=Noto+Sans+SC:wght@300;400;700&family=JetBrains+Mono:wght@400;600&display=swap');
-
-        * { margin: 0; padding: 0; box-sizing: border-box; }
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
 
         :root {
             --primary: #ff6b35;
             --secondary: #f7931e;
-            --accent: #b8860b; /* 亮色下更柔和的金色 */
+            --accent: #b8860b; /* 亮色模式下更柔和的金色文字 */
             --dark: #0a0a0a;
             --light: #1a1a1a; /* 亮色主题正文色 */
             --success: #2e7d32;
             --code-bg: #f6f8fa; /* 亮色代码块背景 */
             --glow: rgba(184, 134, 11, 0.45);
-            color-scheme: light; /* 强制亮色外观 */
+            color-scheme: light; /* 告诉浏览器使用亮色外观，避免强制暗黑干扰 */
         }
 
-        body { font-family: 'Noto Sans SC', sans-serif; background: #ffffff; overflow-x: hidden; color: var(--light); }
+        body {
+            font-family: 'Noto Sans SC', sans-serif;
+            background: #ffffff;
+            overflow-x: hidden;
+            color: var(--light);
+        }
 
         /* 动态背景 */
-        #particles-bg { position: fixed; top:0; left:0; width:100%; height:100%; z-index:999; pointer-events:none; }
+        #particles-bg {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 999; /* 顶层渲染萤火虫，但不遮挡交互 */
+            pointer-events: none; /* 不阻挡交互 */
+        }
 
         /* 导航栏 */
-        nav { position: fixed; top:0; width:100%; padding: 20px 50px; background: rgba(255,255,255,0.86); backdrop-filter: blur(12px); z-index:1000; transition: all .3s ease; border-bottom:1px solid rgba(0,0,0,.06); }
-        nav.scrolled { padding: 10px 50px; background: rgba(255,255,255,.98); }
-        .nav-content { max-width:1400px; margin:0 auto; display:flex; justify-content:space-between; align-items:center; }
-        .logo { font-family:'Cinzel',serif; font-size:1.8em; color:#8d6e00; text-decoration:none; display:flex; align-items:center; gap:10px; transition: all .3s ease; }
-        .logo:hover { text-shadow: 0 0 20px var(--glow); }
-        .nav-links { display:flex; gap:30px; list-style:none; }
-        .nav-links a { color:var(--light); text-decoration:none; padding:8px 16px; border-radius:20px; transition: all .3s ease; }
-        .nav-links a:hover, .nav-links a.active { background: rgba(255,187,0,.12); color: #8d6e00; }
+        nav {
+            position: fixed;
+            top: 0;
+            width: 100%;
+            padding: 20px 50px;
+            background: rgba(255, 255, 255, 0.86);
+            backdrop-filter: blur(12px);
+            z-index: 1000;
+            transition: all 0.3s ease;
+            border-bottom: 1px solid rgba(0, 0, 0, 0.06);
+        }
 
-        /* Hero */
-        .hero { min-height: 70vh; display:flex; align-items:center; justify-content:center; position:relative; padding: 120px 50px 60px; background: radial-gradient(60% 50% at 50% 30%, rgba(255,107,53,.08) 0%, transparent 70%); animation: fadeIn 0.9s ease-out; text-align:center; }
-        @keyframes fadeIn { from{opacity:0; transform: translateY(20px);} to{opacity:1; transform: translateY(0);} }
-        .hero h1 { font-family:'Cinzel',serif; font-size: clamp(2.2em, 6vw, 4.2em); color: var(--accent); background: none !important; -webkit-background-clip: initial; -webkit-text-fill-color: currentColor; display:inline-block; margin-bottom:20px; animation: glow 3s ease-in-out infinite; }
-        @media (prefers-color-scheme: dark) { .hero h1 { animation: none; text-shadow: 0 0 24px rgba(184,134,11,.35); } }
-        @keyframes glow { 0%,100%{ filter: drop-shadow(0 0 30px var(--glow)); } 50%{ filter: drop-shadow(0 0 50px var(--glow)); } }
-        .hero-subtitle { font-size:1.4em; opacity:.95; margin-bottom:14px; }
-        .hero-description { font-size:1.05em; opacity:.85; max-width:900px; margin: 0 auto; line-height:1.7; }
+        nav.scrolled {
+            padding: 10px 50px;
+            background: rgba(255, 255, 255, 0.98);
+        }
 
-        /* 页面主体 */
-        .main-section { padding: 80px 50px; max-width: 1200px; margin: 0 auto; }
-        .section-title { font-family:'Cinzel',serif; font-size:2.2em; color:var(--accent); text-align:center; margin-bottom: 30px; }
+        .nav-content {
+            max-width: 1400px;
+            margin: 0 auto;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
 
-        .grid { display:grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); gap:24px; }
-        .card { background: #ffffff; box-shadow: 0 6px 20px rgba(0,0,0,.06); border:1px solid rgba(0,0,0,.06); border-radius:16px; padding:24px; transition: transform .35s ease, box-shadow .35s ease, opacity .35s ease; opacity:.98; }
-        .card:hover { transform: translateY(-4px); box-shadow: 0 10px 24px rgba(0,0,0,.08); }
-        .card h3 { color:var(--accent); margin-bottom:10px; font-size:1.25em; }
-        .muted { opacity:.85; line-height:1.8; }
+        .logo {
+            font-family: 'Cinzel', serif;
+            font-size: 1.8em;
+            color: var(--accent);
+            text-decoration: none;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            transition: all 0.3s ease;
+        }
 
-        .badges { display:flex; flex-wrap:wrap; gap:10px; margin-top:8px; }
-        .badge { background: rgba(255, 215, 0, 0.08); border: 1px solid rgba(184,134,11,.25); padding:6px 14px; border-radius:20px; color:#8d6e00; font-size:.92em; }
+        .logo:hover {
+            text-shadow: 0 0 20px var(--glow);
+        }
 
-        .info-box { background: linear-gradient(135deg, rgba(76,175,80,.06), rgba(67,160,71,.06)); border:1px solid rgba(76,175,80,.22); border-radius:14px; padding:18px; margin: 26px 0; display:flex; align-items:center; gap:14px; }
-        .info-icon { font-size:1.3em; color: var(--success); }
-        .info-text { flex:1; line-height:1.7; }
-        .info-text strong { color: var(--accent); }
+        .nav-links {
+            display: flex;
+            gap: 30px;
+            list-style: none;
+        }
 
-        /* 关键参数/配置 */
-        .config-grid { display:grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap:18px; }
-        .config-item { background: var(--code-bg); border-radius:12px; padding:18px; border:1px solid rgba(255,215,0,.2); }
-        .config-label { color: var(--accent); font-size:.9em; margin-bottom:8px; text-transform: uppercase; letter-spacing:.5px; }
-        .config-value { font-family:'JetBrains Mono',monospace; color:#4ec9b0; font-size:1em; word-break: break-all; display:flex; align-items:center; justify-content:space-between; gap:8px; }
-        .copy-btn { background: rgba(255,215,0,.1); border:1px solid rgba(255,215,0,.3); color:var(--accent); padding:6px 10px; border-radius:8px; cursor:pointer; transition: all .3s ease; font-size:.85em; border:none; white-space:nowrap; }
-        .copy-btn:hover { background: rgba(255,215,0,.2); transform: scale(1.04); }
-        .copy-btn.copied { background: rgba(76,175,80,.2); color: var(--success); }
+        .nav-links a {
+            color: var(--light);
+            text-decoration: none;
+            padding: 8px 16px;
+            border-radius: 20px;
+            transition: all 0.3s ease;
+        }
 
-        /* 代码块 */
-        .code-block { background: var(--code-bg); border-radius: 10px; padding: 48px 22px 22px; margin: 18px 0; font-family: 'JetBrains Mono', monospace; font-size: 0.94em; overflow-x: auto; border: 1px solid rgba(0,0,0,0.08); position: relative; line-height: 1.6; }
-        .code-lang { position: absolute; top: 10px; right: 10px; color: var(--accent); font-size: 0.82em; opacity: 0.7; }
-        .code-copy { position: absolute; top: 10px; left: 10px; background: rgba(184,134,11,.08); color: #8d6e00; border: 1px solid rgba(184,134,11,.25); border-radius: 8px; padding: 4px 10px; font-size: .83em; cursor: pointer; user-select: none; }
+        .nav-links a:hover, .nav-links a.active {
+            background: rgba(255, 187, 0, 0.12);
+            color: #8d6e00;
+        }
 
-        /* 时间线 */
-        .timeline { position:relative; margin: 10px 0 0 0; padding-left: 22px; }
-        .timeline::before { content:""; position:absolute; left:10px; top:0; bottom:0; width:2px; background: rgba(0,0,0,.08); }
-        .tl-item { position:relative; margin: 14px 0; }
-        .tl-item::before { content:""; position:absolute; left:-2px; top:6px; width:10px; height:10px; border-radius:50%; background: #8d6e00; box-shadow: 0 0 10px var(--glow); }
-        .tl-date { font-family:'JetBrains Mono',monospace; opacity:.7; font-size:.9em; }
-        .tl-title { color:var(--accent); margin: 4px 0; font-weight:700; }
-        .tl-desc { opacity:.9; line-height:1.7; }
+        /* Hero Section */
+        .hero {
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+            padding: 100px 50px 50px;
+            background: radial-gradient(circle at center, rgba(255, 107, 53, 0.08) 0%, transparent 70%);
+            animation: fadeIn 0.9s ease-out;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .hero-content {
+            max-width: 1200px;
+            text-align: center;
+            z-index: 2;
+        }
+
+        .hero h1 {
+            font-family: 'Cinzel', serif;
+            font-size: clamp(2.5em, 6vw, 5em);
+            color: var(--accent);
+            background: none !important; /* 彻底关闭渐变，杜绝矩形底色 */
+            -webkit-background-clip: initial;
+            -webkit-text-fill-color: currentColor;
+            display: inline-block;
+            margin-bottom: 30px;
+            animation: glow 3s ease-in-out infinite;
+            transform: translateZ(0); /* 独立合成层，降低与背景重绘的干扰 */
+            will-change: transform;
+        }
+
+        /* 夜间模式：为避免滤镜与动态背景叠加造成轻微闪动，改为静态柔光 */
+        @media (prefers-color-scheme: dark) {
+            .hero h1 { animation: none; text-shadow: 0 0 24px rgba(184,134,11,.35); }
+        }
+
+        @keyframes glow {
+            0%, 100% { filter: drop-shadow(0 0 30px var(--glow)); }
+            50% { filter: drop-shadow(0 0 50px var(--glow)); }
+        }
+
+        .hero-subtitle {
+            font-size: 1.8em;
+            color: var(--light);
+            margin-bottom: 20px;
+            opacity: 0.95;
+        }
+
+        .hero-description {
+            font-size: 1.2em;
+            color: var(--light);
+            opacity: 0.8;
+            max-width: 800px;
+            margin: 0 auto 50px;
+            line-height: 1.6;
+        }
+
+        .hero-badges {
+            display: flex;
+            gap: 15px;
+            justify-content: center;
+            flex-wrap: wrap;
+            margin-bottom: 40px;
+        }
+
+        .badge {
+            background: rgba(255, 215, 0, 0.1);
+            border: 1px solid rgba(255, 215, 0, 0.3);
+            padding: 8px 20px;
+            border-radius: 20px;
+            color: var(--accent);
+            font-size: 0.95em;
+            animation: float 3.6s ease-in-out infinite;
+            animation-delay: calc(var(--i) * 0.2s);
+        }
+
+        @keyframes float {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-5px); }
+        }
+
+        /* 主要内容区 */
+        .main-section {
+            padding: 100px 50px;
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+
+        .section-title {
+            font-family: 'Cinzel', serif;
+            font-size: 3em;
+            color: var(--accent);
+            text-align: center;
+            margin-bottom: 60px;
+        }
+
+        /* 核心模型展示 */
+        .core-models {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+            gap: 30px;
+            margin-bottom: 80px;
+        }
+
+        .model-card {
+            background: #ffffff;
+            border: 1px solid rgba(0,0,0,0.06);
+            border-radius: 20px;
+            padding: 30px;
+            transition: transform 0.35s ease, box-shadow 0.35s ease, border-color 0.35s ease, opacity 0.35s ease;
+            position: relative;
+            overflow: hidden;
+            animation: slideUp 0.6s ease-out;
+            animation-fill-mode: both;
+            box-shadow: 0 6px 20px rgba(0,0,0,.06);
+        }
+
+        .model-card:nth-child(1) { animation-delay: 0.1s; }
+        .model-card:nth-child(2) { animation-delay: 0.2s; }
+        .model-card:nth-child(3) { animation-delay: 0.3s; }
+
+        @keyframes slideUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .model-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255, 215, 0, 0.1), transparent);
+            transition: left 0.6s ease;
+        }
+
+        .model-card:hover::before { left: 100%; }
+        .model-card:hover { transform: translateY(-6px); box-shadow: 0 10px 24px rgba(0,0,0,.08); border-color: rgba(0,0,0,.09); }
+
+        .model-header {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+
+        .model-logo {
+            width: 60px;
+            height: 60px;
+            border-radius: 15px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 2em;
+        }
+
+        .model-logo.openai {
+            background: linear-gradient(135deg, #10a37f, #1a7f64);
+        }
+
+        .model-logo.anthropic {
+            background: linear-gradient(135deg, #d4a574, #b8935f);
+        }
+
+        .model-logo.google {
+            background: linear-gradient(135deg, #4285f4, #34a853);
+        }
+
+        .model-info h3 {
+            font-size: 1.5em;
+            color: var(--accent);
+            margin-bottom: 5px;
+        }
+
+        .model-company {
+            color: var(--light);
+            opacity: 0.7;
+            font-size: 0.9em;
+        }
+
+        .model-list {
+            margin-top: 20px;
+        }
+
+        .model-item {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 8px 0;
+            color: var(--light);
+            opacity: 0.9;
+            border-bottom: 1px solid rgba(0, 0, 0, 0.06);
+        }
+
+        .model-item:last-child {
+            border-bottom: none;
+        }
+
+        .model-status {
+            width: 8px;
+            height: 8px;
+            background: var(--success);
+            border-radius: 50%;
+            animation: pulse-dot 2s infinite;
+        }
+
+        @keyframes pulse-dot {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.5; }
+        }
+
+        .model-name {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.95em;
+        }
+
+        /* 统一配置区 */
+        .config-section {
+            background: rgba(255, 255, 255, 0.02);
+            border-radius: 20px;
+            padding: 40px;
+            margin-bottom: 60px;
+            border: 1px solid rgba(255, 215, 0, 0.1);
+        }
+
+        /* 模型过滤 */
+        .models-toolbar { display:flex; justify-content:center; margin: 10px 0 30px; }
+        .model-filter { width: min(520px, 90%); background: rgba(255,255,255,.04); border: 1px solid rgba(255,215,0,.2); color: var(--light); padding: 12px 14px; border-radius: 12px; outline: none; }
+        .model-filter::placeholder { color: rgba(255,255,255,.6); }
+
+        .config-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 30px;
+        }
+
+        .config-item {
+            background: var(--code-bg);
+            border-radius: 15px;
+            padding: 25px;
+            border: 1px solid rgba(255, 215, 0, 0.2);
+        }
+
+        .config-label {
+            color: var(--accent);
+            font-size: 0.9em;
+            margin-bottom: 10px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .config-value {
+            font-family: 'JetBrains Mono', monospace;
+            color: #4ec9b0;
+            font-size: 1.1em;
+            word-break: break-all;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 10px;
+        }
+
+        .copy-btn {
+            background: rgba(255, 215, 0, 0.1);
+            border: 1px solid rgba(255, 215, 0, 0.3);
+            color: var(--accent);
+            padding: 5px 12px;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-size: 0.85em;
+            white-space: nowrap;
+            border: none;
+        }
+
+        .copy-btn:hover {
+            background: rgba(255, 215, 0, 0.2);
+            transform: scale(1.05);
+        }
+
+        .copy-btn.copied {
+            background: rgba(76, 175, 80, 0.2);
+            color: var(--success);
+        }
+
+        /* 提示信息 */
+        .info-box {
+            background: linear-gradient(135deg, rgba(76, 175, 80, 0.06), rgba(67, 160, 71, 0.06));
+            border: 1px solid rgba(76, 175, 80, 0.22);
+            border-radius: 15px;
+            padding: 20px;
+            margin: 30px 0;
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .info-icon {
+            font-size: 1.5em;
+            color: var(--success);
+        }
+
+        .info-text {
+            flex: 1;
+            color: var(--light);
+            line-height: 1.6;
+        }
+
+        .info-text strong {
+            color: var(--accent);
+        }
+
+        /* 快速开始 */
+        .quickstart {
+            background: rgba(255, 255, 255, 0.9);
+            border-radius: 20px;
+            padding: 40px;
+            margin: 60px 0;
+            border: 1px solid rgba(0, 0, 0, 0.06);
+            box-shadow: 0 6px 20px rgba(0,0,0,.05);
+        }
+
+        .quickstart h3 {
+            color: var(--accent);
+            font-size: 1.8em;
+            margin-bottom: 30px;
+            text-align: center;
+        }
+
+        .code-block { background: var(--code-bg); border-radius: 10px; padding: 48px 25px 25px; margin: 20px 0; font-family: 'JetBrains Mono', monospace; font-size: 0.95em; overflow-x: auto; border: 1px solid rgba(0,0,0,0.08); position: relative; }
+
+        .code-lang {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            color: var(--accent);
+            font-size: 0.85em;
+            opacity: 0.7;
+        }
+
+        .code-copy { position: absolute; top: 10px; left: 10px; background: rgba(184,134,11,.08); border: 1px solid rgba(184,134,11,.25); color: #8d6e00; padding: 4px 10px; border-radius: 8px; font-size: .85em; cursor: pointer; user-select: none; }
+
+        .code-comment {
+            color: #6A9955;
+        }
+
+        .code-keyword {
+            color: #C586C0;
+        }
+
+        .code-string {
+            color: #CE9178;
+        }
+
+        .code-variable { color: #005cc5; }
+
+        /* FAQ精简版 */
+        .faq-mini { padding: 80px 50px; background: #f8fafc; }
+
+        .faq-grid {
+            max-width: 1200px;
+            margin: 0 auto;
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+            gap: 30px;
+        }
+
+        .faq-card { background: #ffffff; border-radius: 15px; padding: 30px; border: 1px solid rgba(0,0,0,0.06); transition: transform 0.3s ease, background 0.3s ease, opacity .3s ease; box-shadow: 0 6px 20px rgba(0,0,0,.05); }
+
+        .faq-card:hover {
+            background: rgba(255, 255, 255, 0.05);
+            transform: translateY(-3px);
+        }
+
+        .faq-card h4 {
+            color: var(--accent);
+            margin-bottom: 15px;
+            font-size: 1.2em;
+        }
+
+        .faq-card p {
+            color: var(--light);
+            opacity: 0.9;
+            line-height: 1.6;
+        }
 
         /* 页脚 */
-        footer { padding: 50px; background: #fafafa; text-align:center; border-top:1px solid rgba(0,0,0,.06); }
-        .footer-title { font-family:'Cinzel',serif; font-size:1.4em; color:#8d6e00; margin-bottom:8px; }
-        .footer-text { opacity:.8; margin-bottom: 18px; }
-        .footer-links { display:flex; gap:20px; justify-content:center; margin-top:10px; }
-        .footer-link { color: var(--light); text-decoration:none; opacity:.85; }
-        .footer-link:hover { color: #8d6e00; }
+        footer { padding: 50px; background: #fafafa; text-align: center; border-top: 1px solid rgba(0, 0, 0, 0.06); }
 
         /* 进场动画 */
-        .reveal { opacity: 0; transform: translateY(14px); }
+        .reveal { opacity: 0; transform: translateY(16px); }
         .reveal.show { opacity: 1; transform: translateY(0); transition: opacity .6s ease, transform .6s ease; }
-
-        /* 响应式 */
-        @media (max-width: 768px) {
-            nav { padding: 15px 20px; }
-            .nav-links { gap:14px; }
-            .hero { padding: 100px 20px 50px; min-height: 60vh; }
-            .main-section { padding: 60px 20px; }
-        }
 
         /* 降低动效（系统偏好） */
         @media (prefers-reduced-motion: reduce) {
             .hero { animation: none; }
-            .card, .reveal, .reveal.show { transition: none !important; transform: none !important; }
+            .badge { animation: none; }
+            .model-card, .faq-card, .reveal, .reveal.show { transition: none !important; transform: none !important; }
+        }
+
+        .footer-title { font-family: 'Cinzel', serif; font-size: 2em; color: #8d6e00; margin-bottom: 20px; }
+
+        .footer-text {
+            color: var(--light);
+            opacity: 0.9;
+            margin-bottom: 30px;
+        }
+
+        .footer-links {
+            display: flex;
+            justify-content: center;
+            gap: 30px;
+            flex-wrap: wrap;
+        }
+
+        .footer-link {
+            color: var(--light);
+            text-decoration: none;
+            opacity: 0.7;
+            transition: all 0.3s ease;
+        }
+
+        .footer-link:hover { color: #8d6e00; opacity: 1; }
+
+        /* 响应式 */
+        @media (max-width: 768px) {
+            nav {
+                padding: 15px 20px;
+            }
+
+            .nav-links {
+                display: none;
+            }
+
+            .core-models {
+                grid-template-columns: 1fr;
+            }
+
+            .config-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .hero h1 {
+                font-size: 2.5em;
+            }
+
+            .faq-grid {
+                grid-template-columns: 1fr;
+            }
         }
     </style>
 </head>
-<body id="top">
+<body>
     <!-- 粒子背景 -->
     <canvas id="particles-bg"></canvas>
 
     <!-- 导航栏 -->
     <nav id="navbar">
         <div class="nav-content">
-            <a href="#top" class="logo">
+            <a href="#" class="logo">
                 <span>🐺</span>
                 <span>HOLO AI</span>
             </a>
             <ul class="nav-links">
-                <li><a class="active" href="#origin">缘起</a></li>
-                <li><a href="#overview">概览</a></li>
-                <li><a href="#oath">约定</a></li>
-                <li><a href="#journey">里程碑</a></li>
-                <li><a href="#traveler">致旅人</a></li>
+                <li><a href="#models">模型</a></li>
+                <li><a href="#quickstart">快速开始</a></li>
+                <li><a href="#faq">FAQ</a></li>
             </ul>
         </div>
     </nav>
 
-    <!-- Hero -->
+    <!-- Hero Section -->
     <section class="hero">
         <div class="hero-content">
-            <h1>风与麦香之间</h1>
-            <p class="hero-subtitle">一段从麦田出发的故事</p>
-            <p class="hero-description">若你在风里听见麦穗彼此碰触的声响，那便是旅途开始的暗语。我们愿把拾来的智慧切成可分的片：统一接口、免费开放，涵盖 ChatGPT、Claude、Gemini 等主流大模型，供旅人取用。</p>
+            <h1>WolfHolo</h1>
+            <p class="hero-subtitle">御三家最新模型 + 主流模型全覆盖</p>
+            <p class="hero-description">
+                像贤狼赫萝分享智慧一样，我们将最强大的AI模型免费分享给所有人。
+                支持ChatGPT、Claude、Gemini最新系列，以及市面上所有主流模型。
+            </p>
+            
+            <div class="hero-badges">
+                <div class="badge" style="--i: 0">✨ 完全免费</div>
+                <div class="badge" style="--i: 1">🚀 极速响应</div>
+                <div class="badge" style="--i: 2">🔄 持续更新</div>
+                <div class="badge" style="--i: 3">💝 公益项目</div>
+            </div>
         </div>
     </section>
 
-    <!-- 主体内容 -->
-    <main class="main-section">
-        <h2 id="origin" class="section-title">缘起</h2>
-
-        <div class="grid reveal" style="margin-bottom:32px;">
-            <div class="card">
-                <h3>麦田之语</h3>
-                <p class="muted">风说：谷粒熟了。月说：颜色正好。我们不过依着季节行事，把见过的好东西留下一些，摆在篝火旁。若你伸手，便能取走一捧金色的光。</p>
-            </div>
-            <div class="card">
-                <h3>月下的约定</h3>
-                <p class="muted">智慧如酒，须细品；如火，亦须节制。我们不喧哗，不争抢，只在合适的时辰里点亮一盏灯，照亮脚边的路。</p>
-                <div class="badges">
-                    <span class="badge">麦香</span>
-                    <span class="badge">琥珀色月光</span>
-                    <span class="badge">清风</span>
-                    <span class="badge">篝火</span>
+    <!-- 主要内容 -->
+    <section class="main-section" id="models">
+        <h2 class="section-title">支持的模型系列</h2>
+        <div class="models-toolbar">
+            <input class="model-filter" id="model-filter" placeholder="搜索模型（如：gpt-5 / sonnet / gemini）" />
+        </div>
+        
+        <!-- 核心模型展示 -->
+        <div class="core-models">
+            <!-- ChatGPT系列 -->
+            <div class="model-card reveal">
+                <div class="model-header">
+                    <div class="model-logo openai">🤖</div>
+                    <div class="model-info">
+                        <h3>ChatGPT 系列</h3>
+                        <div class="model-company">OpenAI</div>
+                    </div>
+                </div>
+                <div class="model-list">
+                    <div class="model-item">
+                        <span class="model-status"></span>
+                        <span class="model-name">gpt-5</span>
+                    </div>
+                    <div class="model-item">
+                        <span class="model-status"></span>
+                        <span class="model-name">o3</span>
+                    </div>
+                    <div class="model-item">
+                        <span class="model-status"></span>
+                        <span class="model-name">o4-mini</span>
+                    </div>
+                    <div class="model-item">
+                        <span class="model-status"></span>
+                        <span class="model-name">chatgpt-4o</span>
+                    </div>
                 </div>
             </div>
-            <div class="card">
-                <h3>路上的见闻</h3>
-                <p class="muted">见过雷雨后的麦田，也见过清晨的薄雾。偶尔有好心人添了木柴，也有旅人留下箴言。我们把它们记下，待有人问起，便一一讲给他听。</p>
+
+            <!-- Claude系列 -->
+            <div class="model-card reveal">
+                <div class="model-header">
+                    <div class="model-logo anthropic">🧠</div>
+                    <div class="model-info">
+                        <h3>Claude 系列</h3>
+                        <div class="model-company">Anthropic</div>
+                    </div>
+                </div>
+                <div class="model-list">
+                    <div class="model-item">
+                        <span class="model-status"></span>
+                        <span class="model-name">claude-opus-4.1</span>
+                    </div>
+                    <div class="model-item">
+                        <span class="model-status"></span>
+                        <span class="model-name">claude-opus-4</span>
+                    </div>
+                    <div class="model-item">
+                        <span class="model-status"></span>
+                        <span class="model-name">claude-sonnet-4</span>
+                    </div>
+                    <div class="model-item">
+                        <span class="model-status"></span>
+                        <span class="model-name">claude-sonnet-3.7</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Gemini系列 -->
+            <div class="model-card reveal">
+                <div class="model-header">
+                    <div class="model-logo google">💎</div>
+                    <div class="model-info">
+                        <h3>Gemini 系列</h3>
+                        <div class="model-company">Google</div>
+                    </div>
+                </div>
+                <div class="model-list">
+                    <div class="model-item">
+                        <span class="model-status"></span>
+                        <span class="model-name">gemini-2.5-pro</span>
+                    </div>
+                    <div class="model-item">
+                        <span class="model-status"></span>
+                        <span class="model-name">gemini-2.5-flash</span>
+                    </div>
+                    <div class="model-item">
+                        <span class="model-status"></span>
+                        <span class="model-name">gemini-2.5-flash-image-preview</span>
+                    </div>
+                    <div class="model-item">
+                        <span class="model-status"></span>
+                        <span class="model-name">gemini-2.5-flash-lite</span>
+                    </div>
+                </div>
             </div>
         </div>
 
-        <h2 id="overview" class="section-title">概览</h2>
-        <div class="grid reveal" style="margin-bottom:26px;">
-            <div class="card">
-                <h3>支持模型</h3>
-                <p class="muted">ChatGPT（gpt-5、o3、o4-mini、chatgpt-4o 等），Claude（claude-opus-4.1、sonnet-4/3.7 等），Gemini（2.5-pro/flash 等）；并逐步接入 Grok、DeepSeek、Qwen、GLM、Kimi 等。</p>
+        <!-- 更多模型提示 -->
+        <div class="info-box reveal">
+            <span class="info-icon">💡</span>
+            <div class="info-text">
+                <strong>更多模型：</strong>除了御三家外，我们还支持 Grok、DeepSeek、Qwen、GLM、Kimi 等多数主流模型。
+                所有模型均已上线可用，请在顶部菜单栏查看完整模型列表。
             </div>
-            <div class="card">
-                <h3>使用方式</h3>
-                <p class="muted">统一 OpenAI 兼容接口；只需替换 base_url 与 api_key，即可在不同模型间无缝切换。</p>
-                <div class="code-block">
-                    <span class="code-lang">Python</span>
-                    <button class="code-copy" onclick="copyCode(this)">复制</button>
-from openai import OpenAI
-client = OpenAI(api_key="your-api-key", base_url="https://wolfholo.top/v1")
-resp = client.chat.completions.create(
-    model="gpt-5",  # 或 claude-opus-4.1、gemini-2.5-pro
-    messages=[{"role": "user", "content": "Hello!"}]
-)
-print(resp.choices[0].message.content)
+        </div>
+
+        <!-- 统一配置 -->
+        <div class="config-section reveal">
+            <h3 style="color: var(--accent); text-align: center; margin-bottom: 30px; font-size: 1.8em;">
+                统一接入配置
+            </h3>
+            <div class="config-grid">
+                <div class="config-item">
+                    <div class="config-label">API Endpoint</div>
+                    <div class="config-value">
+                        <span>https://wolfholo.top</span>
+                        <button class="copy-btn" onclick="copyToClipboard(this, 'https://wolfholo.top')">复制</button>
+                    </div>
                 </div>
-                <div class="code-block">
-                    <span class="code-lang">cURL</span>
-                    <button class="code-copy" onclick="copyCode(this)">复制</button>
-curl https://wolfholo.top/v1/chat/completions \
-  -H "Content-Type: application/json" \
-  -H "Authorization: Bearer your-api-key" \
-  -d '{
-    "model": "claude-opus-4.1",
-    "messages": [{"role": "user", "content": "Hello!"}]
-  }'
+                <div class="config-item">
+                    <div class="config-label">API Key 申请</div>
+                    <div class="config-value">
+                        <span>联系管理员获取</span>
+                        <button class="copy-btn" onclick="alert('请联系管理员申请API Key')">申请</button>
+                    </div>
                 </div>
             </div>
         </div>
 
-        <h2 id="oath" class="section-title" style="margin-top:10px;">约定</h2>
-        <div class="grid reveal" style="margin-bottom:26px;">
-            <div class="card">
-                <h3>静默的约定</h3>
-                <p class="muted">我们不夺取不属于自己的东西；不以喧嚣求名；不以贪欲伤人。若有余力，便添一束柴；若感温暖，便留下足迹。</p>
+        <!-- 快速开始 -->
+        <div class="quickstart reveal" id="quickstart">
+            <h3>快速开始</h3>
+            
+            <div class="code-block">
+                <span class="code-lang">Python</span>
+                <button class="code-copy" onclick="copyCode(this)">复制</button>
+                <span class="code-comment"># 使用 OpenAI SDK 兼容接口</span><br>
+                <span class="code-keyword">from</span> openai <span class="code-keyword">import</span> OpenAI<br><br>
+                
+                <span class="code-variable">client</span> = OpenAI(<br>
+                &nbsp;&nbsp;&nbsp;&nbsp;<span class="code-variable">api_key</span>=<span class="code-string">"your-api-key"</span>,  <span class="code-comment"># 申请获得的key</span><br>
+                &nbsp;&nbsp;&nbsp;&nbsp;<span class="code-variable">base_url</span>=<span class="code-string">"https://wolfholo.top/v1"</span><br>
+                )<br><br>
+                
+                <span class="code-comment"># 使用任意支持的模型</span><br>
+                <span class="code-variable">response</span> = client.chat.completions.create(<br>
+                &nbsp;&nbsp;&nbsp;&nbsp;<span class="code-variable">model</span>=<span class="code-string">"gpt-5"</span>,  <span class="code-comment"># 或 claude-opus-4.1, gemini-2.5-pro 等</span><br>
+                &nbsp;&nbsp;&nbsp;&nbsp;<span class="code-variable">messages</span>=[<br>
+                &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;{<span class="code-string">"role"</span>: <span class="code-string">"user"</span>, <span class="code-string">"content"</span>: <span class="code-string">"Hello!"</span>}<br>
+                &nbsp;&nbsp;&nbsp;&nbsp;]<br>
+                )<br><br>
+                
+                <span class="code-keyword">print</span>(response.choices[0].message.content)
             </div>
-            <div class="card">
-                <h3>温柔的边界</h3>
-                <p class="muted">火堆很小，风却很大。请收敛夸张的火舌，莫让夜行者失了方向。节制本就是对旅途的敬意。</p>
-            </div>
-        </div>
 
-        <div class="card reveal" id="journey" style="margin-bottom:26px;">
-            <h3>里程碑</h3>
-            <div class="timeline">
-                <div class="tl-item">
-                    <div class="tl-date">2025 Q3</div>
-                    <div class="tl-title">公共节点稳定上线</div>
-                    <div class="tl-desc">完成核心三家模型接入与统一鉴权，小范围试用运行稳定。</div>
-                </div>
-                <div class="tl-item">
-                    <div class="tl-date">2025 Q4</div>
-                    <div class="tl-title">更多模型与示例补全</div>
-                    <div class="tl-desc">补充 Python/cURL 快速开始，完善 FAQ 与限速策略，开放更多模型路由。</div>
-                </div>
-                <div class="tl-item">
-                    <div class="tl-date">进行中</div>
-                    <div class="tl-title">社区共建</div>
-                    <div class="tl-desc">欢迎贡献示例与节点，持续提升可用性与覆盖范围。</div>
-                </div>
+            <div class="code-block">
+                <span class="code-lang">cURL</span>
+                <button class="code-copy" onclick="copyCode(this)">复制</button>
+                <span class="code-comment"># 直接使用 cURL 请求</span><br>
+                curl https://wolfholo.top/v1/chat/completions \<br>
+                &nbsp;&nbsp;-H <span class="code-string">"Content-Type: application/json"</span> \<br>
+                &nbsp;&nbsp;-H <span class="code-string">"Authorization: Bearer your-api-key"</span> \<br>
+                &nbsp;&nbsp;-d '{<br>
+                &nbsp;&nbsp;&nbsp;&nbsp;<span class="code-string">"model"</span>: <span class="code-string">"claude-opus-4.1"</span>,<br>
+                &nbsp;&nbsp;&nbsp;&nbsp;<span class="code-string">"messages"</span>: [{<span class="code-string">"role"</span>: <span class="code-string">"user"</span>, <span class="code-string">"content"</span>: <span class="code-string">"Hello!"</span>}]<br>
+                &nbsp;&nbsp;}'
             </div>
         </div>
+    </section>
 
-        <div class="grid reveal">
-            <div class="card">
-                <h3>在篝火旁</h3>
-                <p class="muted">有人讲交易，有人谈远方；也有人静静看着火光，把心事烤得暖一点。所有的温柔与善意，都值得被认真收藏。</p>
+    <!-- FAQ精简 -->
+    <section class="faq-mini reveal" id="faq">
+        <h2 class="section-title">常见问题</h2>
+        <div class="faq-grid">
+            <div class="faq-card reveal">
+                <h4>如何申请API Key？</h4>
+                <p>联系管理员申请即可，获知合理需求后我们会尽快为你开通。这是为了防止滥用，保证所有人都能正常使用。</p>
             </div>
-            <div class="card" id="traveler">
-                <h3>致旅人</h3>
-                <p class="muted">若你路过此处，便取一捧金色装进兜里。别着急告诉别人它从何来，只在需要时分一点给身旁的人。愿你脚下有风，心里有光。</p>
+            <div class="faq-card reveal">
+                <h4>支持哪些模型？</h4>
+                <p>支持ChatGPT、Claude、Gemini全系列，以及Grok、DeepSeek、Qwen、GLM、Kimi等主流模型。完整列表请查看顶部菜单。</p>
+            </div>
+            <div class="faq-card reveal">
+                <h4>有使用限制吗？</h4>
+                <p>为保证服务稳定，设有合理的速率限制。正常使用完全足够，请勿滥用。</p>
+            </div>
+            <div class="faq-card reveal">
+                <h4>如何切换模型？</h4>
+                <p>只需在请求中修改model参数即可，使用统一的endpoint，所有模型都可以无缝切换。</p>
+            </div>
+            <div class="faq-card reveal">
+                <h4>遇到问题怎么办？</h4>
+                <p>好好发挥自己智慧的大脑啦~</p>
+            </div>
+            <div class="faq-card reveal">
+                <h4>这是公益项目吗？</h4>
+                <p>是的，完全公益。我们相信AI应该惠及所有人，就像赫萝愿意分享她的智慧一样。</p>
             </div>
         </div>
-    </main>
+    </section>
 
     <!-- 页脚 -->
     <footer>
         <div class="footer-title">WolfHolo</div>
-        <p class="footer-text">风起麦浪，月照林间；愿你的旅途总有金色相伴。</p>
-        <div style="margin-top: 30px; opacity: .7;">© 2025 Holo AI Share</div>
+        <p class="footer-text">让AI的智慧如同赫萝的智慧一样，自由流动，惠及所有人</p>
+        
+        <div class="footer-links">
+            <a href="#" class="footer-link">GitHub</a>
+            <a href="#" class="footer-link">文档</a>
+            <a href="#" class="footer-link">社区</a>
+            <a href="#" class="footer-link">联系我们</a>
+        </div>
+        
+        <div style="margin-top: 30px; opacity: 0.7;">
+            © 2025 Holo AI Share | 纯公益项目
+        </div>
     </footer>
 
     <script>
         // 粒子背景
         const canvas = document.getElementById('particles-bg');
         const ctx = canvas.getContext('2d');
-        function resizeCanvas(){ canvas.width = window.innerWidth; canvas.height = window.innerHeight; }
-        resizeCanvas();
+
+        canvas.width = window.innerWidth;
+        canvas.height = window.innerHeight;
 
         const isDark = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches;
         let PARTICLE_COLOR = isDark ? '#ffd666' : '#c9a227';
         let PARTICLE_BLUR = isDark ? 10 : 6;
 
         class Particle {
-            constructor(){ this.x = Math.random()*canvas.width; this.y = Math.random()*canvas.height; this.size = Math.random()*2+1; this.speedX = Math.random()*0.8-0.4; this.speedY = Math.random()*0.8-0.4; this.opacity = Math.random()*0.3+0.2; }
-            update(){ this.x += this.speedX; this.y += this.speedY; if(this.x>canvas.width) this.x=0; if(this.x<0) this.x=canvas.width; if(this.y>canvas.height) this.y=0; if(this.y<0) this.y=canvas.height; }
-            draw(){ ctx.save(); ctx.globalAlpha = this.opacity; ctx.fillStyle = PARTICLE_COLOR; ctx.shadowColor = PARTICLE_COLOR; ctx.shadowBlur = PARTICLE_BLUR; ctx.beginPath(); ctx.arc(this.x,this.y,this.size,0,Math.PI*2); ctx.fill(); ctx.restore(); }
+            constructor() {
+                this.x = Math.random() * canvas.width;
+                this.y = Math.random() * canvas.height;
+                this.size = Math.random() * 2.2 + 0.8;
+                this.speedX = Math.random() * 1.2 - 0.6;
+                this.speedY = Math.random() * 1.2 - 0.6;
+                this.opacity = Math.random() * 0.3 + 0.2;
+            }
+
+            update() {
+                this.x += this.speedX;
+                this.y += this.speedY;
+
+                if (this.x > canvas.width) this.x = 0;
+                if (this.x < 0) this.x = canvas.width;
+                if (this.y > canvas.height) this.y = 0;
+                if (this.y < 0) this.y = canvas.height;
+            }
+
+            draw() {
+                ctx.save();
+                ctx.globalAlpha = this.opacity;
+                ctx.fillStyle = PARTICLE_COLOR;
+                ctx.shadowColor = PARTICLE_COLOR;
+                ctx.shadowBlur = PARTICLE_BLUR;
+                ctx.beginPath();
+                ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2);
+                ctx.fill();
+                ctx.restore();
+            }
         }
-        const particles = Array.from({length: isDark ? 90 : 50}, () => new Particle());
-        let scrollOffset = 0;
-        function animateParticles(){
-            ctx.clearRect(0,0,canvas.width,canvas.height);
+
+        const particles = [];
+        const NUM = isDark ? 100 : 60; /* 降低密度：夜间100，日间60 */
+        for (let i = 0; i < NUM; i++) particles.push(new Particle());
+
+        let scrollOffset = 0; // 用于视差位移
+
+        function animateParticles() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            
+            // 视差平移：随滚动缓慢上移
             const off = (scrollOffset % canvas.height);
             ctx.save();
             ctx.translate(0, -off);
-            particles.forEach(p=>{ p.update(); p.draw(); });
+            particles.forEach(particle => { particle.update(); particle.draw(); });
+            // 补一层平铺，避免出现空带
             ctx.translate(0, canvas.height);
-            particles.forEach(p=>{ p.draw(); });
+            particles.forEach(particle => { particle.draw(); });
             ctx.restore();
-            // 为标题区域挖空，避免萤火虫覆盖造成闪动
+            // 避免粒子覆盖标题：为标题区域留出透明窗口
             const title = document.querySelector('.hero h1');
             if (title) {
                 const r = title.getBoundingClientRect();
@@ -292,40 +904,40 @@ curl https://wolfholo.top/v1/chat/completions \
                 const h = Math.min(canvas.height, r.height + pad * 2);
                 ctx.clearRect(x, y, w, h);
             }
+            
             requestAnimationFrame(animateParticles);
         }
+
         animateParticles();
-        window.addEventListener('resize', resizeCanvas);
-        window.addEventListener('scroll', ()=>{ scrollOffset = window.scrollY * 0.15; });
+
+        // 跟随系统夜间模式动态调整亮度
         if (window.matchMedia) {
             const mq = window.matchMedia('(prefers-color-scheme: dark)');
-            mq.addEventListener('change', (e)=>{
-                const dark = e.matches; PARTICLE_COLOR = dark ? '#ffd666' : '#c9a227'; PARTICLE_BLUR = dark ? 10 : 6; 
+            mq.addEventListener('change', (e) => {
+                const dark = e.matches;
+                PARTICLE_COLOR = dark ? '#ffd666' : '#c9a227';
+                PARTICLE_BLUR = dark ? 10 : 6;
             });
         }
 
-        // 导航栏滚动效果
+        // 窗口大小调整
+        window.addEventListener('resize', () => {
+            canvas.width = window.innerWidth;
+            canvas.height = window.innerHeight;
+        });
+
+        // 导航栏滚动效果 + 粒子视差
         window.addEventListener('scroll', () => {
             const navbar = document.getElementById('navbar');
-            if (window.scrollY > 100) navbar.classList.add('scrolled'); else navbar.classList.remove('scrolled');
+            if (window.scrollY > 100) {
+                navbar.classList.add('scrolled');
+            } else {
+                navbar.classList.remove('scrolled');
+            }
+            scrollOffset = window.scrollY * 0.15; // 视差因子
         });
 
-        // 平滑滚动
-        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
-            anchor.addEventListener('click', function (e) {
-                e.preventDefault();
-                const target = document.querySelector(this.getAttribute('href'));
-                if (target) target.scrollIntoView({ behavior: 'smooth' });
-            });
-        });
-
-        // 滚动显隐
-        const observer = new IntersectionObserver((entries) => {
-            entries.forEach(e => { if (e.isIntersecting) { e.target.classList.add('show'); } });
-        }, { threshold: 0.12 });
-        document.querySelectorAll('.reveal').forEach(el => observer.observe(el));
-
-        // 复制代码（带不安全上下文回退）
+        // 复制功能
         function writeClipboard(text, onDone){
             const ok = () => { if (onDone) onDone(); };
             if (navigator.clipboard && window.isSecureContext) {
@@ -341,29 +953,71 @@ curl https://wolfholo.top/v1/chat/completions \
             }
         }
 
-        function copyCode(btn){
-            const block = btn.parentElement;
-            const cloned = block.cloneNode(true);
-            cloned.querySelectorAll('.code-copy, .code-lang').forEach(el => el.remove());
-            const text = cloned.innerText.trim();
-            writeClipboard(text, ()=>{
-                const t = btn.textContent; btn.textContent = '已复制'; setTimeout(()=> btn.textContent = t, 1800);
+        function copyToClipboard(btn, text) {
+            writeClipboard(text, () => {
+                const originalText = btn.textContent;
+                btn.textContent = '已复制';
+                btn.classList.add('copied');
+                setTimeout(() => {
+                    btn.textContent = originalText;
+                    btn.classList.remove('copied');
+                }, 2000);
             });
         }
 
+        // 平滑滚动
+        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', function (e) {
+                e.preventDefault();
+                const target = document.querySelector(this.getAttribute('href'));
+                if (target) {
+                    target.scrollIntoView({ behavior: 'smooth' });
+                }
+            });
+        });
+
         // 滚动激活导航
-        const navLinks = Array.from(document.querySelectorAll('.nav-links a'));
-        const anchors = ['#origin','#overview','#oath','#journey','#traveler'];
-        function setActive() {
-            let active = '#origin';
-            anchors.forEach(id => {
+        const navLinks = Array.from(document.querySelectorAll('.nav-links a[href^="#"]'));
+        const sections = ['#models', '#quickstart', '#faq'];
+        function updateActive() {
+            let active = '#models';
+            sections.forEach(id => {
                 const el = document.querySelector(id);
                 if (el && el.getBoundingClientRect().top - 120 < 0) active = id;
             });
             navLinks.forEach(a => a.classList.toggle('active', a.getAttribute('href') === active));
         }
-        window.addEventListener('scroll', setActive);
-        setActive();
+        window.addEventListener('scroll', updateActive);
+        updateActive();
+
+        // 代码复制（快速开始）
+        function copyCode(btn) {
+            const block = btn.parentElement;
+            const cloned = block.cloneNode(true);
+            cloned.querySelectorAll('.code-copy, .code-lang').forEach(el => el.remove());
+            const text = cloned.innerText.trim();
+            writeClipboard(text, () => {
+                const t = btn.textContent; btn.textContent = '已复制'; setTimeout(() => btn.textContent = t, 1800);
+            });
+        }
+
+        // 滚动显隐
+        const io = new IntersectionObserver((entries) => {
+            entries.forEach(e => { if (e.isIntersecting) e.target.classList.add('show'); });
+        }, { threshold: 0.12 });
+        document.querySelectorAll('.reveal').forEach(el => io.observe(el));
+
+        // 模型搜索过滤
+        const filterInput = document.getElementById('model-filter');
+        if (filterInput) {
+            filterInput.addEventListener('input', (e) => {
+                const q = e.target.value.toLowerCase().trim();
+                document.querySelectorAll('.model-list .model-item').forEach(item => {
+                    const name = item.querySelector('.model-name').textContent.toLowerCase();
+                    item.style.display = name.includes(q) ? 'flex' : 'none';
+                });
+            });
+        }
     </script>
 </body>
 </html>

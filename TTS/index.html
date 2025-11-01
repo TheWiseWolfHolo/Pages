@@ -1442,25 +1442,53 @@
         /* ========== 响应式设计 ========== */
         @media (max-width: 1024px) {
             .sidebar {
-                position: absolute;
+                position: fixed;
                 left: 0;
                 top: var(--header-height);
-                height: calc(100vh - var(--header-height));
-                z-index: 50;
+                bottom: 0;
+                width: var(--sidebar-width);
+                max-width: 85vw;
+                z-index: 150;
                 transform: translateX(-100%);
                 transition: transform 0.3s var(--transition-smooth);
+                box-shadow: 4px 0 20px var(--shadow-lg);
             }
             
-            .sidebar.active {
+            .sidebar:not(.collapsed) {
                 transform: translateX(0);
             }
             
             .history-panel {
-                display: none;
+                position: fixed;
+                right: 0;
+                top: var(--header-height);
+                bottom: 0;
+                width: var(--history-width);
+                max-width: 85vw;
+                z-index: 150;
+                transform: translateX(100%);
+                transition: transform 0.3s var(--transition-smooth);
+                box-shadow: -4px 0 20px var(--shadow-lg);
             }
             
-            .compare-panel {
-                width: 100%;
+            .history-panel:not(.collapsed) {
+                transform: translateX(0);
+            }
+            
+            /* 移动端遮罩 */
+            .mobile-overlay {
+                display: none;
+                position: fixed;
+                top: var(--header-height);
+                left: 0;
+                right: 0;
+                bottom: 0;
+                background: rgba(0, 0, 0, 0.5);
+                z-index: 149;
+            }
+            
+            .mobile-overlay.active {
+                display: block;
             }
         }
 
@@ -1748,6 +1776,9 @@
         
         <!-- 主内容区 -->
         <main class="main-content">
+            <!-- 移动端遮罩 -->
+            <div class="mobile-overlay" id="mobileOverlay"></div>
+            
             <!-- 左侧音色选择器 -->
             <aside class="sidebar" id="voiceSidebar">
                 <div class="sidebar-header">
@@ -2153,10 +2184,13 @@
             updateDeletedToggleBtn();
             // 恢复历史面板折叠状态
             const savedCollapsed = (localStorage.getItem('historyPanelCollapsed') || 'false') === 'true';
-            setHistoryCollapsed(savedCollapsed);
+            // 移动端默认折叠
+            const isMobile = window.innerWidth <= 1024;
+            setHistoryCollapsed(isMobile ? true : savedCollapsed);
+            
             // 恢复侧边栏折叠状态
             const sidebarCollapsed = (localStorage.getItem('sidebarCollapsed') || 'false') === 'true';
-            setSidebarCollapsed(sidebarCollapsed);
+            setSidebarCollapsed(isMobile ? true : sidebarCollapsed);
             if (state.showDeleted) renderDeleted();
             updateHistoryToggleBtnVisual();
             updateSidebarToggleBtnVisual();
@@ -2164,6 +2198,15 @@
             
             // 输出收藏的音色列表（调试用）
             console.log('已收藏的音色:', state.favoriteVoices);
+            
+            // 窗口大小改变时的处理
+            window.addEventListener('resize', () => {
+                const overlay = document.getElementById('mobileOverlay');
+                if (window.innerWidth > 1024 && overlay) {
+                    // 桌面端：隐藏遮罩
+                    overlay.classList.remove('active');
+                }
+            });
         });
         
         // ========== 主题切换 ==========
@@ -2420,8 +2463,23 @@
             document.getElementById('toggleSidebar').addEventListener('click', () => {
                 const sidebar = document.querySelector('.sidebar');
                 const collapsed = sidebar.classList.contains('collapsed');
+                
+                // 移动端：如果打开侧边栏，先关闭历史面板
+                if (window.innerWidth <= 1024 && collapsed) {
+                    setHistoryCollapsed(true);
+                }
+                
                 setSidebarCollapsed(!collapsed);
             });
+            
+            // 移动端遮罩点击事件
+            const mobileOverlay = document.getElementById('mobileOverlay');
+            if (mobileOverlay) {
+                mobileOverlay.addEventListener('click', () => {
+                    setSidebarCollapsed(true);
+                    setHistoryCollapsed(true);
+                });
+            }
             
             // 历史面板切换（面板内关闭按钮 -> 折叠）
             document.getElementById('toggleHistory').addEventListener('click', () => {
@@ -2431,8 +2489,14 @@
             // 顶部历史按钮（显示/隐藏）
             document.getElementById('historyToggleGlobal').addEventListener('click', () => {
                 const panel = document.getElementById('historyPanel');
-                const next = panel.classList.contains('collapsed') ? false : true;
-                setHistoryCollapsed(next);
+                const collapsed = panel.classList.contains('collapsed');
+                
+                // 移动端：如果打开历史面板，先关闭侧边栏
+                if (window.innerWidth <= 1024 && collapsed) {
+                    setSidebarCollapsed(true);
+                }
+                
+                setHistoryCollapsed(!collapsed);
             });
             
             // 顶部对比列表按钮
@@ -2684,9 +2748,18 @@
 
         function setSidebarCollapsed(collapsed) {
             const sidebar = document.querySelector('.sidebar');
+            const overlay = document.getElementById('mobileOverlay');
+            
             sidebar.classList.toggle('collapsed', collapsed);
             localStorage.setItem('sidebarCollapsed', collapsed);
             updateSidebarToggleBtnVisual();
+            
+            // 移动端：显示/隐藏遮罩
+            if (window.innerWidth <= 1024) {
+                if (overlay) {
+                    overlay.classList.toggle('active', !collapsed);
+                }
+            }
         }
         function updateSidebarToggleBtnVisual() {
             const btn = document.getElementById('toggleSidebar');
@@ -2699,9 +2772,18 @@
 
         function setHistoryCollapsed(collapsed) {
             const panel = document.getElementById('historyPanel');
+            const overlay = document.getElementById('mobileOverlay');
+            
             panel.classList.toggle('collapsed', collapsed);
             localStorage.setItem('historyPanelCollapsed', collapsed);
             updateHistoryToggleBtnVisual();
+            
+            // 移动端：显示/隐藏遮罩
+            if (window.innerWidth <= 1024) {
+                if (overlay) {
+                    overlay.classList.toggle('active', !collapsed);
+                }
+            }
         }
 
         function updateHistoryToggleBtnVisual() {

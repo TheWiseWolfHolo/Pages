@@ -427,75 +427,165 @@
             display: inline-block;
         }
         
-        /* 对比结果面板 */
-        .compare-panel {
-            position: fixed;
-            right: 0;
-            top: var(--header-height);
-            bottom: 0;
-            width: 400px;
-            background: var(--surface-1);
-            backdrop-filter: blur(16px);
-            box-shadow: -4px 0 20px var(--shadow-lg);
-            transform: translateX(100%);
-            transition: transform 0.3s var(--transition-smooth);
-            z-index: 95;
-            display: flex;
-            flex-direction: column;
+        /* 对比列表 - 集成到播放器内 */
+        .compare-playlist {
+            display: none;
+            padding: 0.75rem 1.25rem 0;
+            border-bottom: 1px solid rgba(0, 0, 0, 0.08);
         }
         
-        .compare-panel.active {
-            transform: translateX(0);
+        [data-theme="dark"] .compare-playlist {
+            border-bottom-color: rgba(255, 255, 255, 0.1);
         }
         
-        .compare-header {
-            padding: 1.5rem;
-            border-bottom: 1px solid var(--border-color);
+        .compare-playlist.active {
+            display: block;
+        }
+        
+        .compare-playlist-header {
             display: flex;
             justify-content: space-between;
             align-items: center;
+            margin-bottom: 0.75rem;
         }
         
-        .compare-title {
-            font-size: 1.2rem;
+        .compare-playlist-title {
+            font-size: 0.85rem;
             font-weight: 600;
+            color: var(--text-primary);
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+        
+        .compare-playlist-controls {
+            display: flex;
+            gap: 0.4rem;
+            align-items: center;
         }
         
         .compare-list {
-            flex: 1;
-            overflow-y: auto;
-          padding: 1rem;
+            display: flex;
+            gap: 0.5rem;
+            overflow-x: auto;
+            overflow-y: hidden;
+            padding-bottom: 0.5rem;
+            scroll-behavior: smooth;
+        }
+        
+        .compare-list::-webkit-scrollbar {
+            height: 4px;
+        }
+        
+        .compare-list::-webkit-scrollbar-track {
+            background: rgba(0, 0, 0, 0.05);
+            border-radius: 2px;
+        }
+        
+        .compare-list::-webkit-scrollbar-thumb {
+            background: linear-gradient(90deg, var(--primary-terracotta), var(--primary-sienna));
+            border-radius: 2px;
         }
         
         .compare-item {
-            background: var(--bg-primary);
-            border-radius: var(--border-radius-sm);
-            padding: 1rem;
-            margin-bottom: 0.75rem;
-            border: 2px solid transparent;
-            transition: all 0.3s;
+            background: linear-gradient(135deg, rgba(255, 255, 255, 0.9), rgba(255, 244, 230, 0.7));
+            border-radius: 10px;
+            padding: 0.6rem 0.8rem;
+            min-width: 140px;
+            max-width: 160px;
+            flex-shrink: 0;
+            border: 1.5px solid transparent;
+            transition: all 0.25s var(--transition-smooth);
+            cursor: pointer;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        [data-theme="dark"] .compare-item {
+            background: linear-gradient(135deg, rgba(42, 34, 32, 0.9), rgba(37, 30, 28, 0.8));
+        }
+        
+        .compare-item::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 2px;
+            background: linear-gradient(90deg, var(--primary-terracotta), var(--accent-amber));
+            opacity: 0;
+            transition: opacity 0.25s;
+        }
+        
+        .compare-item:hover {
+            transform: translateY(-2px) scale(1.02);
+            box-shadow: 0 4px 12px var(--shadow-md);
+            border-color: rgba(212, 117, 78, 0.4);
+        }
+        
+        .compare-item:hover::before {
+            opacity: 1;
         }
         
         .compare-item.playing {
             border-color: var(--primary-terracotta);
-            box-shadow: 0 4px 16px var(--shadow-md);
+            box-shadow: 0 4px 16px var(--shadow-lg);
+            background: linear-gradient(135deg, rgba(232, 168, 124, 0.25), rgba(212, 117, 78, 0.15));
         }
         
-        .compare-item-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 0.75rem;
+        .compare-item.playing::before {
+            opacity: 1;
+            height: 3px;
+        }
+        
+        .compare-item.playing::after {
+            content: '▶';
+            position: absolute;
+            bottom: 0.4rem;
+            right: 0.5rem;
+            font-size: 0.7rem;
+            color: var(--primary-terracotta);
+            animation: pulse 1.5s ease-in-out infinite;
+        }
+        
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.5; }
         }
         
         .compare-voice-name {
-            font-weight: 600;
-            font-size: 1rem;
+            font-weight: 700;
+            font-size: 0.9rem;
+            color: var(--text-primary);
+            margin-bottom: 0.3rem;
+            display: flex;
+            align-items: center;
+            gap: 0.3rem;
         }
         
-        .compare-actions {
+        .compare-voice-meta {
+            font-size: 0.7rem;
+            color: var(--text-secondary);
             display: flex;
-            gap: 0.5rem;
+            flex-direction: column;
+            gap: 0.15rem;
+        }
+        
+        .compare-voice-trait {
+            display: inline-block;
+            padding: 0.15rem 0.4rem;
+            background: rgba(212, 117, 78, 0.15);
+            border-radius: 4px;
+            font-size: 0.65rem;
+            font-weight: 500;
+            color: var(--primary-sienna);
+            width: fit-content;
+        }
+        
+        .audio-player.has-playlist {
+            height: auto;
+            min-height: 200px;
+            max-height: 320px;
         }
         
         /* ========== 中央工作区 ========== */
@@ -1331,8 +1421,13 @@
                 width: 100%;
             }
             
-            .compare-panel {
-                width: 100%;
+            .compare-item {
+                min-width: 120px;
+                max-width: 140px;
+            }
+            
+            .compare-playlist-controls {
+                flex-wrap: wrap;
             }
         }
         
@@ -1370,6 +1465,7 @@
                 <div class="logo">🎙️ Gemini TTS Pro</div>
             </div>
             <div class="header-actions">
+                <button class="chip-btn" id="compareToggleGlobal" title="对比列表" style="display: none;">🎭 播放列表</button>
                 <button class="chip-btn" id="historyToggleGlobal" title="打开历史记录">📜 历史</button>
                 <button class="icon-btn" id="themeToggle" title="切换主题">🌓</button>
                 <button class="icon-btn" id="settingsBtn" title="设置">⚙️</button>
@@ -1450,6 +1546,26 @@
         
         <!-- 音频播放器 -->
         <div class="audio-player" id="audioPlayer">
+            <!-- 对比播放列表（集成在播放器内） -->
+            <div class="compare-playlist" id="comparePlaylist">
+                <div class="compare-playlist-header">
+                    <div class="compare-playlist-title">
+                        <span>🎭 音色对比</span>
+                        <span id="comparePosition" style="font-size: 0.75rem; color: var(--text-secondary); font-weight: 400;"></span>
+                    </div>
+                    <div class="compare-playlist-controls">
+                        <button class="icon-control" id="playModeBtnCompare" title="播放模式：顺序" onclick="togglePlayMode()" style="font-size: 0.85rem; width: 28px; height: 28px;">▶️</button>
+                        <button class="icon-control" id="prevCompareBtn" title="上一个" onclick="playPrevCompare()" style="font-size: 0.85rem; width: 28px; height: 28px;">⏮</button>
+                        <button class="icon-control" id="nextCompareBtn" title="下一个" onclick="playNextCompare()" style="font-size: 0.85rem; width: 28px; height: 28px;">⏭</button>
+                        <button class="btn-small" id="downloadAllCompare" style="font-size: 0.7rem; padding: 0.3rem 0.6rem;">📦 全部</button>
+                        <button class="icon-control" onclick="closeComparePlaylist()" style="font-size: 0.85rem; width: 28px; height: 28px;">✕</button>
+                    </div>
+                </div>
+                <div class="compare-list" id="compareList">
+                    <!-- 对比结果将动态生成 -->
+                </div>
+            </div>
+            
             <div class="player-controls">
                 <button class="play-btn" id="playBtn">▶</button>
                 <div class="time-label" id="currentTime">0:00</div>
@@ -1457,43 +1573,29 @@
                     <div class="waveform-wrapper">
                         <canvas class="waveform-canvas" id="waveformCanvas"></canvas>
                         <div class="wave-tooltip" id="waveTooltip"></div>
-            </div>
+                    </div>
                 </div>
                 <div class="time-label" id="totalTime">0:00</div>
                 <div class="player-extra">
                     <button class="icon-control" id="volumeBtn" title="音量">🔉</button>
                     <input type="range" class="slider" id="volumeSlider" min="0" max="100" value="100">
-                <div class="speed-group">
-                    <button class="icon-control" id="speedBtn" title="倍速">⚡</button>
-                    <div class="speed-menu" id="speedMenu">
-                        <button class="speed-item" data-speed="0.5">0.5x</button>
-                        <button class="speed-item" data-speed="0.75">0.75x</button>
-                        <button class="speed-item" data-speed="1">1.0x</button>
-                        <button class="speed-item" data-speed="1.25">1.25x</button>
-                        <button class="speed-item" data-speed="1.5">1.5x</button>
-                        <button class="speed-item" data-speed="2">2.0x</button>
+                    <div class="speed-group">
+                        <button class="icon-control" id="speedBtn" title="倍速">⚡</button>
+                        <div class="speed-menu" id="speedMenu">
+                            <button class="speed-item" data-speed="0.5">0.5x</button>
+                            <button class="speed-item" data-speed="0.75">0.75x</button>
+                            <button class="speed-item" data-speed="1">1.0x</button>
+                            <button class="speed-item" data-speed="1.25">1.25x</button>
+                            <button class="speed-item" data-speed="1.5">1.5x</button>
+                            <button class="speed-item" data-speed="2">2.0x</button>
+                        </div>
                     </div>
-                </div>
                     <button class="icon-control" id="loopBtn" title="循环：关">🔁</button>
                     <button class="icon-control" id="downloadBtn" title="下载">⬇️</button>
                 </div>
             </div>
             <audio id="audioElement" style="display: none;"></audio>
         </div>
-
-    <!-- 对比结果面板 -->
-    <div class="compare-panel" id="comparePanel">
-        <div class="compare-header">
-            <h2 class="compare-title">🎭 音色对比</h2>
-            <button class="icon-btn" onclick="closeComparePanel()">✕</button>
-        </div>
-        <div class="compare-list" id="compareList">
-            <!-- 对比结果将动态生成 -->
-        </div>
-        <div style="padding: 1rem; border-top: 1px solid var(--border-color);">
-            <button class="btn btn-primary" style="width: 100%;" id="downloadAllCompare">📦 打包下载全部</button>
-        </div>
-    </div>
     
     <!-- Toast 容器 -->
     <div class="toast-container" id="toastContainer"></div>
@@ -1645,7 +1747,11 @@
             waveformBins: null,
             multiSelectMode: false,
             selectedVoices: new Set(),
-            compareResults: []
+            compareResults: [],
+            // 播放列表状态
+            currentCompareIndex: -1,
+            playMode: 'order', // 'order', 'loop', 'random'
+            comparePanelCollapsed: true
         };
 
         // 撤销删除所需
@@ -1674,6 +1780,13 @@
             renderHistory();
             renderFavorites();
             
+            // 初始化播放模式按钮
+            const playModeBtn = document.getElementById('playModeBtnCompare');
+            if (playModeBtn) {
+                playModeBtn.textContent = '▶️';
+                playModeBtn.title = '播放模式：顺序播放';
+            }
+            
             // 首次访问提示
             if (!localStorage.getItem('visited')) {
                 setTimeout(() => showToast('👋 欢迎使用！按 Ctrl+Enter 快速生成，点击 💡 查看更多快捷键', 'success'), 500);
@@ -1689,6 +1802,7 @@
             if (state.showDeleted) renderDeleted();
             updateHistoryToggleBtnVisual();
             updateSidebarToggleBtnVisual();
+            updateCompareToggleBtn();
         });
         
         // ========== 主题切换 ==========
@@ -1906,6 +2020,11 @@
                 setHistoryCollapsed(next);
             });
             
+            // 顶部对比列表按钮
+            document.getElementById('compareToggleGlobal').addEventListener('click', () => {
+                toggleComparePlaylist();
+            });
+            
             // 显示/隐藏已删除
             document.getElementById('toggleDeletedBtn').addEventListener('click', () => {
                 state.showDeleted = !state.showDeleted;
@@ -1993,6 +2112,8 @@
             audioElement.addEventListener('ended', () => {
                 state.isPlaying = false;
                 playBtn.textContent = '▶';
+                // 自动播放下一个（如果在播放列表中）
+                handleAudioEnded();
             });
             audioElement.addEventListener('play', () => { startWaveformDraw(); });
             audioElement.addEventListener('pause', () => { stopWaveformDraw(); });
@@ -2118,10 +2239,7 @@
             document.getElementById('downloadBtn').addEventListener('click', downloadAudio);
             
             // 下载全部对比
-            const downloadAllBtn = document.getElementById('downloadAllCompare');
-            if (downloadAllBtn) {
-                downloadAllBtn.addEventListener('click', downloadAllCompare);
-            }
+            document.getElementById('downloadAllCompare').addEventListener('click', downloadAllCompare);
             
             // 字符计数
             document.getElementById('textInput').addEventListener('input', updateCharCount);
@@ -2244,6 +2362,13 @@
                 showToast('请先在设置中配置 API Key', 'error');
                 document.getElementById('settingsModal').classList.add('active');
                 return;
+            }
+            
+            // 检查是否选择了音色，如果没有则默认选择第一个女性音色
+            if (!state.selectedVoice) {
+                const defaultVoice = VOICE_DATABASE.female[0].name;
+                selectVoice(defaultVoice);
+                showToast(`未选择音色，已自动选择：${defaultVoice}`, 'success');
             }
 
             const btn = document.getElementById('generateBtn');
@@ -2407,6 +2532,7 @@
                 btn.textContent = '✓ 开始对比生成';
                 btn.classList.add('btn-primary');
                 btn.classList.remove('btn-secondary');
+                showToast('💡 请勾选2-5个音色进行对比', 'success');
             } else {
                 sidebar.classList.remove('multi-select-mode');
                 btn.textContent = '🎭 多音色对比';
@@ -2428,7 +2554,22 @@
             }
             
             if (state.selectedVoices.size === 0) {
-                showToast('请至少选择一个音色', 'error');
+                showToast('💡 请先勾选要对比的音色（建议2-5个），或使用普通生成按钮', 'error');
+                // 可选：自动选择几个默认音色
+                const defaultVoices = [
+                    VOICE_DATABASE.female[0].name,  // Leda
+                    VOICE_DATABASE.female[2].name,  // Despina
+                    VOICE_DATABASE.male[0].name     // Puck
+                ];
+                defaultVoices.forEach(voice => {
+                    const checkbox = document.querySelector(`.voice-checkbox[data-voice="${voice}"]`);
+                    if (checkbox) {
+                        checkbox.checked = true;
+                        state.selectedVoices.add(voice);
+                    }
+                });
+                updateMultiCount();
+                showToast('已为您自动选择3个音色，可重新勾选', 'success');
                 return;
             }
             
@@ -2478,7 +2619,11 @@
             toggleMultiVoiceMode(); // 退出多选模式
             
             if (state.compareResults.length > 0) {
-                showComparePanel();
+                // 添加到历史记录
+                const successVoices = state.compareResults.map(r => r.voice);
+                addToHistory(text, successVoices[0], true, successVoices);
+                
+                showComparePlaylist();
                 const msg = failed.length > 0 
                     ? `成功 ${state.compareResults.length} 个，失败 ${failed.length} 个`
                     : `成功生成 ${state.compareResults.length} 个音色版本`;
@@ -2488,23 +2633,42 @@
             }
         }
         
-        function showComparePanel() {
-            const panel = document.getElementById('comparePanel');
+        function showComparePlaylist() {
+            const playlist = document.getElementById('comparePlaylist');
             const list = document.getElementById('compareList');
+            const player = document.getElementById('audioPlayer');
             
-            list.innerHTML = state.compareResults.map((item, idx) => `
-                <div class="compare-item" id="compare-${idx}">
-                    <div class="compare-item-header">
-                        <div class="compare-voice-name">${getVoiceIcon(item.voice)} ${item.voice}</div>
-                    </div>
-                    <div class="compare-actions">
-                        <button class="btn-small" onclick="playCompareItem(${idx})">▶ 播放</button>
-                        <button class="btn-small" onclick="downloadCompareItem(${idx})">⬇️ 下载</button>
-                    </div>
-                </div>
-            `).join('');
+            // 获取音色详细信息
+            const getVoiceDetails = (voiceName) => {
+                for (const [category, voices] of Object.entries(VOICE_DATABASE)) {
+                    const voice = voices.find(v => v.name === voiceName);
+                    if (voice) return voice;
+                }
+                return null;
+            };
             
-            panel.classList.add('active');
+            list.innerHTML = state.compareResults.map((item, idx) => {
+                const voiceDetails = getVoiceDetails(item.voice);
+                return `
+                    <div class="compare-item" id="compare-${idx}" onclick="playCompareItem(${idx})">
+                        <div class="compare-voice-name">
+                            ${getVoiceIcon(item.voice)}
+                            ${item.voice}
+                        </div>
+                        <div class="compare-voice-meta">
+                            ${voiceDetails ? `
+                                <span class="compare-voice-trait">${voiceDetails.trait}</span>
+                                <span style="font-size: 0.65rem;">${voiceDetails.age}</span>
+                            ` : ''}
+                        </div>
+                    </div>
+                `;
+            }).join('');
+            
+            playlist.classList.add('active');
+            player.classList.add('has-playlist');
+            updateCompareToggleBtn();
+            updateComparePosition();
         }
         
         function getVoiceIcon(voiceName) {
@@ -2523,12 +2687,22 @@
             const item = state.compareResults[idx];
             if (!item) return;
             
+            state.currentCompareIndex = idx;
+            
             // 高亮当前播放
             document.querySelectorAll('.compare-item').forEach((el, i) => {
                 el.classList.toggle('playing', i === idx);
             });
             
+            // 滚动到当前播放项
+            const compareList = document.getElementById('compareList');
+            const currentItem = compareList.children[idx];
+            if (currentItem) {
+                currentItem.scrollIntoView({ behavior: 'smooth', block: 'nearest', inline: 'center' });
+            }
+            
             playAudio(item.audioUrl, item.wavBlob);
+            updateComparePosition();
         }
         
         function downloadCompareItem(idx) {
@@ -2559,9 +2733,12 @@
             });
         }
         
-        function closeComparePanel() {
-            const panel = document.getElementById('comparePanel');
-            panel.classList.remove('active');
+        function closeComparePlaylist() {
+            const playlist = document.getElementById('comparePlaylist');
+            const player = document.getElementById('audioPlayer');
+            playlist.classList.remove('active');
+            player.classList.remove('has-playlist');
+            updateCompareToggleBtn();
             
             // 关闭面板时清理对比音频（可选：保留或清理）
             // 如果用户可能还要重听，可以注释掉下面的清理代码
@@ -2572,7 +2749,126 @@
                 }
             });
             state.compareResults = [];
+            state.currentCompareIndex = -1;
+            updateCompareToggleBtn();
             */
+        }
+        
+        // 切换对比播放列表显示/隐藏
+        function toggleComparePlaylist() {
+            const playlist = document.getElementById('comparePlaylist');
+            if (playlist.classList.contains('active')) {
+                closeComparePlaylist();
+            } else {
+                if (state.compareResults.length > 0) {
+                    showComparePlaylist();
+                } else {
+                    showToast('暂无对比列表', 'error');
+                }
+            }
+        }
+        
+        // 播放上一个
+        function playPrevCompare() {
+            if (state.compareResults.length === 0) return;
+            
+            if (state.currentCompareIndex <= 0) {
+                state.currentCompareIndex = state.compareResults.length - 1;
+            } else {
+                state.currentCompareIndex--;
+            }
+            
+            playCompareItem(state.currentCompareIndex);
+        }
+        
+        // 播放下一个
+        function playNextCompare() {
+            if (state.compareResults.length === 0) return;
+            
+            if (state.playMode === 'random') {
+                // 随机模式
+                const randomIndex = Math.floor(Math.random() * state.compareResults.length);
+                state.currentCompareIndex = randomIndex;
+            } else {
+                // 顺序模式
+                if (state.currentCompareIndex >= state.compareResults.length - 1) {
+                    if (state.playMode === 'loop') {
+                        state.currentCompareIndex = 0; // 循环回第一个
+                    } else {
+                        // 顺序模式到末尾就停止
+                        showToast('已播放完所有音色', 'success');
+                        return;
+                    }
+                } else {
+                    state.currentCompareIndex++;
+                }
+            }
+            
+            playCompareItem(state.currentCompareIndex);
+        }
+        
+        // 切换播放模式
+        function togglePlayMode() {
+            const modes = ['order', 'loop', 'random'];
+            const currentIndex = modes.indexOf(state.playMode);
+            const nextIndex = (currentIndex + 1) % modes.length;
+            state.playMode = modes[nextIndex];
+            
+            const btn = document.getElementById('playModeBtnCompare');
+            const modeIcons = {
+                'order': '▶️',
+                'loop': '🔁',
+                'random': '🔀'
+            };
+            const modeNames = {
+                'order': '顺序播放',
+                'loop': '循环播放',
+                'random': '随机播放'
+            };
+            
+            btn.textContent = modeIcons[state.playMode];
+            btn.title = `播放模式：${modeNames[state.playMode]}`;
+            btn.classList.toggle('active', state.playMode !== 'order');
+            
+            showToast(`播放模式：${modeNames[state.playMode]}`, 'success');
+        }
+        
+        // 音频播放结束时的处理
+        function handleAudioEnded() {
+            // 如果当前在播放对比列表中的某一项
+            if (state.currentCompareIndex >= 0 && state.compareResults.length > 0) {
+                // 自动播放下一个
+                setTimeout(() => {
+                    playNextCompare();
+                }, 500); // 延迟500ms再播放下一个
+            }
+        }
+        
+        // 更新对比列表切换按钮状态
+        function updateCompareToggleBtn() {
+            const btn = document.getElementById('compareToggleGlobal');
+            if (!btn) return;
+            
+            if (state.compareResults.length > 0) {
+                btn.style.display = 'inline-block';
+                btn.textContent = `🎭 播放列表 (${state.compareResults.length})`;
+                const playlist = document.getElementById('comparePlaylist');
+                btn.classList.toggle('active', playlist && playlist.classList.contains('active'));
+            } else {
+                btn.style.display = 'none';
+            }
+        }
+        
+        // 更新播放位置显示
+        function updateComparePosition() {
+            const el = document.getElementById('comparePosition');
+            if (!el) return;
+            
+            if (state.currentCompareIndex >= 0 && state.compareResults.length > 0) {
+                el.textContent = `(${state.currentCompareIndex + 1}/${state.compareResults.length})`;
+            } else {
+                el.textContent = state.compareResults.length > 0 ? `(${state.compareResults.length} 个音色)` : '';
+            }
         }
         
         // ========== 音频播放 ==========
@@ -2778,12 +3074,14 @@
         }
         
         // ========== 历史记录 ==========
-        function addToHistory(text, voice) {
+        function addToHistory(text, voice, isMulti = false, voices = []) {
             const item = {
                 id: Date.now(),
                 text: text,  // 保存完整文本
                 voice,
-                timestamp: new Date().toLocaleString('zh-CN')
+                timestamp: new Date().toLocaleString('zh-CN'),
+                type: isMulti ? 'multi' : 'single',
+                voices: isMulti ? voices : []
             };
             
             state.history.unshift(item);
@@ -2800,16 +3098,24 @@
                 return;
             }
             
-            container.innerHTML = state.history.map(item => `
-                <div class="history-item">
-                    <div class="item-text">${item.text.substring(0, 100)}${item.text.length > 100 ? '...' : ''}</div>
-                    <div class="item-meta">音色: ${item.voice} · ${item.timestamp}</div>
-                    <div class="item-actions">
-                        <button class="btn-small" onclick="applyHistory(${item.id})">应用</button>
-                        <button class="btn-small" onclick="deleteHistory(${item.id})">删除</button>
+            container.innerHTML = state.history.map(item => {
+                const isMulti = item.type === 'multi';
+                const voiceInfo = isMulti 
+                    ? `🎭 多音色对比 (${item.voices.length}个)` 
+                    : `音色: ${item.voice}`;
+                const applyBtnText = isMulti ? '重新生成对比' : '应用';
+                
+                return `
+                    <div class="history-item">
+                        <div class="item-text">${item.text.substring(0, 100)}${item.text.length > 100 ? '...' : ''}</div>
+                        <div class="item-meta">${voiceInfo} · ${item.timestamp}</div>
+                        <div class="item-actions">
+                            <button class="btn-small" onclick="applyHistory(${item.id})">${applyBtnText}</button>
+                            <button class="btn-small" onclick="deleteHistory(${item.id})">删除</button>
+                        </div>
                     </div>
-                </div>
-            `).join('');
+                `;
+            }).join('');
         }
 
         function renderDeleted() {
@@ -2830,10 +3136,59 @@
             `).join('');
         }
         
-        function applyHistory(id) {
+        async function applyHistory(id) {
             const item = state.history.find(h => h.id === id);
-            if (item) {
-                document.getElementById('textInput').value = item.text;
+            if (!item) return;
+            
+            document.getElementById('textInput').value = item.text;
+            
+            if (item.type === 'multi' && item.voices && item.voices.length > 0) {
+                // 多音色对比记录
+                if (!state.apiKey) {
+                    showToast('请先在设置中配置 API Key', 'error');
+                    document.getElementById('settingsModal').classList.add('active');
+                    return;
+                }
+                
+                showToast(`正在重新生成 ${item.voices.length} 个音色对比...`, 'success');
+                
+                state.compareResults = [];
+                
+                const promises = item.voices.map(async (voice) => {
+                    try {
+                        const { audioUrl, wavBlob } = await callTTSAPI(item.text, voice);
+                        return {
+                            voice,
+                            audioUrl,
+                            wavBlob,
+                            text: item.text,
+                            success: true
+                        };
+                    } catch (error) {
+                        console.error(`${voice} 生成失败:`, error);
+                        return {
+                            voice,
+                            error: error.message,
+                            success: false
+                        };
+                    }
+                });
+                
+                const results = await Promise.all(promises);
+                state.compareResults = results.filter(r => r.success);
+                const failed = results.filter(r => !r.success);
+                
+                if (state.compareResults.length > 0) {
+                    showComparePlaylist();
+                    const msg = failed.length > 0 
+                        ? `成功 ${state.compareResults.length} 个，失败 ${failed.length} 个`
+                        : `成功恢复 ${state.compareResults.length} 个音色对比`;
+                    showToast(msg, 'success');
+                } else {
+                    showToast('所有音色生成失败', 'error');
+                }
+            } else {
+                // 单音色记录
                 selectVoice(item.voice);
                 showToast('已应用历史记录', 'success');
             }
@@ -3057,6 +3412,9 @@
                     }
                 });
                 state.compareResults = [];
+                state.currentCompareIndex = -1;
+                updateCompareToggleBtn();
+                updateComparePosition();
             }
             
             // 清理试听音频

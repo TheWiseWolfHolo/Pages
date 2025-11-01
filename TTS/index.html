@@ -1809,40 +1809,53 @@
         // ========== 音色数据库 ==========
         const VOICE_DATABASE = {
             female: [
+                // 年轻女声 (20-30岁)
                 { name: 'Leda', trait: 'Youthful', age: '20-30岁', desc: '活泼少女音' },
                 { name: 'Aoede', trait: 'Breezy', age: '20-30岁', desc: '轻快女声' },
                 { name: 'Despina', trait: 'Smooth', age: '20-30岁', desc: '温柔女声' },
+                { name: 'Zephyr', trait: 'Bright', age: '20-30岁', desc: '明亮女声' },
+                
+                // 成熟女声 (30-45岁)
                 { name: 'Kore', trait: 'Firm', age: '30-45岁', desc: '坚定女声' },
                 { name: 'Callirrhoe', trait: 'Easy-going', age: '30-45岁', desc: '随和女声' },
                 { name: 'Autonoe', trait: 'Bright', age: '30-45岁', desc: '明亮女声' },
                 { name: 'Erinome', trait: 'Clear', age: '30-45岁', desc: '清晰女声' },
                 { name: 'Vindemiatrix', trait: 'Gentle', age: '30-45岁', desc: '温柔成熟女声' },
-                { name: 'Pulcherrima', trait: 'Forward', age: '35-50岁', desc: '自信女声' },
-                { name: 'Laomedeia', trait: 'Upbeat', age: '35-50岁', desc: '积极女声' }
+                { name: 'Achernar', trait: 'Soft', age: '30-45岁', desc: '温柔女声' },
+                { name: 'Sulafat', trait: 'Warm', age: '30-45岁', desc: '温暖女声' },
+                
+                // 知性女声 (35-50岁)
+                { name: 'Laomedeia', trait: 'Upbeat', age: '35-50岁', desc: '积极女声' },
+                { name: 'Gacrux', trait: 'Mature', age: '40-50岁', desc: '成熟女声' }
             ],
             male: [
+                // 成熟稳重男声 (35-50岁)
+                { name: 'Pulcherrima', trait: 'Forward', age: '35-50岁', desc: '自信男声' },
+                
+                // 年轻男声 (20-30岁)
                 { name: 'Puck', trait: 'Upbeat', age: '20-30岁', desc: '活力男声' },
                 { name: 'Fenrir', trait: 'Excitable', age: '20-30岁', desc: '激情男声' },
-                { name: 'Zephyr', trait: 'Bright', age: '20-30岁', desc: '明亮男声' },
+                
+                // 成熟男声 (30-45岁)
                 { name: 'Charon', trait: 'Informative', age: '30-45岁', desc: '知识型男声' },
                 { name: 'Orus', trait: 'Firm', age: '30-45岁', desc: '坚定男声' },
                 { name: 'Enceladus', trait: 'Breathy', age: '30-45岁', desc: '磁性男声' },
                 { name: 'Iapetus', trait: 'Clear', age: '30-45岁', desc: '清晰男声' },
                 { name: 'Umbriel', trait: 'Easy-going', age: '30-45岁', desc: '随和男声' },
+                { name: 'Algieba', trait: 'Smooth', age: '30-45岁', desc: '柔和男声' },
+                { name: 'Schedar', trait: 'Even', age: '30-45岁', desc: '平稳男声' },
+                { name: 'Achird', trait: 'Friendly', age: '30-45岁', desc: '友好男声' },
+                { name: 'Zubenelgenubi', trait: 'Casual', age: '30-45岁', desc: '休闲男声' },
+                { name: 'Sadachbia', trait: 'Lively', age: '30-45岁', desc: '活泼男声' },
+                { name: 'Sadaltager', trait: 'Knowledgeable', age: '30-45岁', desc: '知识型男声' },
+                
+                // 沉稳男声 (40-60岁)
                 { name: 'Rasalgethi', trait: 'Informative', age: '40-60岁', desc: '播音员男声' },
                 { name: 'Alnilam', trait: 'Firm', age: '40-60岁', desc: '威严男声' },
-                { name: 'Gacrux', trait: 'Mature', age: '40-60岁', desc: '成熟男声' },
                 { name: 'Algenib', trait: 'Gravelly', age: '40-60岁', desc: '沙哑男声' }
             ],
             neutral: [
-                { name: 'Algieba', trait: 'Smooth', age: '通用', desc: '柔和中性音' },
-                { name: 'Achernar', trait: 'Soft', age: '通用', desc: '温柔中性音' },
-                { name: 'Schedar', trait: 'Even', age: '通用', desc: '平稳中性音' },
-                { name: 'Achird', trait: 'Friendly', age: '通用', desc: '友好中性音' },
-                { name: 'Zubenelgenubi', trait: 'Casual', age: '通用', desc: '休闲中性音' },
-                { name: 'Sadachbia', trait: 'Lively', age: '通用', desc: '活泼中性音' },
-                { name: 'Sadaltager', trait: 'Knowledgeable', age: '通用', desc: '知识型中性音' },
-                { name: 'Sulafat', trait: 'Warm', age: '通用', desc: '温暖中性音' }
+                // 注意：目前Gemini TTS的音色都有明确性别倾向，暂无真正的中性音色
             ]
         };
         
@@ -1959,6 +1972,9 @@
             };
             
             Object.entries(categories).forEach(([key, {title, icon}]) => {
+                // 跳过空的分类
+                if (VOICE_DATABASE[key].length === 0) return;
+                
                 const category = document.createElement('div');
                 category.className = 'voice-category';
                 category.innerHTML = `

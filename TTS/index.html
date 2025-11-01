@@ -427,6 +427,38 @@
             display: inline-block;
         }
         
+        .quick-select-buttons {
+            display: none;
+            gap: 0.5rem;
+            margin-top: 0.75rem;
+        }
+        
+        .multi-select-mode .quick-select-buttons {
+            display: flex;
+        }
+        
+        .quick-select-btn {
+            flex: 1;
+            padding: 0.5rem;
+            border: 1px solid var(--border-color);
+            background: var(--bg-card);
+            color: var(--text-primary);
+            border-radius: 8px;
+            font-size: 0.75rem;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        
+        .quick-select-btn:hover {
+            background: linear-gradient(135deg, rgba(212, 117, 78, 0.15), rgba(232, 168, 124, 0.1));
+            border-color: var(--primary-terracotta);
+            transform: translateY(-1px);
+        }
+        
+        .quick-select-btn:active {
+            transform: translateY(0);
+        }
+        
         /* 对比列表 - 集成到播放器内 */
         .compare-playlist {
             display: none;
@@ -1557,6 +1589,11 @@
                     <h2 class="sidebar-title">音色选择</h2>
                     <span class="multi-count" id="multiCount">已选 0 个</span>
                     <input type="text" class="voice-search" id="voiceSearch" placeholder="搜索音色...">
+                    <div class="quick-select-buttons">
+                        <button class="quick-select-btn" onclick="quickSelectByGender('female')">👩‍🎤 全选女声</button>
+                        <button class="quick-select-btn" onclick="quickSelectByGender('male')">👨‍🎤 全选男声</button>
+                        <button class="quick-select-btn" onclick="quickSelectByGender('clear')">✕ 清空</button>
+                    </div>
                 </div>
                 <div class="voice-list" id="voiceList">
                     <!-- 音色列表将通过 JS 动态生成 -->
@@ -1596,6 +1633,7 @@
                         <li><strong>快捷键：</strong>Ctrl/Cmd + Enter 生成，Space 播放/暂停，← → 切换音色，💡 查看完整快捷键</li>
                         <li><strong>智能生成：</strong>未选择音色时，首次提醒，再次点击自动从女性音色中随机选择</li>
                         <li><strong>多音色对比：</strong>点击"🎭 多音色对比"进入多选模式，勾选2个以上音色批量生成对比</li>
+                        <li><strong>快捷勾选：</strong>多选模式下可使用"👩‍🎤 全选女声"、"👨‍🎤 全选男声"、"✕ 清空"快速操作</li>
                         <li><strong>双系统并存：</strong>单音色和多音色独立管理，可自由切换，互不影响</li>
                         <li><strong>多音色列表：</strong>支持上/下切换、循环播放、随机播放，关闭后可随时通过顶部按钮重新打开</li>
                         <li><strong>播放器：</strong>页面底部播放器始终可见，单音色直接播放，多音色显示播放列表</li>
@@ -1762,6 +1800,12 @@
                     <div><strong>Ctrl/Cmd + S</strong> - 保存到收藏</div>
                     <div><strong>Ctrl/Cmd + K</strong> - 搜索音色</div>
                     
+                    <div style="font-weight: 600; color: var(--primary-terracotta); margin-top: 0.5rem;">🎭 多音色对比</div>
+                    <div><strong>快捷勾选</strong> - 多选模式下可一键全选女声/男声/清空</div>
+                    <div><strong>👩‍🎤 全选女声</strong> - 勾选所有女性音色（14个）</div>
+                    <div><strong>👨‍🎤 全选男声</strong> - 勾选所有男性音色（17个）</div>
+                    <div><strong>✕ 清空</strong> - 取消所有勾选</div>
+                    
                     <div style="font-weight: 600; color: var(--primary-terracotta); margin-top: 0.5rem;">🎵 播放列表控制</div>
                     <div><strong>← 左箭头</strong> - 播放上一个音色（自动循环）</div>
                     <div><strong>→ 右箭头</strong> - 播放下一个音色（自动循环）</div>
@@ -1872,6 +1916,7 @@
             favorites: JSON.parse(localStorage.getItem('favorites') || '[]'),
             deletedHistory: JSON.parse(localStorage.getItem('deletedHistory') || '[]'),
             showDeleted: (localStorage.getItem('showDeleted') || 'false') === 'true',
+            favoriteVoices: JSON.parse(localStorage.getItem('favoriteVoices') || '[]'), // 收藏的音色列表
             waveformBins: null,
             multiSelectMode: false,
             selectedVoices: new Set(),
@@ -1949,6 +1994,9 @@
             updateHistoryToggleBtnVisual();
             updateSidebarToggleBtnVisual();
             updateCompareToggleBtn();
+            
+            // 输出收藏的音色列表（调试用）
+            console.log('已收藏的音色:', state.favoriteVoices);
         });
         
         // ========== 主题切换 ==========
@@ -2084,6 +2132,43 @@
             if (el) el.textContent = `已选 ${count} 个`;
         }
         
+        // 一键勾选指定性别的所有音色
+        function quickSelectByGender(gender) {
+            if (gender === 'clear') {
+                // 清空所有选择
+                state.selectedVoices.clear();
+                document.querySelectorAll('.voice-checkbox').forEach(cb => {
+                    cb.checked = false;
+                });
+                updateMultiCount();
+                showToast('已清空所有选择', 'success');
+                state.multiVoiceWarned = false; // 重置警告状态
+                return;
+            }
+            
+            // 获取指定性别的所有音色
+            const voices = VOICE_DATABASE[gender] || [];
+            if (voices.length === 0) {
+                showToast('该分类暂无音色', 'error');
+                return;
+            }
+            
+            // 勾选所有该性别的音色
+            voices.forEach(voice => {
+                const checkbox = document.querySelector(`.voice-checkbox[data-voice="${voice.name}"]`);
+                if (checkbox) {
+                    checkbox.checked = true;
+                    state.selectedVoices.add(voice.name);
+                }
+            });
+            
+            updateMultiCount();
+            state.multiVoiceWarned = false; // 重置警告状态
+            
+            const genderName = gender === 'female' ? '女性' : '男性';
+            showToast(`已勾选所有${genderName}音色 (${voices.length}个)`, 'success');
+        }
+        
         function selectVoice(voiceName) {
             document.querySelectorAll('.voice-item').forEach(item => {
                 item.classList.remove('selected');
@@ -2122,20 +2207,32 @@
         }
         
         function isFavoriteVoice(voiceName) {
-            return state.favorites.some(fav => fav.voice === voiceName);
+            return state.favoriteVoices.includes(voiceName);
         }
         
         function toggleFavoriteVoice(voiceName) {
             const btn = document.querySelector(`.favorite-btn[data-voice="${voiceName}"]`);
-            const isFav = btn.classList.contains('active');
+            if (!btn) return;
+            
+            const isFav = state.favoriteVoices.includes(voiceName);
             
             if (isFav) {
+                // 取消收藏
+                state.favoriteVoices = state.favoriteVoices.filter(v => v !== voiceName);
                 btn.classList.remove('active');
                 btn.textContent = '☆';
+                showToast(`已取消收藏音色：${voiceName}`, 'success');
             } else {
+                // 添加收藏
+                state.favoriteVoices.push(voiceName);
                 btn.classList.add('active');
                 btn.textContent = '★';
+                showToast(`已收藏音色：${voiceName}`, 'success');
             }
+            
+            // 保存到 localStorage
+            localStorage.setItem('favoriteVoices', JSON.stringify(state.favoriteVoices));
+            console.log('收藏音色已更新:', state.favoriteVoices);
         }
         
         // ========== 搜索功能 ==========

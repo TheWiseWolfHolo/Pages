@@ -1790,6 +1790,22 @@
     </div>
 
     <script>
+        /* ========================================
+         * 🎙️ Gemini TTS 专业版
+         * ========================================
+         * 
+         * 【重要规则】自动音色选择策略：
+         * 
+         * ⚠️ 除非用户主动手动选择，否则系统自动选择时：
+         *    - 单音色：只从女性音色（VOICE_DATABASE.female）中随机选择 1 个
+         *    - 多音色：只从女性音色（VOICE_DATABASE.female）中随机选择 3 个
+         *    - 永远不会自动选择男性音色（VOICE_DATABASE.male）
+         *    - 永远不会自动选择中性音色（VOICE_DATABASE.neutral）
+         * 
+         * ✅ 只有用户在左侧音色列表中主动点击男性/中性音色，才会使用
+         * 
+         * ======================================== */
+        
         // ========== 音色数据库 ==========
         const VOICE_DATABASE = {
             female: [
@@ -1832,7 +1848,7 @@
         
         // ========== 状态管理 ==========
         const state = {
-            selectedVoice: 'Puck',
+            selectedVoice: '', // 默认不选择，让用户手动选择或自动随机女性音色
             theme: localStorage.getItem('theme') || 'light',
             apiKey: localStorage.getItem('apiKey') || '',
             apiBaseUrl: localStorage.getItem('apiBaseUrl') || 'https://generativelanguage.googleapis.com/v1beta',
@@ -1864,6 +1880,19 @@
         // 试听音色所需
         let previewAudioUrl = null;
         let previewAudioEl = null;
+        
+        // ========== 音色类型验证工具 ==========
+        function getVoiceGender(voiceName) {
+            if (VOICE_DATABASE.female.some(v => v.name === voiceName)) return 'female';
+            if (VOICE_DATABASE.male.some(v => v.name === voiceName)) return 'male';
+            if (VOICE_DATABASE.neutral.some(v => v.name === voiceName)) return 'neutral';
+            return 'unknown';
+        }
+        
+        // 验证音色是否为女性
+        function isFemaleVoice(voiceName) {
+            return VOICE_DATABASE.female.some(v => v.name === voiceName);
+        }
         
         // ========== 音频可视化全局 ==========
         let audioCtx = null;
@@ -2500,12 +2529,21 @@
                     showToast('💡 未选择音色，请先在左侧选择音色，或再次点击将随机选择一个女性音色', 'error');
                     return;
                 } else {
-                    // 第二次点击：随机选择女性音色
-                    const femaleVoices = VOICE_DATABASE.female;
+                    // ⚠️ 重要：第二次点击只从女性音色中随机选择，永不选择男性或中性音色
+                    const femaleVoices = VOICE_DATABASE.female; // 只从女性音色数据库
                     const randomVoice = femaleVoices[Math.floor(Math.random() * femaleVoices.length)];
+                    
+                    // 运行时验证：确保选择的是女性音色
+                    if (!isFemaleVoice(randomVoice.name)) {
+                        console.error('❌ 错误：自动选择了非女性音色！', randomVoice.name);
+                        showToast('系统错误：音色选择异常', 'error');
+                        return;
+                    }
+                    
                     selectVoice(randomVoice.name);
-                    showToast(`已随机选择音色：${randomVoice.name} (${randomVoice.trait}, ${randomVoice.age})`, 'success');
+                    showToast(`已随机选择女性音色：${randomVoice.name} (${randomVoice.trait}, ${randomVoice.age})`, 'success');
                     state.singleVoiceWarned = false; // 重置状态
+                    console.log('✅ 单音色自动选择验证通过：', randomVoice.name, '- 性别:', getVoiceGender(randomVoice.name));
                     // 不要return，继续执行生成
                 }
             } else {
@@ -2715,17 +2753,25 @@
                 if (!state.multiVoiceWarned) {
                     // 第一次点击：提醒用户
                     state.multiVoiceWarned = true;
-                    showToast('💡 请先勾选2个以上音色进行对比，或再次点击将自动选择3个推荐音色', 'error');
+                    showToast('💡 请先勾选2个以上音色进行对比，或再次点击将自动从女性音色中随机选择3个', 'error');
                     return;
                 } else {
-                    // 第二次点击：随机选择3个女性音色
-                    const femaleVoices = VOICE_DATABASE.female;
+                    // ⚠️ 重要：第二次点击只从女性音色中随机选择，永不选择男性或中性音色
+                    const femaleVoices = VOICE_DATABASE.female; // 只从女性音色数据库
                     
-                    // 随机选择3个女性音色
+                    // 随机选择3个女性音色（确保不重复）
                     const shuffledFemale = [...femaleVoices].sort(() => Math.random() - 0.5);
                     const selectedFemale = shuffledFemale.slice(0, 3);
                     
                     const defaultVoices = selectedFemale.map(v => v.name);
+                    
+                    // 运行时验证：确保所有选择的都是女性音色
+                    const allFemale = defaultVoices.every(v => isFemaleVoice(v));
+                    if (!allFemale) {
+                        console.error('❌ 错误：自动选择包含非女性音色！', defaultVoices);
+                        showToast('系统错误：音色选择异常', 'error');
+                        return;
+                    }
                     
                     defaultVoices.forEach(voice => {
                         const checkbox = document.querySelector(`.voice-checkbox[data-voice="${voice}"]`);
@@ -2738,6 +2784,7 @@
                     
                     const voiceNames = defaultVoices.join(', ');
                     showToast(`已随机选择3个女性音色：${voiceNames}，可重新勾选后再次生成`, 'success');
+                    console.log('✅ 多音色自动选择验证通过：', voiceNames, '- 全部为女性音色');
                     state.multiVoiceWarned = false; // 重置状态
                     // 不要return，继续执行生成
                 }

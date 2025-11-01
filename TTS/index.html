@@ -35,6 +35,7 @@
             --surface-2: #F0EBE7;
             --surface-3: #E6DED8;
             --grid-line-color: rgba(61, 52, 52, 0.06);
+            --wave-line-color: rgba(45, 36, 36, 0.9);
             
             /* 布局 */
             --sidebar-width: 280px;
@@ -66,6 +67,7 @@
             --surface-2: #251E1C;
             --surface-3: #2E2624;
             --grid-line-color: rgba(245, 237, 232, 0.06);
+            --wave-line-color: rgba(255, 255, 255, 0.9);
         }
         
         /* ========== 基础样式 ========== */
@@ -134,7 +136,9 @@
             z-index: 100;
         }
         
-        .logo {
+.header-left { display: flex; align-items: center; gap: 0.75rem; }
+
+.logo {
             font-size: 1.5rem;
             font-weight: 700;
             background: linear-gradient(135deg, var(--primary-terracotta) 0%, var(--primary-sienna) 50%, var(--accent-bronze) 100%);
@@ -149,6 +153,7 @@
             gap: 1rem;
             align-items: center;
         }
+        .header-actions .chip-btn { margin: 0; }
         
         .main-content {
             display: flex;
@@ -166,6 +171,7 @@
             overflow: hidden;
             box-shadow: 2px 0 12px var(--shadow-sm);
         }
+        .sidebar.collapsed { display: none; }
         
         .sidebar-header {
             padding: 1.5rem;
@@ -370,6 +376,116 @@
             white-space: nowrap;
         }
         .preview-inline:hover { background: rgba(0,0,0,0.06); transform: translateY(-1px); }
+        
+        /* 多选模式 */
+        .multi-select-mode .sidebar-header {
+            background: linear-gradient(135deg, rgba(212, 117, 78, 0.1), rgba(232, 168, 124, 0.08));
+        }
+        
+        .voice-checkbox {
+            position: absolute;
+            top: 0.75rem;
+            left: 0.75rem;
+            width: 18px;
+            height: 18px;
+            cursor: pointer;
+            accent-color: var(--primary-terracotta);
+            display: none;
+        }
+        
+        .multi-select-mode .voice-checkbox {
+            display: block;
+        }
+        
+        .multi-select-mode .voice-item {
+            padding-left: 2.5rem;
+        }
+        
+        .multi-count {
+            display: none;
+            background: linear-gradient(135deg, var(--primary-terracotta), var(--primary-sienna));
+            color: var(--cream);
+            padding: 0.4rem 0.8rem;
+            border-radius: 999px;
+            font-size: 0.8rem;
+            font-weight: 600;
+            margin-top: 0.5rem;
+        }
+        
+        .multi-select-mode .multi-count {
+            display: inline-block;
+        }
+        
+        /* 对比结果面板 */
+        .compare-panel {
+            position: fixed;
+            right: 0;
+            top: var(--header-height);
+            bottom: 0;
+            width: 400px;
+            background: var(--surface-1);
+            backdrop-filter: blur(16px);
+            box-shadow: -4px 0 20px var(--shadow-lg);
+            transform: translateX(100%);
+            transition: transform 0.3s var(--transition-smooth);
+            z-index: 95;
+            display: flex;
+            flex-direction: column;
+        }
+        
+        .compare-panel.active {
+            transform: translateX(0);
+        }
+        
+        .compare-header {
+            padding: 1.5rem;
+            border-bottom: 1px solid var(--border-color);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .compare-title {
+            font-size: 1.2rem;
+            font-weight: 600;
+        }
+        
+        .compare-list {
+            flex: 1;
+            overflow-y: auto;
+          padding: 1rem;
+        }
+        
+        .compare-item {
+            background: var(--bg-primary);
+            border-radius: var(--border-radius-sm);
+            padding: 1rem;
+            margin-bottom: 0.75rem;
+            border: 2px solid transparent;
+            transition: all 0.3s;
+        }
+        
+        .compare-item.playing {
+            border-color: var(--primary-terracotta);
+            box-shadow: 0 4px 16px var(--shadow-md);
+        }
+        
+        .compare-item-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 0.75rem;
+        }
+        
+        .compare-voice-name {
+            font-weight: 600;
+            font-size: 1rem;
+        }
+        
+        .compare-actions {
+            display: flex;
+            gap: 0.5rem;
+        }
         
         /* ========== 中央工作区 ========== */
         .workspace {
@@ -632,17 +748,26 @@
         /* ========== 音频播放器 ========== */
         .audio-player {
             height: var(--player-height);
-            background: linear-gradient(135deg, rgba(45, 36, 36, 0.98) 0%, rgba(61, 52, 52, 0.98) 100%);
-            backdrop-filter: blur(20px);
+            background: linear-gradient(135deg, rgba(255, 255, 255, 0.95) 0%, rgba(248, 246, 244, 0.95) 100%);
+            -webkit-backdrop-filter: blur(14px);
+            backdrop-filter: blur(14px);
             padding: 1rem 1.25rem;
             display: none;
             flex-direction: column;
             gap: 0.75rem;
-            box-shadow: 0 -8px 32px rgba(0, 0, 0, 0.3);
-            border-top: 1px solid rgba(212, 117, 78, 0.2);
+            box-shadow: 0 -8px 32px rgba(0, 0, 0, 0.12);
+            border-top: 1px solid rgba(0, 0, 0, 0.06);
             border-radius: 12px;
             position: static; /* 不再覆盖页面底部内容 */
             margin: 12px 12px 0 12px;
+            color: var(--text-primary);
+        }
+
+        [data-theme="dark"] .audio-player {
+            background: linear-gradient(135deg, rgba(45, 36, 36, 0.98) 0%, rgba(61, 52, 52, 0.98) 100%);
+            box-shadow: 0 -8px 32px rgba(0, 0, 0, 0.3);
+            border-top: 1px solid rgba(212, 117, 78, 0.2);
+            color: #fff;
         }
         
         .audio-player.active {
@@ -689,13 +814,14 @@
         }
         
         .time-label {
-            color: rgba(255, 255, 255, 0.85);
+            color: var(--text-primary);
             font-size: 0.8rem;
             font-weight: 500;
             min-width: 42px;
             text-align: center;
             flex-shrink: 0;
         }
+        [data-theme="dark"] .audio-player .time-label { color: rgba(255,255,255,0.85); }
         
         .progress-container {
             flex: 1;
@@ -768,14 +894,54 @@
             align-items: center;
             flex-shrink: 0;
         }
+
+        .speed-group { position: relative; }
+        .speed-menu {
+            position: absolute;
+            bottom: 120%;
+            right: 0;
+            display: none;
+            min-width: 120px;
+            background: rgba(255, 255, 255, 0.92);
+            -webkit-backdrop-filter: blur(12px);
+            backdrop-filter: blur(12px);
+            border: 1px solid rgba(0,0,0,0.08);
+            border-radius: 12px;
+            padding: 6px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.15);
+            z-index: 50;
+            color: var(--text-primary);
+        }
+        [data-theme="dark"] .speed-menu {
+            background: rgba(20, 16, 15, 0.94);
+            border: 1px solid rgba(255,255,255,0.2);
+            box-shadow: 0 10px 30px rgba(0,0,0,0.45);
+            color: #fff;
+        }
+        .speed-menu.visible { display: block; }
+        .speed-item {
+            width: 100%;
+            text-align: left;
+            padding: 6px 10px;
+            color: inherit;
+            background: transparent;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 0.85rem;
+        }
+        .speed-item:hover { background: rgba(0,0,0,0.06); }
+        .speed-item.active { background: rgba(0,0,0,0.08); font-weight: 600; }
+        [data-theme="dark"] .speed-item:hover { background: rgba(255,255,255,0.12); }
+        [data-theme="dark"] .speed-item.active { background: rgba(255,255,255,0.16); }
         
         .icon-control {
             width: 32px;
             height: 32px;
             border-radius: 8px;
             border: none;
-            background: rgba(255, 255, 255, 0.1);
-            color: rgba(255, 255, 255, 0.8);
+            background: rgba(0, 0, 0, 0.06);
+            color: var(--text-primary);
             font-size: 1rem;
             cursor: pointer;
             display: flex;
@@ -783,10 +949,21 @@
             justify-content: center;
             transition: all 0.2s;
         }
-        
         .icon-control:hover {
-            background: rgba(255, 255, 255, 0.18);
+            background: rgba(0, 0, 0, 0.1);
             transform: scale(1.05);
+        }
+        
+        .icon-control.active {
+            background: linear-gradient(135deg, var(--primary-terracotta), var(--primary-sienna));
+            color: var(--cream);
+        }
+        
+        [data-theme="dark"] .audio-player .icon-control { background: rgba(255,255,255,0.1); color: rgba(255,255,255,0.85); }
+        [data-theme="dark"] .audio-player .icon-control:hover { background: rgba(255,255,255,0.18); }
+        [data-theme="dark"] .audio-player .icon-control.active {
+            background: linear-gradient(135deg, var(--primary-terracotta), var(--primary-sienna));
+            color: var(--cream);
         }
         
         .slider {
@@ -794,10 +971,14 @@
             height: 4px;
             -webkit-appearance: none;
             appearance: none;
-            background: rgba(255, 255, 255, 0.18);
+            background: rgba(0, 0, 0, 0.2);
             border-radius: 2px;
             outline: none;
             cursor: pointer;
+        }
+        
+        [data-theme="dark"] .audio-player .slider {
+            background: rgba(255, 255, 255, 0.2);
         }
         
         .slider::-webkit-slider-thumb {
@@ -806,30 +987,30 @@
             width: 12px;
             height: 12px;
             border-radius: 50%;
-            background: var(--cream);
+            background: linear-gradient(135deg, var(--primary-terracotta), var(--primary-sienna));
             cursor: pointer;
-            box-shadow: 0 2px 6px rgba(0, 0, 0, 0.3);
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
             transition: transform 0.2s;
         }
         
         .slider::-webkit-slider-thumb:hover {
-            transform: scale(1.2);
+            transform: scale(1.25);
+            box-shadow: 0 3px 12px rgba(212, 117, 78, 0.5);
         }
         
         .speed-select {
             background: rgba(255, 255, 255, 0.12);
-            border: 1px solid rgba(255, 255, 255, 0.2);
-            color: white;
-            padding: 0.3rem 0.5rem;
-            border-radius: 6px;
-            font-size: 0.75rem;
+            border: 1px solid rgba(255, 255, 255, 0.25);
+            color: var(--cream);
+            padding: 0.35rem 0.6rem;
+            border-radius: 10px;
+            font-size: 0.8rem;
             cursor: pointer;
             outline: none;
+            -webkit-backdrop-filter: blur(10px);
+            backdrop-filter: blur(10px);
         }
-        
-        .speed-select:hover {
-            background: rgba(255, 255, 255, 0.2);
-        }
+        .speed-select:hover { background: rgba(255, 255, 255, 0.18); }
         
         /* ========== 图标按钮 ========== */
         .icon-btn {
@@ -1076,6 +1257,10 @@
             .history-panel {
                 display: none;
             }
+            
+            .compare-panel {
+                width: 100%;
+            }
         }
 
         @media (max-width: 768px) {
@@ -1090,6 +1275,7 @@
             .audio-player {
                 padding: 0.75rem 1rem;
                 height: 70px;
+                margin: 8px 8px 0 8px;
             }
             
             .waveform-wrapper {
@@ -1115,9 +1301,27 @@
                 width: 50px;
             }
             
-            .speed-select {
-                font-size: 0.7rem;
-                padding: 0.2rem 0.4rem;
+            .icon-control {
+                width: 28px;
+                height: 28px;
+                font-size: 0.9rem;
+            }
+            
+            .chip-btn {
+                font-size: 0.75rem;
+                padding: 0.3rem 0.55rem;
+            }
+            
+            .action-buttons {
+                flex-direction: column;
+            }
+            
+            .btn {
+                width: 100%;
+            }
+            
+            .compare-panel {
+                width: 100%;
             }
         }
         
@@ -1132,12 +1336,12 @@
         }
         
         ::-webkit-scrollbar-thumb {
-            background: var(--primary-orange);
+            background: linear-gradient(135deg, var(--primary-terracotta), var(--primary-sienna));
             border-radius: 4px;
         }
         
         ::-webkit-scrollbar-thumb:hover {
-            background: var(--primary-gold);
+            background: linear-gradient(135deg, var(--primary-sienna), var(--accent-bronze));
         }
         
         /* ========== 隐藏类 ========== */
@@ -1150,22 +1354,25 @@
     <div class="app-container">
         <!-- 顶部导航 -->
         <header class="app-header">
-            <div class="logo">🎙️ Gemini TTS Pro</div>
-            <div class="header-actions">
+            <div class="header-left">
                 <button class="icon-btn" id="toggleSidebar" title="音色选择器">☰</button>
-                <button class="icon-btn" id="historyToggleGlobal" title="打开历史记录">🗂</button>
+                <div class="logo">🎙️ Gemini TTS Pro</div>
+            </div>
+            <div class="header-actions">
+                <button class="chip-btn" id="historyToggleGlobal" title="打开历史记录">📜 历史</button>
                 <button class="icon-btn" id="themeToggle" title="切换主题">🌓</button>
                 <button class="icon-btn" id="settingsBtn" title="设置">⚙️</button>
-                <button class="icon-btn" id="helpBtn" title="快捷键帮助">❓</button>
+                <button class="icon-btn" id="helpBtn" title="快捷键帮助">💡</button>
             </div>
         </header>
         
         <!-- 主内容区 -->
         <main class="main-content">
             <!-- 左侧音色选择器 -->
-            <aside class="sidebar">
+            <aside class="sidebar" id="voiceSidebar">
                 <div class="sidebar-header">
                     <h2 class="sidebar-title">音色选择</h2>
+                    <span class="multi-count" id="multiCount">已选 0 个</span>
                     <input type="text" class="voice-search" id="voiceSearch" placeholder="搜索音色...">
                 </div>
                 <div class="voice-list" id="voiceList">
@@ -1192,7 +1399,7 @@
                         <button class="btn btn-primary" id="generateBtn">
                             <span id="generateBtnText">生成语音</span>
                         </button>
-                        <button class="btn btn-secondary" id="batchBtn">批量生成</button>
+                        <button class="btn btn-secondary" id="multiVoiceBtn">🎭 多音色对比</button>
                         <button class="btn btn-secondary" id="saveToFavorites">保存到收藏</button>
                     </div>
                 </div>
@@ -1201,11 +1408,13 @@
                     <h2 class="card-title">💡 使用技巧</h2>
                     <ul style="list-style-position: inside; color: var(--text-secondary); line-height: 1.8;">
                         <li><strong>速度：</strong>使用 "Say quickly:" 或 "Say slowly:" 控制语速</li>
-                    <li><strong>语气：</strong>如 "Say cheerfully:", "Say in a whisper:", "Say dramatically:"</li>
-                    <li><strong>情感：</strong>如 "Say excitedly:", "Say calmly:", "Say mysteriously:"</li>
-                        <li><strong>快捷键：</strong>Ctrl/Cmd + Enter 生成，Space 播放/暂停</li>
-                </ul>
-            </div>
+                        <li><strong>语气：</strong>如 "Say cheerfully:", "Say in a whisper:", "Say dramatically:"</li>
+                        <li><strong>情感：</strong>如 "Say excitedly:", "Say calmly:", "Say mysteriously:"</li>
+                        <li><strong>快捷键：</strong>Ctrl/Cmd + Enter 生成，Space 播放/暂停，💡 查看完整快捷键</li>
+                        <li><strong>多音色对比：</strong>点击"🎭 多音色对比"，勾选多个音色并发生成</li>
+                        <li><strong>内存管理：</strong>关闭页面自动清理，或在设置中手动清理缓存</li>
+                    </ul>
+                </div>
             </section>
             
             <!-- 右侧历史面板 -->
@@ -1241,23 +1450,40 @@
                 </div>
                 <div class="time-label" id="totalTime">0:00</div>
                 <div class="player-extra">
-                    <button class="icon-control" id="volumeBtn" title="音量">🔊</button>
+                    <button class="icon-control" id="volumeBtn" title="音量">🔉</button>
                     <input type="range" class="slider" id="volumeSlider" min="0" max="100" value="100">
-                    <button class="icon-control" id="speedBtn" title="速度">⚡</button>
-                    <select id="speedSelect" class="speed-select">
-                        <option value="0.5">0.5x</option>
-                        <option value="0.75">0.75x</option>
-                        <option value="1" selected>1.0x</option>
-                        <option value="1.25">1.25x</option>
-                        <option value="1.5">1.5x</option>
-                        <option value="2">2.0x</option>
-                    </select>
-                    <button class="icon-control" id="downloadBtn" title="下载">💾</button>
+                <div class="speed-group">
+                    <button class="icon-control" id="speedBtn" title="倍速">⚡</button>
+                    <div class="speed-menu" id="speedMenu">
+                        <button class="speed-item" data-speed="0.5">0.5x</button>
+                        <button class="speed-item" data-speed="0.75">0.75x</button>
+                        <button class="speed-item" data-speed="1">1.0x</button>
+                        <button class="speed-item" data-speed="1.25">1.25x</button>
+                        <button class="speed-item" data-speed="1.5">1.5x</button>
+                        <button class="speed-item" data-speed="2">2.0x</button>
+                    </div>
+                </div>
+                    <button class="icon-control" id="loopBtn" title="循环：关">🔁</button>
+                    <button class="icon-control" id="downloadBtn" title="下载">⬇️</button>
                 </div>
             </div>
             <audio id="audioElement" style="display: none;"></audio>
         </div>
 
+    <!-- 对比结果面板 -->
+    <div class="compare-panel" id="comparePanel">
+        <div class="compare-header">
+            <h2 class="compare-title">🎭 音色对比</h2>
+            <button class="icon-btn" onclick="closeComparePanel()">✕</button>
+        </div>
+        <div class="compare-list" id="compareList">
+            <!-- 对比结果将动态生成 -->
+        </div>
+        <div style="padding: 1rem; border-top: 1px solid var(--border-color);">
+            <button class="btn btn-primary" style="width: 100%;" id="downloadAllCompare">📦 打包下载全部</button>
+        </div>
+    </div>
+    
     <!-- Toast 容器 -->
     <div class="toast-container" id="toastContainer"></div>
     
@@ -1283,6 +1509,13 @@
                         <option value="gemini-2.5-flash-preview-tts">Gemini 2.5 Flash TTS (快速)</option>
                         <option value="gemini-2.5-pro-preview-tts">Gemini 2.5 Pro TTS (高质量)</option>
                     </select>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">内存管理</label>
+                    <button class="btn btn-secondary" style="width: 100%;" id="clearCacheBtn">🗑️ 清理音频缓存</button>
+                    <div style="font-size: 0.8rem; color: var(--text-secondary); margin-top: 0.5rem;">
+                        清理当前生成的所有音频，释放内存
+                    </div>
                 </div>
             </div>
             <div class="modal-actions">
@@ -1320,12 +1553,22 @@
                 <button class="modal-close" onclick="document.getElementById('helpModal').classList.remove('active')">✕</button>
             </div>
             <div class="modal-body">
-                <div style="display: grid; gap: 1rem;">
+                <div style="display: grid; gap: 0.75rem; line-height: 1.6;">
+                    <div style="font-weight: 600; color: var(--primary-terracotta); margin-top: 0.5rem;">⌨️ 基础操作</div>
                     <div><strong>Ctrl/Cmd + Enter</strong> - 生成语音</div>
                     <div><strong>Space</strong> - 播放/暂停</div>
                     <div><strong>Ctrl/Cmd + S</strong> - 保存到收藏</div>
                     <div><strong>Ctrl/Cmd + K</strong> - 搜索音色</div>
-                    <div><strong>Esc</strong> - 关闭弹窗</div>
+                    
+                    <div style="font-weight: 600; color: var(--primary-terracotta); margin-top: 0.5rem;">🎭 高级功能</div>
+                    <div><strong>点击波形</strong> - 快速跳转播放位置</div>
+                    <div><strong>拖动波形</strong> - 精确定位时间点</div>
+                    <div><strong>点击"🎭 多音色对比"</strong> - 进入多选模式，勾选音色批量生成</div>
+                    
+                    <div style="font-weight: 600; color: var(--primary-terracotta); margin-top: 0.5rem;">⚙️ 界面控制</div>
+                    <div><strong>Esc</strong> - 关闭弹窗/菜单</div>
+                    <div><strong>左上角 ☰</strong> - 显示/隐藏音色面板</div>
+                    <div><strong>右上角 📜 历史</strong> - 显示/隐藏历史面板</div>
                 </div>
             </div>
             <div class="modal-actions">
@@ -1387,7 +1630,11 @@
             history: JSON.parse(localStorage.getItem('history') || '[]'),
             favorites: JSON.parse(localStorage.getItem('favorites') || '[]'),
             deletedHistory: JSON.parse(localStorage.getItem('deletedHistory') || '[]'),
-            showDeleted: (localStorage.getItem('showDeleted') || 'false') === 'true'
+            showDeleted: (localStorage.getItem('showDeleted') || 'false') === 'true',
+            waveformBins: null,
+            multiSelectMode: false,
+            selectedVoices: new Set(),
+            compareResults: []
         };
 
         // 撤销删除所需
@@ -1418,15 +1665,19 @@
             
             // 首次访问提示
             if (!localStorage.getItem('visited')) {
-                setTimeout(() => showToast('👋 欢迎使用！按 Ctrl+Enter 快速生成，点击 ❓ 查看更多快捷键', 'success'), 500);
+                setTimeout(() => showToast('👋 欢迎使用！按 Ctrl+Enter 快速生成，点击 💡 查看更多快捷键', 'success'), 500);
                 localStorage.setItem('visited', 'true');
             }
             updateDeletedToggleBtn();
             // 恢复历史面板折叠状态
             const savedCollapsed = (localStorage.getItem('historyPanelCollapsed') || 'false') === 'true';
             setHistoryCollapsed(savedCollapsed);
+            // 恢复侧边栏折叠状态
+            const sidebarCollapsed = (localStorage.getItem('sidebarCollapsed') || 'false') === 'true';
+            setSidebarCollapsed(sidebarCollapsed);
             if (state.showDeleted) renderDeleted();
             updateHistoryToggleBtnVisual();
+            updateSidebarToggleBtnVisual();
         });
         
         // ========== 主题切换 ==========
@@ -1438,7 +1689,6 @@
             state.theme = state.theme === 'light' ? 'dark' : 'light';
             document.documentElement.setAttribute('data-theme', state.theme);
             localStorage.setItem('theme', state.theme);
-            showToast(`已切换到${state.theme === 'light' ? '浅色' : '深色'}模式`, 'success');
         }
         
         // ========== 音色列表初始化 ==========
@@ -1461,6 +1711,7 @@
                     <div class="category-content active">
                         ${VOICE_DATABASE[key].map(voice => `
                             <div class="voice-item ${voice.name === state.selectedVoice ? 'selected' : ''}" data-voice="${voice.name}">
+                                <input type="checkbox" class="voice-checkbox" data-voice="${voice.name}">
                                 <div class="voice-item-name">
                                     <span class="voice-icon">${icon}</span>
                                     <span>${getVoiceEmoji(voice.trait)} ${voice.name}</span>
@@ -1494,7 +1745,22 @@
             // 音色选择
             document.querySelectorAll('.voice-item').forEach(item => {
                 item.addEventListener('click', (e) => {
-                    if (!e.target.classList.contains('favorite-btn')) {
+                    // 如果点击的是按钮，不处理
+                    if (e.target.classList.contains('favorite-btn') || 
+                        e.target.classList.contains('preview-inline') ||
+                        e.target.classList.contains('voice-checkbox')) {
+                        return;
+                    }
+                    
+                    // 多选模式：切换复选框
+                    if (state.multiSelectMode) {
+                        const checkbox = item.querySelector('.voice-checkbox');
+                        if (checkbox) {
+                            checkbox.checked = !checkbox.checked;
+                            checkbox.dispatchEvent(new Event('change'));
+                        }
+                    } else {
+                        // 单选模式：选择音色
                         selectVoice(item.dataset.voice);
                     }
                 });
@@ -1515,6 +1781,26 @@
                     previewVoice(btn.dataset.voice);
                 });
             });
+            
+            // 复选框处理
+            document.querySelectorAll('.voice-checkbox').forEach(cb => {
+                cb.addEventListener('change', (e) => {
+                    e.stopPropagation();
+                    const voice = cb.dataset.voice;
+                    if (cb.checked) {
+                        state.selectedVoices.add(voice);
+            } else {
+                        state.selectedVoices.delete(voice);
+                    }
+                    updateMultiCount();
+                });
+            });
+        }
+        
+        function updateMultiCount() {
+            const count = state.selectedVoices.size;
+            const el = document.getElementById('multiCount');
+            if (el) el.textContent = `已选 ${count} 个`;
         }
         
         function selectVoice(voiceName) {
@@ -1584,9 +1870,11 @@
             // 主题切换
             document.getElementById('themeToggle').addEventListener('click', toggleTheme);
             
-            // 侧边栏切换
+            // 侧边栏切换（全局按钮）
             document.getElementById('toggleSidebar').addEventListener('click', () => {
-                document.querySelector('.sidebar').classList.toggle('active');
+                const sidebar = document.querySelector('.sidebar');
+                const collapsed = sidebar.classList.contains('collapsed');
+                setSidebarCollapsed(!collapsed);
             });
             
             // 历史面板切换（面板内关闭按钮 -> 折叠）
@@ -1615,8 +1903,14 @@
             // 生成语音
             document.getElementById('generateBtn').addEventListener('click', generateSpeech);
             
-            // 批量生成
-            document.getElementById('batchBtn').addEventListener('click', batchGenerate);
+            // 多音色对比
+            document.getElementById('multiVoiceBtn').addEventListener('click', () => {
+                if (state.multiSelectMode) {
+                    generateMultiVoiceCompare();
+                } else {
+                    toggleMultiVoiceMode();
+                }
+            });
             
             // 保存到收藏
             document.getElementById('saveToFavorites').addEventListener('click', openSaveFavoriteModal);
@@ -1631,6 +1925,25 @@
             });
             
             document.getElementById('saveSettings').addEventListener('click', saveSettings);
+            
+            // 清理缓存
+            document.getElementById('clearCacheBtn').addEventListener('click', () => {
+                const audioCount = (state.currentAudio ? 1 : 0) + 
+                                   (state.compareResults?.length || 0) + 
+                                   (previewAudioUrl ? 1 : 0);
+                
+                if (audioCount === 0) {
+                    showToast('当前没有音频缓存', 'success');
+                    return;
+                }
+                
+                if (confirm(`将清理 ${audioCount} 个音频缓存，是否继续？`)) {
+                    cleanupAudioResources();
+                    document.getElementById('audioPlayer').classList.remove('active');
+                    document.getElementById('comparePanel').classList.remove('active');
+                    showToast(`已清理 ${audioCount} 个音频缓存`, 'success');
+                }
+            });
             
             // 帮助
             document.getElementById('helpBtn').addEventListener('click', () => {
@@ -1734,13 +2047,64 @@
                 audioElement.volume = e.target.value / 100;
             });
             
-            // 速度控制
-            document.getElementById('speedSelect').addEventListener('change', (e) => {
-                audioElement.playbackRate = parseFloat(e.target.value);
+            // 速度控制（下拉 + 闪电按钮循环）
+            const speedBtn = document.getElementById('speedBtn');
+            const speedMenu = document.getElementById('speedMenu');
+            const speedItems = () => Array.from(document.querySelectorAll('#speedMenu .speed-item'));
+            const speeds = [0.5, 0.75, 1, 1.25, 1.5, 2];
+            const applySpeed = (val) => {
+                const v = parseFloat(val);
+                audioElement.playbackRate = v;
+                if (previewAudioEl) previewAudioEl.playbackRate = v;
+                speedBtn.title = `倍速：${v.toFixed(2).replace(/\.00$/, '')}x`;
+                // 高亮当前选项
+                speedItems().forEach(it => {
+                    const m = parseFloat(it.getAttribute('data-speed'));
+                    it.classList.toggle('active', m === v);
+                });
+            };
+            // 默认1x
+            applySpeed(1);
+            // 打开/关闭菜单
+            speedBtn.addEventListener('click', (e) => {
+                e.stopPropagation();
+                speedMenu.classList.toggle('visible');
+            });
+            // 菜单项
+            speedItems().forEach(item => {
+                item.addEventListener('click', (e) => {
+                    const s = e.currentTarget.getAttribute('data-speed');
+                    applySpeed(s);
+                    speedMenu.classList.remove('visible');
+                });
+            });
+            // 点击外部关闭
+            document.addEventListener('click', (e) => {
+                if (!speedMenu.contains(e.target) && e.target !== speedBtn) {
+                    speedMenu.classList.remove('visible');
+                }
+            });
+            // Esc关闭
+            document.addEventListener('keydown', (e) => {
+                if (e.key === 'Escape') speedMenu.classList.remove('visible');
+            });
+
+            // 循环控制
+            const loopBtn = document.getElementById('loopBtn');
+            loopBtn.addEventListener('click', () => {
+                audioElement.loop = !audioElement.loop;
+                loopBtn.classList.toggle('active', audioElement.loop);
+                loopBtn.title = audioElement.loop ? '循环：开' : '循环：关';
             });
             
             // 下载
             document.getElementById('downloadBtn').addEventListener('click', downloadAudio);
+            
+            // 下载全部对比
+            const downloadAllBtn = document.getElementById('downloadAllCompare');
+            if (downloadAllBtn) {
+                downloadAllBtn.addEventListener('click', downloadAllCompare);
+            }
             
             // 字符计数
             document.getElementById('textInput').addEventListener('input', updateCharCount);
@@ -1762,6 +2126,21 @@
             document.getElementById('confirmFavorite').addEventListener('click', saveFavorite);
         }
 
+        function setSidebarCollapsed(collapsed) {
+            const sidebar = document.querySelector('.sidebar');
+            sidebar.classList.toggle('collapsed', collapsed);
+            localStorage.setItem('sidebarCollapsed', collapsed);
+            updateSidebarToggleBtnVisual();
+        }
+        function updateSidebarToggleBtnVisual() {
+            const btn = document.getElementById('toggleSidebar');
+            const sidebar = document.querySelector('.sidebar');
+            if (!btn || !sidebar) return;
+            const collapsed = sidebar.classList.contains('collapsed');
+            if (collapsed) { btn.classList.remove('active'); btn.title = '打开音色选择器'; }
+            else { btn.classList.add('active'); btn.title = '关闭音色选择器'; }
+        }
+
         function setHistoryCollapsed(collapsed) {
             const panel = document.getElementById('historyPanel');
             panel.classList.toggle('collapsed', collapsed);
@@ -1777,9 +2156,11 @@
             if (collapsed) {
                 btn.classList.remove('active');
                 btn.title = '打开历史记录';
-            } else {
+                btn.textContent = '📜 历史';
+                } else {
                 btn.classList.add('active');
                 btn.title = '关闭历史记录';
+                btn.textContent = '📁 收起';
             }
         }
         
@@ -1854,8 +2235,8 @@
             btnText.innerHTML = '<span class="loading-spinner"></span> 生成中...';
             
             try {
-                const audioUrl = await callTTSAPI(text, state.selectedVoice);
-                playAudio(audioUrl);
+                const { audioUrl, wavBlob } = await callTTSAPI(text, state.selectedVoice);
+                playAudio(audioUrl, wavBlob);
                 addToHistory(text, state.selectedVoice);
                 showToast('生成成功！', 'success');
             } catch (error) {
@@ -1904,7 +2285,7 @@
             const wavHeader = createWavHeader(pcmData.size);
             const wavBlob = new Blob([wavHeader, pcmData], { type: 'audio/wav' });
             
-            return URL.createObjectURL(wavBlob);
+            return { audioUrl: URL.createObjectURL(wavBlob), wavBlob };
         }
 
         async function previewVoice(voice) {
@@ -1913,6 +2294,17 @@
                 document.getElementById('settingsModal').classList.add('active');
                 return;
             }
+            
+            // 停止之前的试听并清理
+            if (previewAudioEl) {
+                previewAudioEl.pause();
+                previewAudioEl.currentTime = 0;
+            }
+            if (previewAudioUrl) {
+                URL.revokeObjectURL(previewAudioUrl);
+                previewAudioUrl = null;
+            }
+            
             try {
                 const sample = '你好，这是一段音色试听。';
                 const url = `${state.apiBaseUrl}/models/${state.model}:generateContent?key=${state.apiKey}`;
@@ -1939,7 +2331,6 @@
                 const pcmData = base64ToBlob(audioData);
                 const wavHeader = createWavHeader(pcmData.size);
                 const wavBlob = new Blob([wavHeader, pcmData], { type: 'audio/wav' });
-                if (previewAudioUrl) URL.revokeObjectURL(previewAudioUrl);
                 previewAudioUrl = URL.createObjectURL(wavBlob);
                 if (!previewAudioEl) previewAudioEl = new Audio();
                 previewAudioEl.src = previewAudioUrl;
@@ -1988,50 +2379,204 @@
             return new Uint8Array(buffer);
         }
 
-        // ========== 批量生成 ==========
-        async function batchGenerate() {
+        // ========== 多音色对比 ==========
+        function toggleMultiVoiceMode() {
+            state.multiSelectMode = !state.multiSelectMode;
+            const sidebar = document.getElementById('voiceSidebar');
+            const btn = document.getElementById('multiVoiceBtn');
+            
+            if (state.multiSelectMode) {
+                sidebar.classList.add('multi-select-mode');
+                btn.textContent = '✓ 开始对比生成';
+                btn.classList.add('btn-primary');
+                btn.classList.remove('btn-secondary');
+            } else {
+                sidebar.classList.remove('multi-select-mode');
+                btn.textContent = '🎭 多音色对比';
+                btn.classList.remove('btn-primary');
+                btn.classList.add('btn-secondary');
+                // 清空选择
+                state.selectedVoices.clear();
+                document.querySelectorAll('.voice-checkbox').forEach(cb => cb.checked = false);
+                updateMultiCount();
+            }
+        }
+        
+        async function generateMultiVoiceCompare() {
             const text = document.getElementById('textInput').value.trim();
-            const lines = text.split('\n').filter(line => line.trim());
             
-            if (lines.length < 2) {
-                showToast('请输入多行文本进行批量生成', 'error');
+            if (!text) {
+                showToast('请输入文本', 'error');
                 return;
             }
             
-            if (!confirm(`将生成 ${lines.length} 个音频文件，是否继续？`)) {
+            if (state.selectedVoices.size === 0) {
+                showToast('请至少选择一个音色', 'error');
                 return;
             }
             
-            const btn = document.getElementById('batchBtn');
+            if (!state.apiKey) {
+                showToast('请先在设置中配置 API Key', 'error');
+                document.getElementById('settingsModal').classList.add('active');
+                return;
+            }
+            
+            const voices = Array.from(state.selectedVoices);
+            const btn = document.getElementById('multiVoiceBtn');
             btn.disabled = true;
+            btn.textContent = `并发生成中 (${voices.length})...`;
             
-            let success = 0;
-            for (let i = 0; i < lines.length; i++) {
+            state.compareResults = [];
+            
+            // 并发生成所有音色
+            showToast(`正在并发生成 ${voices.length} 个音色...`, 'success');
+            
+            const promises = voices.map(async (voice) => {
                 try {
-                    showToast(`正在生成 ${i + 1}/${lines.length}...`, 'success');
-                    await callTTSAPI(lines[i], state.selectedVoice);
-                    success++;
+                    const { audioUrl, wavBlob } = await callTTSAPI(text, voice);
+                    return {
+                        voice,
+                        audioUrl,
+                        wavBlob,
+                        text,
+                        success: true
+                    };
                 } catch (error) {
-                    console.error(error);
+                    console.error(`${voice} 生成失败:`, error);
+                    return {
+                        voice,
+                        error: error.message,
+                        success: false
+                    };
                 }
-            }
+            });
+            
+            const results = await Promise.all(promises);
+            
+            // 只保留成功的结果
+            state.compareResults = results.filter(r => r.success);
+            const failed = results.filter(r => !r.success);
             
             btn.disabled = false;
-            showToast(`批量生成完成！成功 ${success}/${lines.length}`, 'success');
+            toggleMultiVoiceMode(); // 退出多选模式
+            
+            if (state.compareResults.length > 0) {
+                showComparePanel();
+                const msg = failed.length > 0 
+                    ? `成功 ${state.compareResults.length} 个，失败 ${failed.length} 个`
+                    : `成功生成 ${state.compareResults.length} 个音色版本`;
+                showToast(msg, 'success');
+            } else {
+                showToast('所有音色生成失败', 'error');
+            }
+        }
+        
+        function showComparePanel() {
+            const panel = document.getElementById('comparePanel');
+            const list = document.getElementById('compareList');
+            
+            list.innerHTML = state.compareResults.map((item, idx) => `
+                <div class="compare-item" id="compare-${idx}">
+                    <div class="compare-item-header">
+                        <div class="compare-voice-name">${getVoiceIcon(item.voice)} ${item.voice}</div>
+                    </div>
+                    <div class="compare-actions">
+                        <button class="btn-small" onclick="playCompareItem(${idx})">▶ 播放</button>
+                        <button class="btn-small" onclick="downloadCompareItem(${idx})">⬇️ 下载</button>
+                    </div>
+                </div>
+            `).join('');
+            
+            panel.classList.add('active');
+        }
+        
+        function getVoiceIcon(voiceName) {
+            for (const [category, voices] of Object.entries(VOICE_DATABASE)) {
+                const voice = voices.find(v => v.name === voiceName);
+                if (voice) {
+                    if (category === 'female') return '👩‍🎤';
+                    if (category === 'male') return '👨‍🎤';
+                    return '🧑‍🎤';
+                }
+            }
+            return '🎤';
+        }
+        
+        function playCompareItem(idx) {
+            const item = state.compareResults[idx];
+            if (!item) return;
+            
+            // 高亮当前播放
+            document.querySelectorAll('.compare-item').forEach((el, i) => {
+                el.classList.toggle('playing', i === idx);
+            });
+            
+            playAudio(item.audioUrl, item.wavBlob);
+        }
+        
+        function downloadCompareItem(idx) {
+            const item = state.compareResults[idx];
+            if (!item) return;
+            
+            const a = document.createElement('a');
+            a.href = item.audioUrl;
+            a.download = `${item.voice}_${Date.now()}.wav`;
+            a.click();
+        }
+        
+        function downloadAllCompare() {
+            if (state.compareResults.length === 0) {
+                showToast('没有可下载的内容', 'error');
+                return;
+            }
+            
+            showToast(`开始下载 ${state.compareResults.length} 个文件...`, 'success');
+            
+            state.compareResults.forEach((item, i) => {
+                setTimeout(() => {
+                    const a = document.createElement('a');
+                    a.href = item.audioUrl;
+                    a.download = `${item.voice}_对比_${Date.now()}.wav`;
+                    a.click();
+                }, i * 300); // 延迟下载避免浏览器阻止
+            });
+        }
+        
+        function closeComparePanel() {
+            const panel = document.getElementById('comparePanel');
+            panel.classList.remove('active');
+            
+            // 关闭面板时清理对比音频（可选：保留或清理）
+            // 如果用户可能还要重听，可以注释掉下面的清理代码
+            /*
+            state.compareResults.forEach(item => {
+                if (item.audioUrl) {
+                    URL.revokeObjectURL(item.audioUrl);
+                }
+            });
+            state.compareResults = [];
+            */
         }
         
         // ========== 音频播放 ==========
-        function playAudio(audioUrl) {
+        async function playAudio(audioUrl, wavBlob) {
             const audioElement = document.getElementById('audioElement');
             const player = document.getElementById('audioPlayer');
             
-            if (state.currentAudio) {
+            // 清理旧音频
+            if (state.currentAudio && state.currentAudio !== audioUrl) {
                 URL.revokeObjectURL(state.currentAudio);
             }
             
             state.currentAudio = audioUrl;
             audioElement.src = audioUrl;
             player.classList.add('active');
+            
+            // 预计算整轨波形
+            state.waveformBins = null;
+            if (wavBlob) {
+                try { await computeWaveformFromBlob(wavBlob); } catch(e) { console.warn('waveform 预计算失败', e); }
+            }
             
             audioElement.play();
             state.isPlaying = true;
@@ -2105,6 +2650,52 @@
             }
         }
 
+        async function computeWaveformFromBlob(wavBlob) {
+            try {
+                if (!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+                const arr = await wavBlob.arrayBuffer();
+                const buffer = await audioCtx.decodeAudioData(arr.slice(0));
+                const channelData = buffer.numberOfChannels > 1
+                  ? mixDownChannels(buffer)
+                  : buffer.getChannelData(0);
+                const canvas = document.getElementById('waveformCanvas');
+                const targetBins = Math.max(200, Math.min(1200, Math.floor(canvas.offsetWidth)));
+                state.waveformBins = computeBins(channelData, targetBins);
+            } catch (e) {
+                console.warn('decodeAudioData 失败', e);
+            }
+        }
+
+        function mixDownChannels(buffer) {
+            const len = buffer.length;
+            const mixed = new Float32Array(len);
+            for (let ch = 0; ch < buffer.numberOfChannels; ch++) {
+                const data = buffer.getChannelData(ch);
+                for (let i = 0; i < len; i++) mixed[i] += data[i];
+            }
+            for (let i = 0; i < len; i++) mixed[i] /= buffer.numberOfChannels;
+            return mixed;
+        }
+
+        function computeBins(data, bins) {
+            const len = data.length;
+            const step = Math.floor(len / bins);
+            const out = new Float32Array(bins);
+            for (let i = 0; i < bins; i++) {
+                const start = i * step;
+                const end = i === bins - 1 ? len : start + step;
+                let min = 1.0, max = -1.0;
+                for (let j = start; j < end; j++) {
+                    const v = data[j];
+                    if (v < min) min = v;
+                    if (v > max) max = v;
+                }
+                const amp = Math.max(Math.abs(min), Math.abs(max));
+                out[i] = amp;
+            }
+            return out;
+        }
+
         function startWaveformDraw() {
             ensureAnalyser();
             const canvas = document.getElementById('waveformCanvas');
@@ -2116,7 +2707,20 @@
                 canvas.height = canvas.offsetHeight;
                 ctx.clearRect(0, 0, canvas.width, canvas.height);
 
-                if (!analyser || !dataArray) {
+                if (state.waveformBins && state.waveformBins.length) {
+                    const bins = state.waveformBins;
+                    const bw = canvas.width / bins.length;
+                    for (let i = 0; i < bins.length; i++) {
+                        const h = Math.max(2, bins[i] * canvas.height * 0.9);
+                        const x = i * bw;
+                        const y = (canvas.height - h) / 2;
+                        const grad = ctx.createLinearGradient(0, y, 0, y + h);
+                        grad.addColorStop(0, getComputedStyle(document.documentElement).getPropertyValue('--primary-terracotta') || '#D4754E');
+                        grad.addColorStop(1, getComputedStyle(document.documentElement).getPropertyValue('--accent-amber') || '#E8A87C');
+                        ctx.fillStyle = grad;
+                        ctx.fillRect(x, y, Math.max(1, bw - 0.5), h);
+                    }
+                } else if (analyser && dataArray) {
                     // 降级：简单条形动画
                     const barWidth = 2;
                     const gap = 2;
@@ -2131,21 +2735,21 @@
                         ctx.fillStyle = grad;
                         ctx.fillRect(x, y, barWidth, height);
                     }
-                } else {
-                    analyser.getByteTimeDomainData(dataArray);
-                    const barCount = Math.min(180, Math.floor(canvas.width / 4));
-                    const step = Math.max(1, Math.floor(dataArray.length / barCount));
-                    for (let i = 0; i < barCount; i++) {
-                        const v = dataArray[i * step] / 128.0;
-                        const h = Math.max(2, Math.abs(v - 1) * canvas.height * 0.9);
-                        const x = i * 4;
-                        const y = (canvas.height - h) / 2;
-                        const grad = ctx.createLinearGradient(0, y, 0, y + h);
-                        grad.addColorStop(0, getComputedStyle(document.documentElement).getPropertyValue('--primary-terracotta') || '#D4754E');
-                        grad.addColorStop(1, getComputedStyle(document.documentElement).getPropertyValue('--accent-amber') || '#E8A87C');
-                        ctx.fillStyle = grad;
-                        ctx.fillRect(x, y, 2, h);
-                    }
+                }
+                // 绘制当前进度细线
+                const audioElement = document.getElementById('audioElement');
+                if (audioElement && audioElement.duration) {
+                    const ratio = audioElement.currentTime / audioElement.duration;
+                    const x = Math.max(0, Math.min(canvas.width, ratio * canvas.width));
+                    ctx.save();
+                    const waveLineVar = getComputedStyle(document.documentElement).getPropertyValue('--wave-line-color') || 'rgba(255,255,255,0.9)';
+                    ctx.strokeStyle = waveLineVar.trim() || 'rgba(255,255,255,0.9)';
+                    ctx.lineWidth = 1;
+                    ctx.beginPath();
+                    ctx.moveTo(x + 0.5, 0);
+                    ctx.lineTo(x + 0.5, canvas.height);
+                    ctx.stroke();
+                    ctx.restore();
                 }
                 rafId = requestAnimationFrame(render);
             };
@@ -2420,12 +3024,33 @@
             }, 4000);
         }
         
-        // 清理
-        window.addEventListener('beforeunload', () => {
+        // 清理所有音频资源
+        function cleanupAudioResources() {
+            // 清理主音频
             if (state.currentAudio) {
                 URL.revokeObjectURL(state.currentAudio);
+                state.currentAudio = null;
             }
-        });
+            
+            // 清理对比音频
+            if (state.compareResults && state.compareResults.length > 0) {
+                state.compareResults.forEach(item => {
+                    if (item.audioUrl) {
+                        URL.revokeObjectURL(item.audioUrl);
+                    }
+                });
+                state.compareResults = [];
+            }
+            
+            // 清理试听音频
+            if (previewAudioUrl) {
+                URL.revokeObjectURL(previewAudioUrl);
+                previewAudioUrl = null;
+            }
+        }
+        
+        // 页面关闭前清理
+        window.addEventListener('beforeunload', cleanupAudioResources);
     </script>
 </body>
 </html>

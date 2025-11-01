@@ -1466,76 +1466,241 @@
 
         @media (max-width: 768px) {
             .app-header {
-                padding: 0 1rem;
+                padding: 0 0.75rem;
+            }
+            
+            .logo {
+                font-size: 1.2rem;
+            }
+            
+            .header-actions {
+                gap: 0.5rem;
+            }
+            
+            .icon-btn {
+                width: 36px;
+                height: 36px;
+                font-size: 1rem;
             }
             
             .workspace {
-                padding: 1rem;
+                padding: 0.75rem;
+            }
+            
+            .workspace-card {
+                padding: 1.25rem;
+                margin-bottom: 1rem;
             }
             
             .audio-player {
-                padding: 0.75rem 1rem;
+                padding: 0.75rem;
                 min-height: 50px;
-                margin: 8px 8px 8px 8px;
+                margin: 8px;
             }
             
             .audio-player.has-content {
                 min-height: 70px;
             }
             
+            .audio-player.has-playlist {
+                max-height: 280px;
+            }
+            
+            .compare-playlist-header {
+                padding: 0.5rem 0;
+                margin-bottom: 0.5rem;
+            }
+            
+            .compare-playlist-title {
+                font-size: 0.75rem;
+            }
+            
+            .compare-playlist-controls {
+                gap: 0.3rem;
+            }
+            
+            .compare-playlist-controls .icon-control {
+                width: 26px !important;
+                height: 26px !important;
+                font-size: 0.75rem !important;
+            }
+            
+            .compare-playlist-controls .btn-small {
+                font-size: 0.65rem !important;
+                padding: 0.25rem 0.5rem !important;
+            }
+            
             .waveform-wrapper {
-                height: 24px;
+                height: 28px;
             }
             
             .player-controls {
-                gap: 0.5rem;
+                gap: 0.4rem;
             }
             
             .play-btn {
                 width: 36px;
                 height: 36px;
-                font-size: 1.1rem;
+                font-size: 1rem;
             }
             
             .time-label {
                 font-size: 0.7rem;
-                min-width: 36px;
+                min-width: 32px;
+            }
+            
+            .player-extra {
+                gap: 0.4rem;
             }
             
             .slider {
-                width: 50px;
+                width: 40px;
             }
             
             .icon-control {
-                width: 28px;
-                height: 28px;
-                font-size: 0.9rem;
+                width: 26px;
+                height: 26px;
+                font-size: 0.85rem;
             }
             
             .chip-btn {
-                font-size: 0.75rem;
-                padding: 0.3rem 0.55rem;
+                font-size: 0.7rem;
+                padding: 0.3rem 0.5rem;
             }
             
             .action-buttons {
                 flex-direction: column;
+                gap: 0.75rem;
             }
             
             .btn {
                 width: 100%;
+                padding: 0.75rem 1.5rem;
+                font-size: 0.95rem;
             }
             
             .compare-item {
-                min-width: 110px;
-                max-width: 130px;
+                min-width: 100px;
+                max-width: 120px;
+                padding: 0.5rem 0.6rem;
             }
             
-            .compare-playlist-controls {
-                flex-wrap: wrap;
+            .compare-voice-name {
+                font-size: 0.8rem;
             }
             
-            .compare-playlist-title {
+            .compare-voice-meta {
+                font-size: 0.65rem;
+            }
+            
+            .quick-select-buttons {
+                gap: 0.4rem;
+            }
+            
+            .quick-select-btn {
+                font-size: 0.7rem;
+                padding: 0.4rem;
+            }
+            
+            .sidebar-header {
+                padding: 1rem;
+            }
+            
+            .voice-search {
+                padding: 0.75rem;
+                font-size: 0.85rem;
+            }
+            
+            .text-input {
+                min-height: 150px;
+                font-size: 0.95rem;
+                padding: 1rem;
+            }
+            
+            .player-empty-state {
                 font-size: 0.75rem;
+                padding: 0.5rem;
+            }
+            
+            /* 移动端隐藏部分不常用的播放控制 */
+            .speed-group {
+                display: none;
+            }
+            
+            #loopBtn {
+                display: none;
+            }
+            
+            .compare-list {
+                gap: 0.4rem;
+            }
+            
+            .sidebar {
+                width: 85%;
+                max-width: 300px;
+            }
+            
+            .history-panel {
+                width: 85%;
+                max-width: 300px;
+            }
+        }
+        
+        /* 极小屏幕优化 */
+        @media (max-width: 480px) {
+            .logo {
+                font-size: 1rem;
+            }
+            
+            .chip-btn {
+                font-size: 0.65rem;
+                padding: 0.25rem 0.4rem;
+            }
+            
+            .audio-player {
+                padding: 0.5rem;
+                margin: 6px;
+            }
+            
+            .player-controls {
+                gap: 0.3rem;
+            }
+            
+            .play-btn {
+                width: 32px;
+                height: 32px;
+                font-size: 0.95rem;
+            }
+            
+            .time-label {
+                font-size: 0.65rem;
+                min-width: 28px;
+            }
+            
+            .icon-control {
+                width: 24px;
+                height: 24px;
+                font-size: 0.8rem;
+            }
+            
+            #volumeBtn,
+            #volumeSlider {
+                display: none;
+            }
+            
+            .compare-item {
+                min-width: 90px;
+                max-width: 110px;
+                padding: 0.4rem 0.5rem;
+            }
+            
+            .compare-voice-name {
+                font-size: 0.75rem;
+            }
+            
+            .compare-voice-trait {
+                font-size: 0.6rem;
+                padding: 0.1rem 0.3rem;
             }
         }
         
@@ -1620,6 +1785,7 @@
                             <span id="generateBtnText">生成语音</span>
                         </button>
                         <button class="btn btn-secondary" id="multiVoiceBtn">🎭 多音色对比</button>
+                        <button class="btn btn-secondary hidden" id="cancelMultiVoiceBtn">✕ 退出多选</button>
                         <button class="btn btn-secondary" id="saveToFavorites">保存到收藏</button>
                     </div>
                 </div>
@@ -1822,7 +1988,8 @@
                     <div><strong>点击"🎭 多音色对比"</strong> - 进入多选模式，勾选音色批量生成</div>
                     
                     <div style="font-weight: 600; color: var(--primary-terracotta); margin-top: 0.5rem;">⚙️ 界面控制</div>
-                    <div><strong>Esc</strong> - 关闭弹窗/菜单</div>
+                    <div><strong>Esc</strong> - 关闭弹窗/退出多选模式</div>
+                    <div><strong>再次点击"🎭 多音色对比"</strong> - 退出多选模式</div>
                     <div><strong>左上角 ☰</strong> - 显示/隐藏音色面板</div>
                     <div><strong>右上角 📜 历史</strong> - 显示/隐藏历史面板</div>
                 </div>
@@ -2296,6 +2463,13 @@
                 }
             });
             
+            // 退出多选模式
+            document.getElementById('cancelMultiVoiceBtn').addEventListener('click', () => {
+                if (state.multiSelectMode) {
+                    toggleMultiVoiceMode();
+                }
+            });
+            
             // 保存到收藏
             document.getElementById('saveToFavorites').addEventListener('click', openSaveFavoriteModal);
             
@@ -2612,9 +2786,18 @@
                     }
                 }
                 
-                // Esc: 关闭弹窗
+                // Esc: 关闭弹窗或退出多选模式
                 if (e.key === 'Escape') {
-                    document.querySelectorAll('.modal-overlay').forEach(m => m.classList.remove('active'));
+                    // 先检查是否有打开的弹窗
+                    const hasOpenModal = Array.from(document.querySelectorAll('.modal-overlay')).some(m => m.classList.contains('active'));
+                    
+                    if (hasOpenModal) {
+                        // 关闭弹窗
+                        document.querySelectorAll('.modal-overlay').forEach(m => m.classList.remove('active'));
+                    } else if (state.multiSelectMode) {
+                        // 退出多选模式
+                        toggleMultiVoiceMode();
+                    }
                 }
             });
         }
@@ -2835,22 +3018,30 @@
             state.multiSelectMode = !state.multiSelectMode;
             const sidebar = document.getElementById('voiceSidebar');
             const btn = document.getElementById('multiVoiceBtn');
+            const cancelBtn = document.getElementById('cancelMultiVoiceBtn');
             
             if (state.multiSelectMode) {
                 sidebar.classList.add('multi-select-mode');
                 btn.textContent = '✓ 开始对比生成';
                 btn.classList.add('btn-primary');
                 btn.classList.remove('btn-secondary');
-                showToast('💡 请勾选2个以上音色进行对比', 'success');
+                if (cancelBtn) {
+                    cancelBtn.classList.remove('hidden');
+                }
+                showToast('💡 请勾选2个以上音色进行对比（按ESC或点击"✕ 退出多选"可退出）', 'success');
             } else {
                 sidebar.classList.remove('multi-select-mode');
                 btn.textContent = '🎭 多音色对比';
                 btn.classList.remove('btn-primary');
                 btn.classList.add('btn-secondary');
+                if (cancelBtn) {
+                    cancelBtn.classList.add('hidden');
+                }
                 // 清空选择
                 state.selectedVoices.clear();
                 document.querySelectorAll('.voice-checkbox').forEach(cb => cb.checked = false);
                 updateMultiCount();
+                showToast('已退出多选模式', 'success');
             }
         }
         

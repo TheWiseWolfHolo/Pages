@@ -265,9 +265,20 @@
             transform: translateY(0);
         }
         
+        .category-arrow {
+            transition: transform 0.3s var(--transition-smooth);
+            display: inline-block;
+        }
+        
+        .category-header.collapsed .category-arrow {
+            transform: rotate(-90deg);
+        }
+        
         .category-content {
             display: none;
             padding-left: 0.5rem;
+            overflow: hidden;
+            transition: max-height 0.3s var(--transition-smooth);
         }
         
         .category-content.active {
@@ -1706,7 +1717,7 @@
                 category.innerHTML = `
                     <div class="category-header" data-category="${key}">
                         <span>${icon} ${title}</span>
-                        <span>▼</span>
+                        <span class="category-arrow">▼</span>
                     </div>
                     <div class="category-content active">
                         ${VOICE_DATABASE[key].map(voice => `
@@ -1738,7 +1749,13 @@
             document.querySelectorAll('.category-header').forEach(header => {
                 header.addEventListener('click', () => {
                     const content = header.nextElementSibling;
+                    const isActive = content.classList.contains('active');
+                    
+                    // 切换内容显示
                     content.classList.toggle('active');
+                    
+                    // 切换箭头方向
+                    header.classList.toggle('collapsed', isActive);
                 });
             });
             

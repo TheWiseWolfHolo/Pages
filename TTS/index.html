@@ -3325,14 +3325,13 @@
                 } else {
                     voiceInfo = `音色: ${item.voice}`;
                 }
-                const applyBtnText = isMulti ? '重新生成对比' : '应用';
                 
                 return `
                     <div class="history-item">
                         <div class="item-text">${item.text.substring(0, 100)}${item.text.length > 100 ? '...' : ''}</div>
                         <div class="item-meta">${voiceInfo} · ${item.timestamp}</div>
                         <div class="item-actions">
-                            <button class="btn-small" onclick="applyHistory(${item.id})">${applyBtnText}</button>
+                            <button class="btn-small" onclick="applyHistory(${item.id})">应用</button>
                             <button class="btn-small" onclick="deleteHistory(${item.id})">删除</button>
                         </div>
                     </div>
@@ -3372,20 +3371,14 @@
             }).join('');
         }
         
-        async function applyHistory(id) {
+        function applyHistory(id) {
             const item = state.history.find(h => h.id === id);
             if (!item) return;
             
             document.getElementById('textInput').value = item.text;
             
             if (item.type === 'multi' && item.voices && item.voices.length > 0) {
-                // 多音色对比记录
-                if (!state.apiKey) {
-                    showToast('请先在设置中配置 API Key', 'error');
-                    document.getElementById('settingsModal').classList.add('active');
-                    return;
-                }
-                
+                // 多音色对比记录 - 只应用状态，不自动生成
                 // 进入多选模式
                 if (!state.multiSelectMode) {
                     toggleMultiVoiceMode();
@@ -3405,12 +3398,7 @@
                 });
                 updateMultiCount();
                 
-                showToast(`已加载 ${item.voices.length} 个音色，正在生成...`, 'success');
-                
-                // 延迟一下让用户看到勾选效果，然后直接调用多音色生成函数
-                setTimeout(() => {
-                    generateMultiVoiceCompare();
-                }, 800);
+                showToast(`已应用：${item.voices.length} 个音色已勾选，点击"✓ 开始对比生成"按钮即可生成`, 'success');
             } else {
                 // 单音色记录
                 selectVoice(item.voice);

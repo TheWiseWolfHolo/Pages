@@ -1,0 +1,2431 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gemini TTS 专业版</title>
+    <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Cdefs%3E%3ClinearGradient id='grad' x1='0%25' y1='0%25' x2='100%25' y2='100%25'%3E%3Cstop offset='0%25' style='stop-color:%23D4754E;stop-opacity:1' /%3E%3Cstop offset='50%25' style='stop-color:%23C86240;stop-opacity:1' /%3E%3Cstop offset='100%25' style='stop-color:%239B5D42;stop-opacity:1' /%3E%3C/linearGradient%3E%3C/defs%3E%3Ccircle cx='50' cy='50' r='48' fill='url(%23grad)'/%3E%3Cpath d='M35 38 Q50 28 65 38 L65 62 Q50 72 35 62 Z' fill='%23FFF9F0' opacity='0.95'/%3E%3Cellipse cx='50' cy='43' rx='9' ry='7' fill='url(%23grad)'/%3E%3C/svg%3E">
+    <style>
+        /* ========== CSS 变量系统 - 优雅暖调配色 ========== */
+        :root {
+            /* 主色调 - Terracotta & Sienna 陶土色系 */
+            --primary-terracotta: #D4754E;
+            --primary-sienna: #C86240;
+            --accent-amber: #E8A87C;
+            --accent-bronze: #9B5D42;
+            
+            /* 辅助色 - 温暖米色系（更有设计感） */
+            --bg-primary: #F8F6F4;
+            --bg-secondary: #EDE8E4;
+            --bg-card: rgba(248, 246, 244, 0.88);
+            --text-primary: #2D2424;
+            --text-secondary: #6B5E5E;
+            --border-color: rgba(212, 117, 78, 0.14);
+            --shadow-sm: rgba(155, 93, 66, 0.09);
+            --shadow-md: rgba(155, 93, 66, 0.14);
+            --shadow-lg: rgba(155, 93, 66, 0.20);
+            
+            /* 点缀色 */
+            --sage-green: #8A9A8E;
+            --cream: #FFF9F0;
+            --charcoal: #3D3434;
+            
+            /* 表面色层级（统一空白与卡片的视觉系统） */
+            --surface-1: rgba(248, 246, 244, 0.90);
+            --surface-2: #F0EBE7;
+            --surface-3: #E6DED8;
+            --grid-line-color: rgba(61, 52, 52, 0.06);
+            
+            /* 布局 */
+            --sidebar-width: 280px;
+            --history-width: 280px;
+            --header-height: 60px;
+            --player-height: 84px;
+            --player-height-collapsed: 56px;
+            --border-radius: 20px;
+            --border-radius-sm: 14px;
+            
+            /* 动画 */
+            --transition-smooth: cubic-bezier(0.4, 0, 0.2, 1);
+            --transition-bounce: cubic-bezier(0.68, -0.55, 0.265, 1.55);
+        }
+        
+        [data-theme="dark"] {
+            --bg-primary: #1A1514;
+            --bg-secondary: #2A2220;
+            --bg-card: rgba(42, 34, 32, 0.85);
+            --text-primary: #F5EDE8;
+            --text-secondary: #B8ADA8;
+            --border-color: rgba(212, 117, 78, 0.15);
+            --shadow-sm: rgba(0, 0, 0, 0.25);
+            --shadow-md: rgba(0, 0, 0, 0.35);
+            --shadow-lg: rgba(0, 0, 0, 0.45);
+            --cream: #2A2220;
+            --charcoal: #F5EDE8;
+            --surface-1: rgba(42, 34, 32, 0.88);
+            --surface-2: #251E1C;
+            --surface-3: #2E2624;
+            --grid-line-color: rgba(245, 237, 232, 0.06);
+        }
+        
+        /* ========== 基础样式 ========== */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Noto Sans SC', sans-serif;
+            background: 
+                radial-gradient(ellipse at top left, var(--cream) 0%, transparent 50%),
+                radial-gradient(ellipse at bottom right, var(--bg-secondary) 0%, transparent 50%),
+                linear-gradient(135deg, var(--bg-primary) 0%, var(--bg-secondary) 100%);
+            color: var(--text-primary);
+            overflow: hidden;
+            transition: background 0.5s var(--transition-smooth);
+            position: relative;
+        }
+        
+        body::before {
+            content: '';
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: 
+                radial-gradient(circle at 15% 25%, rgba(232, 168, 124, 0.04) 0%, transparent 40%),
+                radial-gradient(circle at 85% 75%, rgba(138, 154, 142, 0.03) 0%, transparent 40%),
+                radial-gradient(circle at 50% 50%, rgba(212, 117, 78, 0.02) 0%, transparent 60%);
+            pointer-events: none;
+            z-index: 0;
+        }
+        /* 细腻网格纹理，提升空白区域的设计感 */
+        body::after {
+            content: '';
+            position: fixed;
+            inset: 0;
+            pointer-events: none;
+            background-image:
+                repeating-linear-gradient(0deg, var(--grid-line-color) 0 1px, transparent 1px 24px),
+                repeating-linear-gradient(90deg, var(--grid-line-color) 0 1px, transparent 1px 24px);
+            z-index: 0;
+        }
+        
+        /* ========== 布局容器 ========== */
+        .app-container {
+            display: flex;
+            flex-direction: column;
+            height: 100vh;
+            position: relative;
+            z-index: 1;
+        }
+        
+        .app-header {
+            height: var(--header-height);
+            background: var(--bg-card);
+            backdrop-filter: blur(12px);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0 2rem;
+            box-shadow: 0 1px 3px var(--shadow-sm);
+            z-index: 100;
+        }
+        
+        .logo {
+            font-size: 1.5rem;
+            font-weight: 700;
+            background: linear-gradient(135deg, var(--primary-terracotta) 0%, var(--primary-sienna) 50%, var(--accent-bronze) 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            letter-spacing: -0.5px;
+        }
+        
+        .header-actions {
+            display: flex;
+            gap: 1rem;
+            align-items: center;
+        }
+        
+        .main-content {
+            display: flex;
+            flex: 1;
+            overflow: hidden;
+        }
+        
+        /* ========== 侧边栏 - 音色选择器 ========== */
+        .sidebar {
+            width: var(--sidebar-width);
+            background: var(--surface-1);
+            backdrop-filter: blur(12px);
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+            box-shadow: 2px 0 12px var(--shadow-sm);
+        }
+        
+        .sidebar-header {
+            padding: 1.5rem;
+            background: linear-gradient(to bottom, transparent, var(--border-color) 100%);
+            background-size: 100% 1px;
+            background-position: bottom;
+            background-repeat: no-repeat;
+        }
+        
+        .sidebar-title {
+            font-size: 1.1rem;
+            font-weight: 600;
+            margin-bottom: 1rem;
+            color: var(--text-primary);
+        }
+        
+        .voice-search {
+            width: 100%;
+            padding: 0.875rem 1.125rem;
+            border: 2px solid transparent;
+            border-radius: var(--border-radius-sm);
+            font-size: 0.9rem;
+            background: linear-gradient(to right, rgba(255, 255, 255, 0.5), rgba(255, 244, 230, 0.3));
+            color: var(--text-primary);
+            transition: all 0.3s var(--transition-smooth);
+            box-shadow: inset 0 1px 2px var(--shadow-sm);
+        }
+        
+        .voice-search:focus {
+            outline: none;
+            border-color: var(--primary-terracotta);
+            box-shadow: 0 0 0 4px rgba(212, 117, 78, 0.12), inset 0 1px 2px var(--shadow-sm);
+            background: rgba(255, 255, 255, 0.9);
+        }
+
+        /* 暗黑模式输入类修复 */
+        [data-theme="dark"] .text-input,
+        [data-theme="dark"] .form-input,
+        [data-theme="dark"] .voice-search {
+            background: linear-gradient(to bottom, rgba(245, 237, 232, 0.06), rgba(245, 237, 232, 0.04));
+            border-color: rgba(245, 237, 232, 0.14);
+            color: var(--text-primary);
+            caret-color: var(--accent-amber);
+        }
+        [data-theme="dark"] .text-input:focus,
+        [data-theme="dark"] .form-input:focus,
+        [data-theme="dark"] .voice-search:focus {
+            background: rgba(245, 237, 232, 0.12);
+            border-color: var(--primary-terracotta);
+            box-shadow: 0 0 0 4px rgba(212, 117, 78, 0.16), inset 0 1px 2px rgba(0,0,0,0.2);
+        }
+        [data-theme="dark"] .text-input::placeholder,
+        [data-theme="dark"] .form-input::placeholder,
+        [data-theme="dark"] .voice-search::placeholder {
+            color: rgba(245, 237, 232, 0.6);
+        }
+        
+        .voice-list {
+            flex: 1;
+            overflow-y: auto;
+            padding: 1rem;
+        }
+
+        .voice-category {
+            margin-bottom: 1.5rem;
+        }
+        
+        .category-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 1rem 1.25rem;
+            background: linear-gradient(135deg, var(--primary-terracotta) 0%, var(--primary-sienna) 100%);
+            color: var(--cream);
+            border-radius: var(--border-radius-sm);
+            cursor: pointer;
+            font-weight: 600;
+            margin-bottom: 0.875rem;
+            transition: all 0.3s var(--transition-smooth);
+            box-shadow: 0 3px 12px var(--shadow-md);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        
+        .category-header:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 24px var(--shadow-lg);
+            background: linear-gradient(135deg, var(--primary-sienna) 0%, var(--accent-bronze) 100%);
+        }
+        
+        .category-header:active {
+            transform: translateY(0);
+        }
+        
+        .category-content {
+            display: none;
+            padding-left: 0.5rem;
+        }
+        
+        .category-content.active {
+            display: block;
+        }
+
+        .voice-item {
+            padding: 0.875rem 1.125rem;
+            margin: 0.375rem 0;
+            border-radius: var(--border-radius-sm);
+            cursor: pointer;
+            border: 1px solid transparent;
+            transition: all 0.3s var(--transition-smooth);
+            position: relative;
+            background: transparent;
+        }
+        
+        .voice-item:hover {
+            background: linear-gradient(to right, rgba(232, 168, 124, 0.15), transparent);
+            border-color: rgba(212, 117, 78, 0.25);
+            transform: translateX(3px);
+        }
+        
+        .voice-item.selected {
+            background: linear-gradient(135deg, rgba(232, 168, 124, 0.2) 0%, rgba(212, 117, 78, 0.1) 100%);
+            border-color: var(--primary-terracotta);
+            box-shadow: 0 4px 16px var(--shadow-md);
+            transform: scale(1.02);
+            border-width: 1.5px;
+        }
+        
+        .voice-item-name {
+            font-weight: 600;
+            color: var(--text-primary);
+            margin-bottom: 0.25rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+        
+        .voice-icon {
+            font-size: 1.1rem;
+        }
+        
+        .voice-item-meta {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 0.5rem;
+            flex-wrap: wrap;
+            margin-top: 0.5rem;
+        }
+        .voice-item-meta .meta-left { display: flex; gap: 0.5rem; flex-wrap: wrap; }
+        
+        .voice-tag {
+            font-size: 0.75rem;
+            padding: 0.2rem 0.5rem;
+            border-radius: 4px;
+            background: var(--bg-primary);
+            color: var(--text-secondary);
+        }
+        
+        .favorite-btn {
+            position: absolute;
+            top: 0.5rem;
+            right: 0.5rem;
+            background: none;
+            border: none;
+            font-size: 1.2rem;
+            cursor: pointer;
+            opacity: 0;
+            transition: opacity 0.3s;
+        }
+        
+        .voice-item:hover .favorite-btn,
+        .favorite-btn.active {
+            opacity: 1;
+        }
+
+        .preview-btn {
+            position: absolute;
+            top: 0.5rem;
+            left: 0.5rem;
+            background: rgba(0,0,0,0.04);
+            border: 1px solid var(--border-color);
+            color: var(--text-primary);
+            font-size: 0.75rem;
+            padding: 2px 6px;
+            border-radius: 6px;
+            cursor: pointer;
+            opacity: 0;
+            transition: opacity 0.3s, background 0.2s;
+        }
+        .voice-item:hover .preview-btn { opacity: 1; }
+        .preview-btn:hover { background: rgba(0,0,0,0.06); }
+
+        .preview-inline {
+            background: rgba(0,0,0,0.04);
+            border: 1px solid var(--border-color);
+            color: var(--text-primary);
+            font-size: 0.75rem;
+            padding: 2px 8px;
+            border-radius: 999px;
+            cursor: pointer;
+            transition: background 0.2s, transform 0.1s;
+            white-space: nowrap;
+        }
+        .preview-inline:hover { background: rgba(0,0,0,0.06); transform: translateY(-1px); }
+        
+        /* ========== 中央工作区 ========== */
+        .workspace {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            padding: 2rem;
+            overflow-y: auto;
+        }
+        
+        .workspace-card {
+            background: var(--surface-1);
+            backdrop-filter: blur(12px);
+            border-radius: var(--border-radius);
+            padding: 2rem;
+            box-shadow: 0 2px 20px var(--shadow-sm), 0 0 0 1px var(--border-color);
+            margin-bottom: 1.5rem;
+            transition: all 0.3s var(--transition-smooth);
+        }
+        
+        .workspace-card:hover {
+            box-shadow: 0 6px 36px var(--shadow-md), 0 0 0 1px rgba(212, 117, 78, 0.2);
+            transform: translateY(-3px);
+        }
+        
+        .card-title {
+            font-size: 1.2rem;
+            font-weight: 600;
+          margin-bottom: 1rem;
+            color: var(--text-primary);
+        }
+        
+        .textarea-container {
+            position: relative;
+        }
+        
+        .text-input {
+            width: 100%;
+            min-height: 200px;
+            padding: 1.25rem;
+            border: 2px solid transparent;
+            border-radius: var(--border-radius-sm);
+            font-size: 1rem;
+            font-family: inherit;
+            resize: vertical;
+            background: linear-gradient(to bottom, rgba(255, 255, 255, 0.5), rgba(255, 244, 230, 0.2));
+            color: var(--text-primary);
+            transition: background-color 0.25s var(--transition-smooth), border-color 0.25s var(--transition-smooth), box-shadow 0.25s var(--transition-smooth);
+            box-shadow: inset 0 1px 3px var(--shadow-sm);
+        }
+        
+        .text-input:focus {
+            outline: none;
+            border-color: var(--primary-terracotta);
+            box-shadow: 0 0 0 4px rgba(212, 117, 78, 0.12), inset 0 1px 3px var(--shadow-sm);
+            background: rgba(255, 255, 255, 0.95);
+        }
+        
+        .text-meta {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 0.5rem;
+            font-size: 0.85rem;
+            color: var(--text-secondary);
+        }
+        
+        .action-buttons {
+            display: flex;
+            gap: 1rem;
+            margin-top: 1.5rem;
+        }
+        
+        .btn {
+            padding: 0.875rem 2rem;
+            border: none;
+          border-radius: 8px;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s var(--transition-smooth);
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .btn-primary {
+            background: linear-gradient(135deg, var(--primary-terracotta) 0%, var(--primary-sienna) 100%);
+            color: var(--cream);
+            box-shadow: 0 4px 16px var(--shadow-md);
+        }
+        
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 28px var(--shadow-lg);
+            background: linear-gradient(135deg, var(--primary-sienna) 0%, var(--accent-bronze) 100%);
+        }
+        
+        .btn-primary:active {
+            transform: translateY(0);
+        }
+        
+        .btn-primary:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+            transform: none;
+        }
+        
+        .btn-secondary {
+            background: var(--bg-card);
+            color: var(--text-primary);
+            border: 1.5px solid var(--border-color);
+            backdrop-filter: blur(8px);
+        }
+        
+        .btn-secondary:hover {
+            background: linear-gradient(135deg, rgba(232, 168, 124, 0.12), rgba(212, 117, 78, 0.08));
+            border-color: var(--primary-terracotta);
+            color: var(--primary-sienna);
+        }
+        
+        /* ========== 右侧历史面板 ========== */
+        .history-panel {
+            width: var(--history-width);
+            background: var(--surface-1);
+            backdrop-filter: blur(12px);
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+            transition: transform 0.3s var(--transition-smooth);
+            box-shadow: -2px 0 12px var(--shadow-sm);
+        }
+        
+        .history-panel.collapsed {
+            transform: translateX(100%);
+        }
+        
+        .panel-header {
+            padding: 1.5rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background: linear-gradient(to bottom, transparent, var(--border-color) 100%);
+            background-size: 100% 1px;
+            background-position: bottom;
+            background-repeat: no-repeat;
+        }
+        
+        .panel-title {
+            font-weight: 600;
+            font-size: 1.1rem;
+        }
+
+        .chip-btn {
+            border: 1px solid var(--border-color);
+            background: var(--surface-1);
+            color: var(--text-primary);
+            border-radius: 999px;
+            padding: 0.35rem 0.65rem;
+            font-size: 0.8rem;
+            cursor: pointer;
+            transition: all 0.2s;
+            margin-left: auto;
+            margin-right: 0.5rem;
+        }
+        .chip-btn:hover { transform: translateY(-1px); }
+        .chip-btn.active { border-color: var(--primary-terracotta); color: var(--primary-sienna); }
+        
+        .panel-tabs {
+            display: flex;
+            padding: 0 1rem;
+            background: linear-gradient(to bottom, transparent, var(--border-color) 100%);
+            background-size: 100% 1px;
+            background-position: bottom;
+            background-repeat: no-repeat;
+        }
+        
+        .tab {
+            flex: 1;
+            padding: 1rem;
+            background: none;
+            border: none;
+            border-bottom: 2px solid transparent;
+            cursor: pointer;
+            font-weight: 500;
+            color: var(--text-secondary);
+            transition: all 0.3s var(--transition-smooth);
+        }
+        
+        .tab.active {
+            color: var(--primary-terracotta);
+            border-bottom-color: var(--primary-terracotta);
+            font-weight: 600;
+        }
+        
+        .tab:hover:not(.active) {
+            color: var(--primary-sienna);
+        }
+        
+        .panel-content {
+            flex: 1;
+            overflow-y: auto;
+            padding: 1rem;
+        }
+        
+        .history-item, .favorite-item {
+            padding: 1rem;
+            background: linear-gradient(135deg, rgba(255, 255, 255, 0.5), rgba(255, 244, 230, 0.3));
+            border-radius: var(--border-radius-sm);
+            margin-bottom: 0.75rem;
+            border: 1px solid transparent;
+            transition: all 0.3s var(--transition-smooth);
+            backdrop-filter: blur(8px);
+        }
+        
+        .history-item:hover, .favorite-item:hover {
+            border-color: rgba(212, 117, 78, 0.3);
+            box-shadow: 0 6px 20px var(--shadow-md);
+            transform: translateY(-2px);
+        }
+        
+        .item-text {
+            font-size: 0.9rem;
+            color: var(--text-primary);
+            margin-bottom: 0.5rem;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            display: -webkit-box;
+            -webkit-line-clamp: 2;
+            line-clamp: 2;
+            -webkit-box-orient: vertical;
+        }
+        
+        .item-meta {
+            font-size: 0.75rem;
+            color: var(--text-secondary);
+            margin-bottom: 0.5rem;
+        }
+        
+        .item-actions {
+            display: flex;
+            gap: 0.5rem;
+        }
+        
+        .btn-small {
+            padding: 0.4rem 0.8rem;
+            font-size: 0.75rem;
+            border-radius: 4px;
+            border: none;
+            cursor: pointer;
+            background: var(--bg-card);
+            color: var(--text-primary);
+            transition: all 0.3s;
+        }
+        
+        .btn-small:hover {
+            background: linear-gradient(135deg, var(--primary-terracotta), var(--primary-sienna));
+            color: var(--cream);
+            transform: translateY(-1px);
+        }
+        
+        /* ========== 音频播放器 ========== */
+        .audio-player {
+            height: var(--player-height);
+            background: linear-gradient(135deg, rgba(45, 36, 36, 0.98) 0%, rgba(61, 52, 52, 0.98) 100%);
+            backdrop-filter: blur(20px);
+            padding: 1rem 1.25rem;
+            display: none;
+            flex-direction: column;
+            gap: 0.75rem;
+            box-shadow: 0 -8px 32px rgba(0, 0, 0, 0.3);
+            border-top: 1px solid rgba(212, 117, 78, 0.2);
+            border-radius: 12px;
+            position: static; /* 不再覆盖页面底部内容 */
+            margin: 12px 12px 0 12px;
+        }
+        
+        .audio-player.active {
+            display: flex;
+        }
+        
+        .waveform-wrapper {
+            position: relative;
+            width: 100%;
+            height: 48px;
+        }
+        
+        .player-controls {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            width: 100%;
+        }
+        
+        .play-btn {
+            width: 42px;
+            height: 42px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, var(--primary-terracotta) 0%, var(--primary-sienna) 100%);
+            border: none;
+            color: var(--cream);
+            font-size: 1.3rem;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.25s var(--transition-smooth);
+            box-shadow: 0 2px 12px rgba(212, 117, 78, 0.35);
+            flex-shrink: 0;
+        }
+        
+        .play-btn:hover {
+            transform: scale(1.08);
+            box-shadow: 0 4px 20px rgba(212, 117, 78, 0.45);
+        }
+        
+        .play-btn:active {
+            transform: scale(1.0);
+        }
+        
+        .time-label {
+            color: rgba(255, 255, 255, 0.85);
+            font-size: 0.8rem;
+            font-weight: 500;
+            min-width: 42px;
+            text-align: center;
+            flex-shrink: 0;
+        }
+        
+        .progress-container {
+            flex: 1;
+            display: flex;
+            align-items: center;
+        }
+        
+        .progress-bar {
+            height: 5px;
+            width: 100%;
+            background: rgba(255, 255, 255, 0.15);
+            border-radius: 3px;
+            cursor: pointer;
+            position: relative;
+            transition: height 0.2s;
+        }
+        
+        .progress-bar:hover {
+            height: 6px;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, var(--primary-terracotta) 0%, var(--accent-amber) 100%);
+            border-radius: 3px;
+            width: 0%;
+            transition: width 0.1s linear;
+            box-shadow: 0 0 10px rgba(212, 117, 78, 0.6);
+            position: relative;
+        }
+        
+        .progress-fill::after {
+            content: '';
+            position: absolute;
+            right: -1px;
+            top: 50%;
+            transform: translateY(-50%);
+            width: 12px;
+            height: 12px;
+            background: var(--cream);
+            border-radius: 50%;
+            box-shadow: 0 2px 6px rgba(0,0,0,0.3);
+            opacity: 0;
+            transition: opacity 0.2s;
+        }
+        
+        .progress-bar:hover .progress-fill::after {
+            opacity: 1;
+        }
+        
+        .wave-tooltip {
+            position: absolute;
+            top: -32px;
+            left: 0;
+            transform: translateX(-50%);
+            background: rgba(0, 0, 0, 0.75);
+            color: #fff;
+            font-size: 11px;
+            padding: 4px 8px;
+            border-radius: 6px;
+            pointer-events: none;
+            opacity: 0;
+            transition: opacity 0.15s ease;
+            white-space: nowrap;
+        }
+        
+        .player-extra {
+            display: flex;
+            gap: 0.75rem;
+            align-items: center;
+            flex-shrink: 0;
+        }
+        
+        .icon-control {
+            width: 32px;
+            height: 32px;
+            border-radius: 8px;
+            border: none;
+            background: rgba(255, 255, 255, 0.1);
+            color: rgba(255, 255, 255, 0.8);
+            font-size: 1rem;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.2s;
+        }
+        
+        .icon-control:hover {
+            background: rgba(255, 255, 255, 0.18);
+            transform: scale(1.05);
+        }
+        
+        .slider {
+            width: 70px;
+            height: 4px;
+            -webkit-appearance: none;
+            appearance: none;
+            background: rgba(255, 255, 255, 0.18);
+            border-radius: 2px;
+            outline: none;
+            cursor: pointer;
+        }
+        
+        .slider::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            appearance: none;
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            background: var(--cream);
+            cursor: pointer;
+            box-shadow: 0 2px 6px rgba(0, 0, 0, 0.3);
+            transition: transform 0.2s;
+        }
+        
+        .slider::-webkit-slider-thumb:hover {
+            transform: scale(1.2);
+        }
+        
+        .speed-select {
+            background: rgba(255, 255, 255, 0.12);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            color: white;
+            padding: 0.3rem 0.5rem;
+            border-radius: 6px;
+            font-size: 0.75rem;
+            cursor: pointer;
+            outline: none;
+        }
+        
+        .speed-select:hover {
+            background: rgba(255, 255, 255, 0.2);
+        }
+        
+        /* ========== 图标按钮 ========== */
+        .icon-btn {
+            width: 42px;
+            height: 42px;
+            border-radius: 11px;
+            border: 1px solid transparent;
+            background: rgba(212, 117, 78, 0.1);
+            color: var(--text-primary);
+            font-size: 1.2rem;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.3s var(--transition-smooth);
+            backdrop-filter: blur(4px);
+        }
+        
+        .icon-btn:hover {
+            background: linear-gradient(135deg, var(--primary-terracotta) 0%, var(--primary-sienna) 100%);
+            color: var(--cream);
+            border-color: transparent;
+            transform: scale(1.08);
+            box-shadow: 0 6px 20px var(--shadow-md);
+        }
+        
+        .icon-btn:active {
+            transform: scale(0.96);
+        }
+        
+        .icon-btn.active {
+            background: linear-gradient(135deg, var(--primary-terracotta) 0%, var(--primary-sienna) 100%);
+            color: var(--cream);
+            border-color: transparent;
+        }
+        
+        /* ========== Toast 通知 ========== */
+        .toast-container {
+            position: fixed;
+            top: calc(var(--header-height) + 0.5rem);
+            right: 1rem;
+            z-index: 1000;
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+        }
+        
+        .toast {
+            background: var(--surface-1);
+            backdrop-filter: blur(12px);
+            padding: 1rem 1.5rem;
+            border-radius: var(--border-radius-sm);
+            box-shadow: 0 8px 32px var(--shadow-lg);
+            border-left: 4px solid var(--primary-terracotta);
+            animation: slideIn 0.3s var(--transition-smooth);
+            min-width: 320px;
+            border: 1px solid var(--border-color);
+            border-left-width: 4px;
+        }
+
+        .toast .close {
+            margin-left: 0.75rem;
+            background: transparent;
+            border: none;
+            color: var(--text-secondary);
+            cursor: pointer;
+            font-size: 1rem;
+        }
+        
+        .toast.success {
+            border-left-color: var(--sage-green);
+        }
+        
+        .toast.error {
+            border-left-color: #D64545;
+        }
+        
+        @keyframes slideIn {
+            from {
+                transform: translateX(400px);
+                opacity: 0;
+            }
+            to {
+                transform: translateX(0);
+                opacity: 1;
+            }
+        }
+        
+        /* ========== Modal ========== */
+        .modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.5);
+            display: none;
+            align-items: center;
+            justify-content: center;
+            z-index: 1600;
+        }
+        
+        .modal-overlay.active {
+            display: flex;
+        }
+        
+        .modal {
+            background: var(--surface-1);
+            backdrop-filter: blur(20px);
+            border-radius: var(--border-radius);
+            padding: 2rem;
+            max-width: 500px;
+            width: 90%;
+            max-height: 80vh;
+            overflow-y: auto;
+            box-shadow: 0 20px 60px var(--shadow-lg), 0 0 0 1px var(--border-color);
+        }
+        
+        .modal-header {
+            font-size: 1.5rem;
+            font-weight: 600;
+            margin-bottom: 1.5rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding-right: 0.5rem;
+        }
+        
+        .modal-close {
+            width: 32px;
+            height: 32px;
+            border-radius: 8px;
+            border: none;
+            background: rgba(212, 117, 78, 0.1);
+            color: var(--text-secondary);
+            font-size: 1.5rem;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.3s var(--transition-smooth);
+            line-height: 1;
+        }
+        
+        .modal-close:hover {
+            background: var(--primary-terracotta);
+            color: var(--cream);
+            transform: scale(1.1) rotate(90deg);
+        }
+        
+        [data-theme="dark"] .modal-close {
+            background: rgba(245, 237, 232, 0.15);
+            color: var(--text-primary);
+        }
+        
+        [data-theme="dark"] .modal-close:hover {
+            background: var(--primary-terracotta);
+            color: var(--cream);
+        }
+        
+        .modal-body {
+            margin-bottom: 1.5rem;
+        }
+        
+        .form-group {
+            margin-bottom: 1rem;
+        }
+        
+        .form-label {
+            display: block;
+            margin-bottom: 0.5rem;
+            font-weight: 500;
+        }
+        
+        .form-input {
+            width: 100%;
+            padding: 0.875rem 1rem;
+            border: 2px solid transparent;
+            border-radius: var(--border-radius-sm);
+            font-size: 1rem;
+            background: linear-gradient(to right, rgba(255, 255, 255, 0.5), rgba(255, 244, 230, 0.3));
+            color: var(--text-primary);
+            transition: all 0.3s var(--transition-smooth);
+            box-shadow: inset 0 1px 2px var(--shadow-sm);
+        }
+        
+        .form-input:focus {
+            outline: none;
+            border-color: var(--primary-terracotta);
+            box-shadow: 0 0 0 4px rgba(212, 117, 78, 0.12), inset 0 1px 2px var(--shadow-sm);
+            background: rgba(255, 255, 255, 0.95);
+        }
+        
+        .modal-actions {
+            display: flex;
+            gap: 1rem;
+            justify-content: flex-end;
+        }
+        
+        /* ========== 加载动画 ========== */
+        .loading-spinner {
+            display: inline-block;
+            width: 20px;
+            height: 20px;
+            border: 3px solid rgba(255, 255, 255, 0.3);
+            border-radius: 50%;
+            border-top-color: white;
+            animation: spin 0.8s linear infinite;
+        }
+        
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+        
+        /* ========== 波形可视化 ========== */
+        .waveform-canvas {
+            width: 100%;
+            height: 100%;
+            cursor: pointer;
+            border-radius: 6px;
+            transition: opacity 0.2s;
+        }
+        
+        .waveform-canvas:hover {
+            opacity: 0.9;
+        }
+        
+        /* ========== 响应式设计 ========== */
+        @media (max-width: 1024px) {
+            .sidebar {
+                position: absolute;
+                left: 0;
+                top: var(--header-height);
+                height: calc(100vh - var(--header-height));
+                z-index: 50;
+                transform: translateX(-100%);
+                transition: transform 0.3s var(--transition-smooth);
+            }
+            
+            .sidebar.active {
+                transform: translateX(0);
+            }
+            
+            .history-panel {
+                display: none;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .app-header {
+                padding: 0 1rem;
+            }
+            
+            .workspace {
+                padding: 1rem;
+            }
+            
+            .audio-player {
+                padding: 0.75rem 1rem;
+                height: 70px;
+            }
+            
+            .waveform-wrapper {
+                height: 24px;
+            }
+            
+            .player-controls {
+                gap: 0.5rem;
+            }
+            
+            .play-btn {
+                width: 36px;
+                height: 36px;
+                font-size: 1.1rem;
+            }
+            
+            .time-label {
+                font-size: 0.7rem;
+                min-width: 36px;
+            }
+            
+            .slider {
+                width: 50px;
+            }
+            
+            .speed-select {
+                font-size: 0.7rem;
+                padding: 0.2rem 0.4rem;
+            }
+        }
+        
+        /* ========== 滚动条样式 ========== */
+        ::-webkit-scrollbar {
+            width: 8px;
+            height: 8px;
+        }
+        
+        ::-webkit-scrollbar-track {
+            background: var(--bg-primary);
+        }
+        
+        ::-webkit-scrollbar-thumb {
+            background: var(--primary-orange);
+            border-radius: 4px;
+        }
+        
+        ::-webkit-scrollbar-thumb:hover {
+            background: var(--primary-gold);
+        }
+        
+        /* ========== 隐藏类 ========== */
+        .hidden {
+            display: none !important;
+        }
+    </style>
+</head>
+<body>
+    <div class="app-container">
+        <!-- 顶部导航 -->
+        <header class="app-header">
+            <div class="logo">🎙️ Gemini TTS Pro</div>
+            <div class="header-actions">
+                <button class="icon-btn" id="toggleSidebar" title="音色选择器">☰</button>
+                <button class="icon-btn" id="historyToggleGlobal" title="打开历史记录">🗂</button>
+                <button class="icon-btn" id="themeToggle" title="切换主题">🌓</button>
+                <button class="icon-btn" id="settingsBtn" title="设置">⚙️</button>
+                <button class="icon-btn" id="helpBtn" title="快捷键帮助">❓</button>
+            </div>
+        </header>
+        
+        <!-- 主内容区 -->
+        <main class="main-content">
+            <!-- 左侧音色选择器 -->
+            <aside class="sidebar">
+                <div class="sidebar-header">
+                    <h2 class="sidebar-title">音色选择</h2>
+                    <input type="text" class="voice-search" id="voiceSearch" placeholder="搜索音色...">
+                </div>
+                <div class="voice-list" id="voiceList">
+                    <!-- 音色列表将通过 JS 动态生成 -->
+                </div>
+            </aside>
+            
+            <!-- 中央工作区 -->
+            <section class="workspace">
+                <div class="workspace-card">
+                    <h2 class="card-title">文本输入</h2>
+                    <div class="textarea-container">
+                        <textarea 
+                            class="text-input" 
+                            id="textInput" 
+                            placeholder="在此输入要转换的文本...&#10;&#10;💡 提示：可使用控制语句，如：&#10;Say slowly and dramatically: 这是一个戏剧性的句子。&#10;Say excitedly: 太棒了！"
+                        ></textarea>
+                        <div class="text-meta">
+                            <span id="charCount">0 字符</span>
+                            <span id="estimatedTime"></span>
+                        </div>
+                    </div>
+                    <div class="action-buttons">
+                        <button class="btn btn-primary" id="generateBtn">
+                            <span id="generateBtnText">生成语音</span>
+                        </button>
+                        <button class="btn btn-secondary" id="batchBtn">批量生成</button>
+                        <button class="btn btn-secondary" id="saveToFavorites">保存到收藏</button>
+                    </div>
+                </div>
+                
+                <div class="workspace-card">
+                    <h2 class="card-title">💡 使用技巧</h2>
+                    <ul style="list-style-position: inside; color: var(--text-secondary); line-height: 1.8;">
+                        <li><strong>速度：</strong>使用 "Say quickly:" 或 "Say slowly:" 控制语速</li>
+                    <li><strong>语气：</strong>如 "Say cheerfully:", "Say in a whisper:", "Say dramatically:"</li>
+                    <li><strong>情感：</strong>如 "Say excitedly:", "Say calmly:", "Say mysteriously:"</li>
+                        <li><strong>快捷键：</strong>Ctrl/Cmd + Enter 生成，Space 播放/暂停</li>
+                </ul>
+            </div>
+            </section>
+            
+            <!-- 右侧历史面板 -->
+            <aside class="history-panel" id="historyPanel">
+                <div class="panel-header">
+                    <h2 class="panel-title">历史与收藏</h2>
+                    <button class="chip-btn" id="toggleDeletedBtn" title="显示/隐藏已删除">🗑 显示已删除</button>
+                    <button class="icon-btn" id="toggleHistory" title="收起">✕</button>
+            </div>
+                <div class="panel-tabs">
+                    <button class="tab active" data-tab="history">历史</button>
+                    <button class="tab" data-tab="favorites">收藏</button>
+        </div>
+                <div class="panel-content" id="historyContent">
+                    <!-- 历史记录将通过 JS 动态生成 -->
+                </div>
+                <div class="panel-content hidden" id="favoritesContent">
+                    <!-- 收藏记录将通过 JS 动态生成 -->
+                </div>
+            </aside>
+        </main>
+        
+        <!-- 音频播放器 -->
+        <div class="audio-player" id="audioPlayer">
+            <div class="player-controls">
+                <button class="play-btn" id="playBtn">▶</button>
+                <div class="time-label" id="currentTime">0:00</div>
+                <div class="progress-container">
+                    <div class="waveform-wrapper">
+                        <canvas class="waveform-canvas" id="waveformCanvas"></canvas>
+                        <div class="wave-tooltip" id="waveTooltip"></div>
+            </div>
+                </div>
+                <div class="time-label" id="totalTime">0:00</div>
+                <div class="player-extra">
+                    <button class="icon-control" id="volumeBtn" title="音量">🔊</button>
+                    <input type="range" class="slider" id="volumeSlider" min="0" max="100" value="100">
+                    <button class="icon-control" id="speedBtn" title="速度">⚡</button>
+                    <select id="speedSelect" class="speed-select">
+                        <option value="0.5">0.5x</option>
+                        <option value="0.75">0.75x</option>
+                        <option value="1" selected>1.0x</option>
+                        <option value="1.25">1.25x</option>
+                        <option value="1.5">1.5x</option>
+                        <option value="2">2.0x</option>
+                    </select>
+                    <button class="icon-control" id="downloadBtn" title="下载">💾</button>
+                </div>
+            </div>
+            <audio id="audioElement" style="display: none;"></audio>
+        </div>
+
+    <!-- Toast 容器 -->
+    <div class="toast-container" id="toastContainer"></div>
+    
+    <!-- 设置 Modal -->
+    <div class="modal-overlay" id="settingsModal">
+        <div class="modal">
+            <div class="modal-header">
+                <span>设置</span>
+                <button class="modal-close" onclick="document.getElementById('settingsModal').classList.remove('active')">✕</button>
+            </div>
+            <div class="modal-body">
+                <div class="form-group">
+                    <label class="form-label">API 基础地址</label>
+                    <input type="text" class="form-input" id="apiBaseUrl" value="https://generativelanguage.googleapis.com/v1beta">
+                </div>
+                <div class="form-group">
+                    <label class="form-label">API 密钥</label>
+                    <input type="password" class="form-input" id="apiKey" placeholder="输入您的 Gemini API Key">
+                </div>
+                <div class="form-group">
+                    <label class="form-label">模型选择</label>
+                    <select class="form-input" id="modelSelect">
+                        <option value="gemini-2.5-flash-preview-tts">Gemini 2.5 Flash TTS (快速)</option>
+                        <option value="gemini-2.5-pro-preview-tts">Gemini 2.5 Pro TTS (高质量)</option>
+                    </select>
+                </div>
+            </div>
+            <div class="modal-actions">
+                <button class="btn btn-secondary" id="cancelSettings">取消</button>
+                <button class="btn btn-primary" id="saveSettings">保存</button>
+            </div>
+        </div>
+    </div>
+    
+    <!-- 收藏保存 Modal -->
+    <div class="modal-overlay" id="saveFavoriteModal">
+        <div class="modal">
+            <div class="modal-header">
+                <span>保存到收藏</span>
+                <button class="modal-close" onclick="document.getElementById('saveFavoriteModal').classList.remove('active')">✕</button>
+            </div>
+            <div class="modal-body">
+                <div class="form-group">
+                    <label class="form-label">收藏名称</label>
+                    <input type="text" class="form-input" id="favoriteName" placeholder="为这个配置命名...">
+                </div>
+            </div>
+            <div class="modal-actions">
+                <button class="btn btn-secondary" id="cancelFavorite">取消</button>
+                <button class="btn btn-primary" id="confirmFavorite">保存</button>
+            </div>
+        </div>
+    </div>
+    
+    <!-- 帮助 Modal -->
+    <div class="modal-overlay" id="helpModal">
+        <div class="modal">
+            <div class="modal-header">
+                <span>⌨️ 快捷键</span>
+                <button class="modal-close" onclick="document.getElementById('helpModal').classList.remove('active')">✕</button>
+            </div>
+            <div class="modal-body">
+                <div style="display: grid; gap: 1rem;">
+                    <div><strong>Ctrl/Cmd + Enter</strong> - 生成语音</div>
+                    <div><strong>Space</strong> - 播放/暂停</div>
+                    <div><strong>Ctrl/Cmd + S</strong> - 保存到收藏</div>
+                    <div><strong>Ctrl/Cmd + K</strong> - 搜索音色</div>
+                    <div><strong>Esc</strong> - 关闭弹窗</div>
+                </div>
+            </div>
+            <div class="modal-actions">
+                <button class="btn btn-primary" id="closeHelp">知道了</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // ========== 音色数据库 ==========
+        const VOICE_DATABASE = {
+            female: [
+                { name: 'Leda', trait: 'Youthful', age: '20-30岁', desc: '活泼少女音' },
+                { name: 'Aoede', trait: 'Breezy', age: '20-30岁', desc: '轻快女声' },
+                { name: 'Despina', trait: 'Smooth', age: '20-30岁', desc: '温柔女声' },
+                { name: 'Kore', trait: 'Firm', age: '30-45岁', desc: '坚定女声' },
+                { name: 'Callirrhoe', trait: 'Easy-going', age: '30-45岁', desc: '随和女声' },
+                { name: 'Autonoe', trait: 'Bright', age: '30-45岁', desc: '明亮女声' },
+                { name: 'Erinome', trait: 'Clear', age: '30-45岁', desc: '清晰女声' },
+                { name: 'Vindemiatrix', trait: 'Gentle', age: '30-45岁', desc: '温柔成熟女声' },
+                { name: 'Pulcherrima', trait: 'Forward', age: '35-50岁', desc: '自信女声' },
+                { name: 'Laomedeia', trait: 'Upbeat', age: '35-50岁', desc: '积极女声' }
+            ],
+            male: [
+                { name: 'Puck', trait: 'Upbeat', age: '20-30岁', desc: '活力男声' },
+                { name: 'Fenrir', trait: 'Excitable', age: '20-30岁', desc: '激情男声' },
+                { name: 'Zephyr', trait: 'Bright', age: '20-30岁', desc: '明亮男声' },
+                { name: 'Charon', trait: 'Informative', age: '30-45岁', desc: '知识型男声' },
+                { name: 'Orus', trait: 'Firm', age: '30-45岁', desc: '坚定男声' },
+                { name: 'Enceladus', trait: 'Breathy', age: '30-45岁', desc: '磁性男声' },
+                { name: 'Iapetus', trait: 'Clear', age: '30-45岁', desc: '清晰男声' },
+                { name: 'Umbriel', trait: 'Easy-going', age: '30-45岁', desc: '随和男声' },
+                { name: 'Rasalgethi', trait: 'Informative', age: '40-60岁', desc: '播音员男声' },
+                { name: 'Alnilam', trait: 'Firm', age: '40-60岁', desc: '威严男声' },
+                { name: 'Gacrux', trait: 'Mature', age: '40-60岁', desc: '成熟男声' },
+                { name: 'Algenib', trait: 'Gravelly', age: '40-60岁', desc: '沙哑男声' }
+            ],
+            neutral: [
+                { name: 'Algieba', trait: 'Smooth', age: '通用', desc: '柔和中性音' },
+                { name: 'Achernar', trait: 'Soft', age: '通用', desc: '温柔中性音' },
+                { name: 'Schedar', trait: 'Even', age: '通用', desc: '平稳中性音' },
+                { name: 'Achird', trait: 'Friendly', age: '通用', desc: '友好中性音' },
+                { name: 'Zubenelgenubi', trait: 'Casual', age: '通用', desc: '休闲中性音' },
+                { name: 'Sadachbia', trait: 'Lively', age: '通用', desc: '活泼中性音' },
+                { name: 'Sadaltager', trait: 'Knowledgeable', age: '通用', desc: '知识型中性音' },
+                { name: 'Sulafat', trait: 'Warm', age: '通用', desc: '温暖中性音' }
+            ]
+        };
+        
+        // ========== 状态管理 ==========
+        const state = {
+            selectedVoice: 'Puck',
+            theme: localStorage.getItem('theme') || 'light',
+            apiKey: localStorage.getItem('apiKey') || '',
+            apiBaseUrl: localStorage.getItem('apiBaseUrl') || 'https://generativelanguage.googleapis.com/v1beta',
+            model: localStorage.getItem('model') || 'gemini-2.5-flash-preview-tts',
+            currentAudio: null,
+            isPlaying: false,
+            history: JSON.parse(localStorage.getItem('history') || '[]'),
+            favorites: JSON.parse(localStorage.getItem('favorites') || '[]'),
+            deletedHistory: JSON.parse(localStorage.getItem('deletedHistory') || '[]'),
+            showDeleted: (localStorage.getItem('showDeleted') || 'false') === 'true'
+        };
+
+        // 撤销删除所需
+        let lastDeletedHistoryItem = null;
+        
+        // 试听音色所需
+        let previewAudioUrl = null;
+        let previewAudioEl = null;
+        
+        // ========== 音频可视化全局 ==========
+        let audioCtx = null;
+        let analyser = null;
+        let sourceNode = null;
+        let dataArray = null;
+        let rafId = null;
+        let isScrubbing = false;
+        let wasPlayingBeforeScrub = false;
+
+        // ========== 初始化 ==========
+        document.addEventListener('DOMContentLoaded', () => {
+            initTheme();
+            initVoiceList();
+            initEventListeners();
+            initKeyboardShortcuts();
+            loadSettings();
+            renderHistory();
+            renderFavorites();
+            
+            // 首次访问提示
+            if (!localStorage.getItem('visited')) {
+                setTimeout(() => showToast('👋 欢迎使用！按 Ctrl+Enter 快速生成，点击 ❓ 查看更多快捷键', 'success'), 500);
+                localStorage.setItem('visited', 'true');
+            }
+            updateDeletedToggleBtn();
+            // 恢复历史面板折叠状态
+            const savedCollapsed = (localStorage.getItem('historyPanelCollapsed') || 'false') === 'true';
+            setHistoryCollapsed(savedCollapsed);
+            if (state.showDeleted) renderDeleted();
+            updateHistoryToggleBtnVisual();
+        });
+        
+        // ========== 主题切换 ==========
+        function initTheme() {
+            document.documentElement.setAttribute('data-theme', state.theme);
+        }
+        
+        function toggleTheme() {
+            state.theme = state.theme === 'light' ? 'dark' : 'light';
+            document.documentElement.setAttribute('data-theme', state.theme);
+            localStorage.setItem('theme', state.theme);
+            showToast(`已切换到${state.theme === 'light' ? '浅色' : '深色'}模式`, 'success');
+        }
+        
+        // ========== 音色列表初始化 ==========
+        function initVoiceList() {
+            const voiceList = document.getElementById('voiceList');
+            const categories = {
+                female: { title: '女性音色', icon: '👩‍🎤' },
+                male: { title: '男性音色', icon: '👨‍🎤' },
+                neutral: { title: '中性音色', icon: '🧑‍🎤' }
+            };
+            
+            Object.entries(categories).forEach(([key, {title, icon}]) => {
+                const category = document.createElement('div');
+                category.className = 'voice-category';
+                category.innerHTML = `
+                    <div class="category-header" data-category="${key}">
+                        <span>${icon} ${title}</span>
+                        <span>▼</span>
+                    </div>
+                    <div class="category-content active">
+                        ${VOICE_DATABASE[key].map(voice => `
+                            <div class="voice-item ${voice.name === state.selectedVoice ? 'selected' : ''}" data-voice="${voice.name}">
+                                <div class="voice-item-name">
+                                    <span class="voice-icon">${icon}</span>
+                                    <span>${getVoiceEmoji(voice.trait)} ${voice.name}</span>
+                                </div>
+                                <div class="voice-item-meta">
+                                    <div class="meta-left">
+                                        <span class="voice-tag">${voice.age}</span>
+                                        <span class="voice-tag">${voice.trait}</span>
+                                        <span class="voice-tag">${voice.desc}</span>
+                                    </div>
+                                    <button class="preview-inline" data-voice="${voice.name}">🔊 试听</button>
+                                </div>
+                                <button class="favorite-btn ${isFavoriteVoice(voice.name) ? 'active' : ''}" data-voice="${voice.name}">
+                                    ${isFavoriteVoice(voice.name) ? '★' : '☆'}
+                                </button>
+                            </div>
+                        `).join('')}
+                    </div>
+                `;
+                voiceList.appendChild(category);
+            });
+            
+            // 分类折叠功能
+            document.querySelectorAll('.category-header').forEach(header => {
+                header.addEventListener('click', () => {
+                    const content = header.nextElementSibling;
+                    content.classList.toggle('active');
+                });
+            });
+            
+            // 音色选择
+            document.querySelectorAll('.voice-item').forEach(item => {
+                item.addEventListener('click', (e) => {
+                    if (!e.target.classList.contains('favorite-btn')) {
+                        selectVoice(item.dataset.voice);
+                    }
+                });
+            });
+            
+            // 收藏音色
+            document.querySelectorAll('.favorite-btn').forEach(btn => {
+                btn.addEventListener('click', (e) => {
+                    e.stopPropagation();
+                    toggleFavoriteVoice(btn.dataset.voice);
+                });
+            });
+
+            // 试听音色（内联按钮）
+            document.querySelectorAll('.preview-inline').forEach(btn => {
+                btn.addEventListener('click', (e) => {
+                    e.stopPropagation();
+                    previewVoice(btn.dataset.voice);
+                });
+            });
+        }
+        
+        function selectVoice(voiceName) {
+            document.querySelectorAll('.voice-item').forEach(item => {
+                item.classList.remove('selected');
+            });
+            document.querySelector(`[data-voice="${voiceName}"]`).classList.add('selected');
+            state.selectedVoice = voiceName;
+            showToast(`已选择音色：${voiceName}`, 'success');
+        }
+
+        function getVoiceEmoji(trait) {
+            const map = {
+                'Bright': '✨',
+                'Upbeat': '🎵',
+                'Informative': '🧠',
+                'Firm': '🧱',
+                'Excitable': '🔥',
+                'Youthful': '🐣',
+                'Breezy': '🌬️',
+                'Easy-going': '😌',
+                'Breathy': '😮\u200d💨',
+                'Clear': '🔊',
+                'Smooth': '🎷',
+                'Gravelly': '🪨',
+                'Mature': '🎩',
+                'Soft': '☁️',
+                'Even': '📏',
+                'Friendly': '🤗',
+                'Casual': '🧢',
+                'Gentle': '🍃',
+                'Lively': '⚡',
+                'Knowledgeable': '📚',
+                'Warm': '🔆'
+            };
+            return map[trait] || '🎙️';
+        }
+        
+        function isFavoriteVoice(voiceName) {
+            return state.favorites.some(fav => fav.voice === voiceName);
+        }
+        
+        function toggleFavoriteVoice(voiceName) {
+            const btn = document.querySelector(`.favorite-btn[data-voice="${voiceName}"]`);
+            const isFav = btn.classList.contains('active');
+            
+            if (isFav) {
+                btn.classList.remove('active');
+                btn.textContent = '☆';
+            } else {
+                btn.classList.add('active');
+                btn.textContent = '★';
+            }
+        }
+        
+        // ========== 搜索功能 ==========
+        document.getElementById('voiceSearch').addEventListener('input', (e) => {
+            const query = e.target.value.toLowerCase();
+            document.querySelectorAll('.voice-item').forEach(item => {
+                const text = item.textContent.toLowerCase();
+                item.style.display = text.includes(query) ? 'block' : 'none';
+            });
+        });
+        
+        // ========== 事件监听 ==========
+        function initEventListeners() {
+            // 主题切换
+            document.getElementById('themeToggle').addEventListener('click', toggleTheme);
+            
+            // 侧边栏切换
+            document.getElementById('toggleSidebar').addEventListener('click', () => {
+                document.querySelector('.sidebar').classList.toggle('active');
+            });
+            
+            // 历史面板切换（面板内关闭按钮 -> 折叠）
+            document.getElementById('toggleHistory').addEventListener('click', () => {
+                setHistoryCollapsed(true);
+            });
+
+            // 顶部历史按钮（显示/隐藏）
+            document.getElementById('historyToggleGlobal').addEventListener('click', () => {
+                const panel = document.getElementById('historyPanel');
+                const next = panel.classList.contains('collapsed') ? false : true;
+                setHistoryCollapsed(next);
+            });
+            
+            // 显示/隐藏已删除
+            document.getElementById('toggleDeletedBtn').addEventListener('click', () => {
+                state.showDeleted = !state.showDeleted;
+                localStorage.setItem('showDeleted', state.showDeleted);
+                updateDeletedToggleBtn();
+                const activeTab = document.querySelector('.tab.active')?.dataset.tab;
+                if (activeTab === 'history') {
+                    if (state.showDeleted) renderDeleted(); else renderHistory();
+                }
+            });
+            
+            // 生成语音
+            document.getElementById('generateBtn').addEventListener('click', generateSpeech);
+            
+            // 批量生成
+            document.getElementById('batchBtn').addEventListener('click', batchGenerate);
+            
+            // 保存到收藏
+            document.getElementById('saveToFavorites').addEventListener('click', openSaveFavoriteModal);
+            
+            // 设置
+            document.getElementById('settingsBtn').addEventListener('click', () => {
+                document.getElementById('settingsModal').classList.add('active');
+            });
+            
+            document.getElementById('cancelSettings').addEventListener('click', () => {
+                document.getElementById('settingsModal').classList.remove('active');
+            });
+            
+            document.getElementById('saveSettings').addEventListener('click', saveSettings);
+            
+            // 帮助
+            document.getElementById('helpBtn').addEventListener('click', () => {
+                document.getElementById('helpModal').classList.add('active');
+            });
+            
+            document.getElementById('closeHelp').addEventListener('click', () => {
+                document.getElementById('helpModal').classList.remove('active');
+            });
+            
+            // Tab 切换
+            document.querySelectorAll('.tab').forEach(tab => {
+                tab.addEventListener('click', () => {
+                    document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+                    tab.classList.add('active');
+                    
+                    const tabName = tab.dataset.tab;
+                    document.getElementById('historyContent').classList.toggle('hidden', tabName !== 'history');
+                    document.getElementById('favoritesContent').classList.toggle('hidden', tabName !== 'favorites');
+                });
+            });
+            
+            // 播放控制
+            const playBtn = document.getElementById('playBtn');
+            const audioElement = document.getElementById('audioElement');
+            
+            playBtn.addEventListener('click', togglePlay);
+            
+            audioElement.addEventListener('timeupdate', updateProgress);
+            audioElement.addEventListener('ended', () => {
+                state.isPlaying = false;
+                playBtn.textContent = '▶';
+            });
+            audioElement.addEventListener('play', () => { startWaveformDraw(); });
+            audioElement.addEventListener('pause', () => { stopWaveformDraw(); });
+            
+            // 进度条已移除，使用波形进行寻址
+            
+            // 波形交互：点击/拖拽寻址 + tooltip
+            const waveformCanvas = document.getElementById('waveformCanvas');
+            const waveTooltip = document.getElementById('waveTooltip');
+            const getTimeFromX = (x) => {
+                const rect = waveformCanvas.getBoundingClientRect();
+                const ratio = Math.min(Math.max((x - rect.left) / rect.width, 0), 1);
+                return ratio * (audioElement.duration || 0);
+            };
+            const setTooltip = (x) => {
+                const t = getTimeFromX(x);
+                const rect = waveformCanvas.getBoundingClientRect();
+                waveTooltip.style.left = `${x - rect.left}px`;
+                waveTooltip.textContent = formatTime(t);
+            };
+            waveformCanvas.addEventListener('mouseenter', () => {
+                waveTooltip.style.opacity = '1';
+            });
+            waveformCanvas.addEventListener('mouseleave', () => {
+                waveTooltip.style.opacity = '0';
+                if (isScrubbing) {
+                    isScrubbing = false;
+                    if (wasPlayingBeforeScrub) audioElement.play();
+                }
+            });
+            waveformCanvas.addEventListener('mousemove', (e) => {
+                setTooltip(e.clientX);
+                if (isScrubbing) {
+                    audioElement.currentTime = getTimeFromX(e.clientX);
+                }
+            });
+            const startScrub = (clientX) => {
+                wasPlayingBeforeScrub = !audioElement.paused;
+                if (wasPlayingBeforeScrub) audioElement.pause();
+                isScrubbing = true;
+                audioElement.currentTime = getTimeFromX(clientX);
+            };
+            waveformCanvas.addEventListener('mousedown', (e) => startScrub(e.clientX));
+            window.addEventListener('mouseup', () => {
+                if (isScrubbing) {
+                    isScrubbing = false;
+                    if (wasPlayingBeforeScrub) audioElement.play();
+                }
+            });
+            // 触控
+            waveformCanvas.addEventListener('touchstart', (e) => {
+                const touch = e.touches[0];
+                startScrub(touch.clientX);
+            }, { passive: true });
+            waveformCanvas.addEventListener('touchmove', (e) => {
+                const touch = e.touches[0];
+                setTooltip(touch.clientX);
+                if (isScrubbing) audioElement.currentTime = getTimeFromX(touch.clientX);
+            }, { passive: true });
+            window.addEventListener('touchend', () => {
+                if (isScrubbing) {
+                    isScrubbing = false;
+                    if (wasPlayingBeforeScrub) audioElement.play();
+                }
+            });
+            
+            // 音量控制
+            document.getElementById('volumeSlider').addEventListener('input', (e) => {
+                audioElement.volume = e.target.value / 100;
+            });
+            
+            // 速度控制
+            document.getElementById('speedSelect').addEventListener('change', (e) => {
+                audioElement.playbackRate = parseFloat(e.target.value);
+            });
+            
+            // 下载
+            document.getElementById('downloadBtn').addEventListener('click', downloadAudio);
+            
+            // 字符计数
+            document.getElementById('textInput').addEventListener('input', updateCharCount);
+            
+            // Modal 关闭
+            document.querySelectorAll('.modal-overlay').forEach(overlay => {
+                overlay.addEventListener('click', (e) => {
+                    if (e.target === overlay) {
+                        overlay.classList.remove('active');
+                    }
+                });
+            });
+            
+            // 收藏 Modal
+            document.getElementById('cancelFavorite').addEventListener('click', () => {
+                document.getElementById('saveFavoriteModal').classList.remove('active');
+            });
+            
+            document.getElementById('confirmFavorite').addEventListener('click', saveFavorite);
+        }
+
+        function setHistoryCollapsed(collapsed) {
+            const panel = document.getElementById('historyPanel');
+            panel.classList.toggle('collapsed', collapsed);
+            localStorage.setItem('historyPanelCollapsed', collapsed);
+            updateHistoryToggleBtnVisual();
+        }
+
+        function updateHistoryToggleBtnVisual() {
+            const btn = document.getElementById('historyToggleGlobal');
+            const panel = document.getElementById('historyPanel');
+            if (!btn || !panel) return;
+            const collapsed = panel.classList.contains('collapsed');
+            if (collapsed) {
+                btn.classList.remove('active');
+                btn.title = '打开历史记录';
+            } else {
+                btn.classList.add('active');
+                btn.title = '关闭历史记录';
+            }
+        }
+        
+        function updateDeletedToggleBtn() {
+            const btn = document.getElementById('toggleDeletedBtn');
+            if (!btn) return;
+            if (state.showDeleted) {
+                btn.classList.add('active');
+                btn.textContent = '🗂 隐藏已删除';
+                btn.title = '隐藏已删除记录';
+            } else {
+                btn.classList.remove('active');
+                btn.textContent = '🗑 显示已删除';
+                btn.title = '显示已删除记录';
+            }
+        }
+        
+        // ========== 快捷键 ==========
+        function initKeyboardShortcuts() {
+            document.addEventListener('keydown', (e) => {
+                // Ctrl/Cmd + Enter: 生成
+                if ((e.ctrlKey || e.metaKey) && e.key === 'Enter') {
+                    e.preventDefault();
+                    generateSpeech();
+                }
+                
+                // Space: 播放/暂停
+                if (e.key === ' ' && !e.target.matches('input, textarea')) {
+                    e.preventDefault();
+                    if (state.currentAudio) {
+                        togglePlay();
+                    }
+                }
+                
+                // Ctrl/Cmd + S: 保存到收藏
+                if ((e.ctrlKey || e.metaKey) && e.key === 's') {
+                    e.preventDefault();
+                    openSaveFavoriteModal();
+                }
+                
+                // Ctrl/Cmd + K: 搜索音色
+                if ((e.ctrlKey || e.metaKey) && e.key === 'k') {
+                    e.preventDefault();
+                    document.getElementById('voiceSearch').focus();
+                }
+                
+                // Esc: 关闭弹窗
+                if (e.key === 'Escape') {
+                    document.querySelectorAll('.modal-overlay').forEach(m => m.classList.remove('active'));
+                }
+            });
+        }
+        
+        // ========== TTS 生成 ==========
+        async function generateSpeech() {
+            const text = document.getElementById('textInput').value.trim();
+            
+            if (!text) {
+                showToast('请输入文本', 'error');
+                return;
+            }
+
+            if (!state.apiKey) {
+                showToast('请先在设置中配置 API Key', 'error');
+                document.getElementById('settingsModal').classList.add('active');
+                return;
+            }
+
+            const btn = document.getElementById('generateBtn');
+            const btnText = document.getElementById('generateBtnText');
+            btn.disabled = true;
+            btnText.innerHTML = '<span class="loading-spinner"></span> 生成中...';
+            
+            try {
+                const audioUrl = await callTTSAPI(text, state.selectedVoice);
+                playAudio(audioUrl);
+                addToHistory(text, state.selectedVoice);
+                showToast('生成成功！', 'success');
+            } catch (error) {
+                showToast(`生成失败：${error.message}`, 'error');
+            } finally {
+                btn.disabled = false;
+                btnText.textContent = '生成语音';
+            }
+        }
+        
+        async function callTTSAPI(text, voice) {
+            const url = `${state.apiBaseUrl}/models/${state.model}:generateContent?key=${state.apiKey}`;
+            
+            const response = await fetch(url, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    contents: [{ parts: [{ text }] }],
+                    generationConfig: {
+                        responseModalities: ['AUDIO'],
+                        speechConfig: {
+                            voiceConfig: {
+                                prebuiltVoiceConfig: {
+                                    voiceName: voice
+                                }
+                            }
+                        }
+                    }
+                })
+            });
+            
+            if (!response.ok) {
+                const error = await response.json();
+                throw new Error(error.error?.message || `HTTP ${response.status}`);
+            }
+            
+            const data = await response.json();
+            const audioData = data.candidates?.[0]?.content?.parts?.[0]?.inlineData?.data;
+            
+            if (!audioData) {
+                throw new Error('未找到音频数据');
+            }
+            
+            // 转换为 WAV
+            const pcmData = base64ToBlob(audioData);
+            const wavHeader = createWavHeader(pcmData.size);
+            const wavBlob = new Blob([wavHeader, pcmData], { type: 'audio/wav' });
+            
+            return URL.createObjectURL(wavBlob);
+        }
+
+        async function previewVoice(voice) {
+            if (!state.apiKey) {
+                showToast('请先在设置中配置 API Key', 'error');
+                document.getElementById('settingsModal').classList.add('active');
+                return;
+            }
+            try {
+                const sample = '你好，这是一段音色试听。';
+                const url = `${state.apiBaseUrl}/models/${state.model}:generateContent?key=${state.apiKey}`;
+                const response = await fetch(url, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        contents: [{ parts: [{ text: sample }] }],
+                        generationConfig: {
+                            responseModalities: ['AUDIO'],
+                            speechConfig: {
+                                voiceConfig: { prebuiltVoiceConfig: { voiceName: voice } }
+                            }
+                        }
+                    })
+                });
+                if (!response.ok) {
+                    const err = await response.json();
+                    throw new Error(err.error?.message || `HTTP ${response.status}`);
+                }
+                const data = await response.json();
+                const audioData = data.candidates?.[0]?.content?.parts?.[0]?.inlineData?.data;
+                if (!audioData) throw new Error('未获得音频数据');
+                const pcmData = base64ToBlob(audioData);
+                const wavHeader = createWavHeader(pcmData.size);
+                const wavBlob = new Blob([wavHeader, pcmData], { type: 'audio/wav' });
+                if (previewAudioUrl) URL.revokeObjectURL(previewAudioUrl);
+                previewAudioUrl = URL.createObjectURL(wavBlob);
+                if (!previewAudioEl) previewAudioEl = new Audio();
+                previewAudioEl.src = previewAudioUrl;
+                previewAudioEl.play();
+                showToast(`正在试听：${voice}`, 'success');
+            } catch (e) {
+                showToast(`试听失败：${e.message}`, 'error');
+            }
+        }
+        
+        function base64ToBlob(base64) {
+            const byteCharacters = atob(base64);
+                const byteNumbers = new Array(byteCharacters.length);
+                
+                for (let i = 0; i < byteCharacters.length; i++) {
+                    byteNumbers[i] = byteCharacters.charCodeAt(i);
+                }
+                
+            return new Blob([new Uint8Array(byteNumbers)]);
+        }
+
+        function createWavHeader(dataLength, sampleRate = 24000, numChannels = 1, bitsPerSample = 16) {
+            const buffer = new ArrayBuffer(44);
+            const view = new DataView(buffer);
+
+            const writeString = (offset, string) => {
+                for (let i = 0; i < string.length; i++) {
+                    view.setUint8(offset + i, string.charCodeAt(i));
+                }
+            };
+            
+            writeString(0, 'RIFF');
+            view.setUint32(4, 36 + dataLength, true);
+            writeString(8, 'WAVE');
+            writeString(12, 'fmt ');
+            view.setUint32(16, 16, true);
+            view.setUint16(20, 1, true);
+            view.setUint16(22, numChannels, true);
+            view.setUint32(24, sampleRate, true);
+            view.setUint32(28, sampleRate * numChannels * bitsPerSample / 8, true);
+            view.setUint16(32, numChannels * bitsPerSample / 8, true);
+            view.setUint16(34, bitsPerSample, true);
+            writeString(36, 'data');
+            view.setUint32(40, dataLength, true);
+
+            return new Uint8Array(buffer);
+        }
+
+        // ========== 批量生成 ==========
+        async function batchGenerate() {
+            const text = document.getElementById('textInput').value.trim();
+            const lines = text.split('\n').filter(line => line.trim());
+            
+            if (lines.length < 2) {
+                showToast('请输入多行文本进行批量生成', 'error');
+                return;
+            }
+            
+            if (!confirm(`将生成 ${lines.length} 个音频文件，是否继续？`)) {
+                return;
+            }
+            
+            const btn = document.getElementById('batchBtn');
+            btn.disabled = true;
+            
+            let success = 0;
+            for (let i = 0; i < lines.length; i++) {
+                try {
+                    showToast(`正在生成 ${i + 1}/${lines.length}...`, 'success');
+                    await callTTSAPI(lines[i], state.selectedVoice);
+                    success++;
+                } catch (error) {
+                    console.error(error);
+                }
+            }
+            
+            btn.disabled = false;
+            showToast(`批量生成完成！成功 ${success}/${lines.length}`, 'success');
+        }
+        
+        // ========== 音频播放 ==========
+        function playAudio(audioUrl) {
+            const audioElement = document.getElementById('audioElement');
+            const player = document.getElementById('audioPlayer');
+            
+            if (state.currentAudio) {
+                URL.revokeObjectURL(state.currentAudio);
+            }
+            
+            state.currentAudio = audioUrl;
+            audioElement.src = audioUrl;
+            player.classList.add('active');
+            
+            audioElement.play();
+            state.isPlaying = true;
+            document.getElementById('playBtn').textContent = '⏸';
+            
+            startWaveformDraw();
+        }
+        
+        function togglePlay() {
+            const audioElement = document.getElementById('audioElement');
+            const playBtn = document.getElementById('playBtn');
+            
+            if (state.isPlaying) {
+                audioElement.pause();
+                playBtn.textContent = '▶';
+            } else {
+                audioElement.play();
+                playBtn.textContent = '⏸';
+            }
+            
+            state.isPlaying = !state.isPlaying;
+        }
+        
+        function updateProgress() {
+            const audioElement = document.getElementById('audioElement');
+            if (!audioElement.duration) return;
+            document.getElementById('currentTime').textContent = formatTime(audioElement.currentTime);
+            document.getElementById('totalTime').textContent = formatTime(audioElement.duration);
+        }
+        
+        function seekAudio(e) {
+            const audioElement = document.getElementById('audioElement');
+            const progressBar = document.getElementById('progressBar');
+            const percent = e.offsetX / progressBar.offsetWidth;
+            audioElement.currentTime = percent * audioElement.duration;
+        }
+        
+        function formatTime(seconds) {
+            if (!seconds || isNaN(seconds)) return '0:00';
+            const mins = Math.floor(seconds / 60);
+            const secs = Math.floor(seconds % 60);
+            return `${mins}:${secs.toString().padStart(2, '0')}`;
+        }
+        
+        function downloadAudio() {
+            if (!state.currentAudio) return;
+            
+            const a = document.createElement('a');
+            a.href = state.currentAudio;
+            a.download = `tts_${Date.now()}.wav`;
+            a.click();
+            
+            showToast('开始下载', 'success');
+        }
+        
+        // ========== 波形可视化 ==========
+        function ensureAnalyser() {
+            if (audioCtx) return;
+            try {
+                audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+                const audioElement = document.getElementById('audioElement');
+                sourceNode = audioCtx.createMediaElementSource(audioElement);
+                analyser = audioCtx.createAnalyser();
+                analyser.fftSize = 1024;
+                const bufferLength = analyser.frequencyBinCount;
+                dataArray = new Uint8Array(bufferLength);
+                sourceNode.connect(analyser);
+                analyser.connect(audioCtx.destination);
+            } catch (e) {
+                console.warn('AudioContext 初始化失败，使用降级波形', e);
+            }
+        }
+
+        function startWaveformDraw() {
+            ensureAnalyser();
+            const canvas = document.getElementById('waveformCanvas');
+            const ctx = canvas.getContext('2d');
+            cancelAnimationFrame(rafId);
+
+            const render = () => {
+                canvas.width = canvas.offsetWidth;
+                canvas.height = canvas.offsetHeight;
+                ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+                if (!analyser || !dataArray) {
+                    // 降级：简单条形动画
+                    const barWidth = 2;
+                    const gap = 2;
+                    const barCount = Math.floor(canvas.width / (barWidth + gap));
+                    for (let i = 0; i < barCount; i++) {
+                        const height = Math.random() * canvas.height * 0.8 + 2;
+                        const x = i * (barWidth + gap);
+                        const y = (canvas.height - height) / 2;
+                        const grad = ctx.createLinearGradient(0, y, 0, y + height);
+                        grad.addColorStop(0, getComputedStyle(document.documentElement).getPropertyValue('--primary-terracotta') || '#D4754E');
+                        grad.addColorStop(1, getComputedStyle(document.documentElement).getPropertyValue('--accent-amber') || '#E8A87C');
+                        ctx.fillStyle = grad;
+                        ctx.fillRect(x, y, barWidth, height);
+                    }
+                } else {
+                    analyser.getByteTimeDomainData(dataArray);
+                    const barCount = Math.min(180, Math.floor(canvas.width / 4));
+                    const step = Math.max(1, Math.floor(dataArray.length / barCount));
+                    for (let i = 0; i < barCount; i++) {
+                        const v = dataArray[i * step] / 128.0;
+                        const h = Math.max(2, Math.abs(v - 1) * canvas.height * 0.9);
+                        const x = i * 4;
+                        const y = (canvas.height - h) / 2;
+                        const grad = ctx.createLinearGradient(0, y, 0, y + h);
+                        grad.addColorStop(0, getComputedStyle(document.documentElement).getPropertyValue('--primary-terracotta') || '#D4754E');
+                        grad.addColorStop(1, getComputedStyle(document.documentElement).getPropertyValue('--accent-amber') || '#E8A87C');
+                        ctx.fillStyle = grad;
+                        ctx.fillRect(x, y, 2, h);
+                    }
+                }
+                rafId = requestAnimationFrame(render);
+            };
+            rafId = requestAnimationFrame(render);
+        }
+
+        function stopWaveformDraw() {
+            if (rafId) cancelAnimationFrame(rafId);
+        }
+        
+        // ========== 历史记录 ==========
+        function addToHistory(text, voice) {
+            const item = {
+                id: Date.now(),
+                text: text,  // 保存完整文本
+                voice,
+                timestamp: new Date().toLocaleString('zh-CN')
+            };
+            
+            state.history.unshift(item);
+            state.history = state.history.slice(0, 100);
+            localStorage.setItem('history', JSON.stringify(state.history));
+            renderHistory();
+        }
+        
+        function renderHistory() {
+            const container = document.getElementById('historyContent');
+            
+            if (!state.history || state.history.length === 0) {
+                container.innerHTML = '<p style="text-align: center; color: var(--text-secondary); padding: 2rem;">暂无历史记录</p>';
+                return;
+            }
+            
+            container.innerHTML = state.history.map(item => `
+                <div class="history-item">
+                    <div class="item-text">${item.text.substring(0, 100)}${item.text.length > 100 ? '...' : ''}</div>
+                    <div class="item-meta">音色: ${item.voice} · ${item.timestamp}</div>
+                    <div class="item-actions">
+                        <button class="btn-small" onclick="applyHistory(${item.id})">应用</button>
+                        <button class="btn-small" onclick="deleteHistory(${item.id})">删除</button>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        function renderDeleted() {
+            const container = document.getElementById('historyContent');
+            if (!state.deletedHistory || state.deletedHistory.length === 0) {
+                container.innerHTML = '<p style="text-align: center; color: var(--text-secondary); padding: 2rem;">暂无已删除记录</p>';
+                return;
+            }
+            container.innerHTML = state.deletedHistory.map(item => `
+                <div class="history-item">
+                    <div class="item-text">${item.text.substring(0, 100)}${item.text.length > 100 ? '...' : ''}</div>
+                    <div class="item-meta">音色: ${item.voice} · ${item.timestamp}</div>
+                    <div class="item-actions">
+                        <button class="btn-small" onclick="restoreDeleted(${item.id})">恢复</button>
+                        <button class="btn-small" onclick="purgeDeleted(${item.id})">彻底删除</button>
+                    </div>
+                </div>
+            `).join('');
+        }
+        
+        function applyHistory(id) {
+            const item = state.history.find(h => h.id === id);
+            if (item) {
+                document.getElementById('textInput').value = item.text;
+                selectVoice(item.voice);
+                showToast('已应用历史记录', 'success');
+            }
+        }
+        
+        function deleteHistory(id) {
+            const idx = state.history.findIndex(h => h.id === id);
+            if (idx !== -1) {
+                lastDeletedHistoryItem = state.history[idx];
+                state.history.splice(idx, 1);
+                // 推入已删除
+                state.deletedHistory.unshift(lastDeletedHistoryItem);
+                localStorage.setItem('history', JSON.stringify(state.history));
+                localStorage.setItem('deletedHistory', JSON.stringify(state.deletedHistory));
+                renderHistory();
+                showToastAction('已删除', '撤销', () => {
+                    if (lastDeletedHistoryItem) {
+                        // 从已删除移除，回到历史
+                        state.deletedHistory = state.deletedHistory.filter(i => i.id !== lastDeletedHistoryItem.id);
+                        state.history.unshift(lastDeletedHistoryItem);
+                        localStorage.setItem('history', JSON.stringify(state.history));
+                        localStorage.setItem('deletedHistory', JSON.stringify(state.deletedHistory));
+                        renderHistory();
+                        lastDeletedHistoryItem = null;
+                    }
+                }, 'success');
+            }
+        }
+
+        function restoreDeleted(id) {
+            const idx = state.deletedHistory.findIndex(h => h.id === id);
+            if (idx !== -1) {
+                const item = state.deletedHistory[idx];
+                state.deletedHistory.splice(idx, 1);
+                state.history.unshift(item);
+                localStorage.setItem('history', JSON.stringify(state.history));
+                localStorage.setItem('deletedHistory', JSON.stringify(state.deletedHistory));
+                renderDeleted();
+            }
+        }
+
+        function purgeDeleted(id) {
+            state.deletedHistory = state.deletedHistory.filter(h => h.id !== id);
+            localStorage.setItem('deletedHistory', JSON.stringify(state.deletedHistory));
+            renderDeleted();
+        }
+        
+        // ========== 收藏功能 ==========
+        function openSaveFavoriteModal() {
+            const text = document.getElementById('textInput').value.trim();
+            if (!text) {
+                showToast('请先输入文本', 'error');
+                return;
+            }
+            
+            document.getElementById('saveFavoriteModal').classList.add('active');
+            document.getElementById('favoriteName').value = '';
+            document.getElementById('favoriteName').focus();
+        }
+        
+        function saveFavorite() {
+            const name = document.getElementById('favoriteName').value.trim();
+            const text = document.getElementById('textInput').value.trim();
+            
+            if (!name) {
+                showToast('请输入收藏名称', 'error');
+                return;
+            }
+            
+            const item = {
+                id: Date.now(),
+                name,
+                text,
+                voice: state.selectedVoice,
+                timestamp: new Date().toLocaleString('zh-CN')
+            };
+            
+            state.favorites.unshift(item);
+            localStorage.setItem('favorites', JSON.stringify(state.favorites));
+            renderFavorites();
+            
+            document.getElementById('saveFavoriteModal').classList.remove('active');
+            showToast('保存成功！', 'success');
+        }
+        
+        function renderFavorites() {
+            const container = document.getElementById('favoritesContent');
+            
+            if (state.favorites.length === 0) {
+                container.innerHTML = '<p style="text-align: center; color: var(--text-secondary); padding: 2rem;">暂无收藏</p>';
+                return;
+            }
+            
+            container.innerHTML = state.favorites.map(item => `
+                <div class="favorite-item">
+                    <div style="font-weight: 600; margin-bottom: 0.5rem;">${item.name}</div>
+                    <div class="item-text">${item.text}</div>
+                    <div class="item-meta">音色: ${item.voice}</div>
+                    <div class="item-actions">
+                        <button class="btn-small" onclick="applyFavorite(${item.id})">应用</button>
+                        <button class="btn-small" onclick="deleteFavorite(${item.id})">删除</button>
+                    </div>
+                </div>
+            `).join('');
+        }
+        
+        function applyFavorite(id) {
+            const item = state.favorites.find(f => f.id === id);
+            if (item) {
+                document.getElementById('textInput').value = item.text;
+                selectVoice(item.voice);
+                showToast('已应用收藏配置', 'success');
+            }
+        }
+        
+        function deleteFavorite(id) {
+            state.favorites = state.favorites.filter(f => f.id !== id);
+            localStorage.setItem('favorites', JSON.stringify(state.favorites));
+            renderFavorites();
+            showToast('已删除', 'success');
+        }
+        
+        // ========== 设置 ==========
+        function loadSettings() {
+            document.getElementById('apiKey').value = state.apiKey;
+            document.getElementById('apiBaseUrl').value = state.apiBaseUrl;
+            document.getElementById('modelSelect').value = state.model;
+        }
+        
+        function saveSettings() {
+            state.apiKey = document.getElementById('apiKey').value.trim();
+            state.apiBaseUrl = document.getElementById('apiBaseUrl').value.trim();
+            state.model = document.getElementById('modelSelect').value;
+            
+            localStorage.setItem('apiKey', state.apiKey);
+            localStorage.setItem('apiBaseUrl', state.apiBaseUrl);
+            localStorage.setItem('model', state.model);
+            
+            document.getElementById('settingsModal').classList.remove('active');
+            showToast('设置已保存', 'success');
+        }
+        
+        // ========== 工具函数 ==========
+        function updateCharCount() {
+            const text = document.getElementById('textInput').value;
+            const count = text.length;
+            document.getElementById('charCount').textContent = `${count} 字符`;
+            
+            if (count > 0) {
+                const estimatedSeconds = Math.ceil(count / 10);
+                document.getElementById('estimatedTime').textContent = `预计 ${estimatedSeconds} 秒`;
+            } else {
+                document.getElementById('estimatedTime').textContent = '';
+            }
+        }
+        
+        function showToast(message, type = 'info') {
+            const container = document.getElementById('toastContainer');
+            const toast = document.createElement('div');
+            toast.className = `toast ${type}`;
+            const content = document.createElement('span');
+            content.textContent = message;
+            const close = document.createElement('button');
+            close.className = 'close';
+            close.textContent = '✕';
+            close.addEventListener('click', () => toast.remove());
+            toast.appendChild(content);
+            toast.appendChild(close);
+            container.appendChild(toast);
+            
+            setTimeout(() => {
+                if (toast.parentNode) {
+                    toast.style.animation = 'slideIn 0.3s reverse';
+                    setTimeout(() => toast.remove(), 300);
+                }
+            }, 3000);
+        }
+
+        function showToastAction(message, actionText, actionFn, type = 'info') {
+            const container = document.getElementById('toastContainer');
+            const toast = document.createElement('div');
+            toast.className = `toast ${type}`;
+            const content = document.createElement('span');
+            content.textContent = message;
+            const actionBtn = document.createElement('button');
+            actionBtn.className = 'close';
+            actionBtn.textContent = actionText;
+            actionBtn.style.fontWeight = '600';
+            actionBtn.style.color = 'var(--primary-terracotta)';
+            actionBtn.addEventListener('click', () => { actionFn(); toast.remove(); });
+            const close = document.createElement('button');
+            close.className = 'close';
+            close.textContent = '✕';
+            close.addEventListener('click', () => toast.remove());
+            toast.appendChild(content);
+            toast.appendChild(actionBtn);
+            toast.appendChild(close);
+            container.appendChild(toast);
+            
+            setTimeout(() => {
+                if (toast.parentNode) {
+                    toast.style.animation = 'slideIn 0.3s reverse';
+                    setTimeout(() => toast.remove(), 300);
+                }
+            }, 4000);
+        }
+        
+        // 清理
+        window.addEventListener('beforeunload', () => {
+            if (state.currentAudio) {
+                URL.revokeObjectURL(state.currentAudio);
+            }
+        });
+    </script>
+</body>
+</html>

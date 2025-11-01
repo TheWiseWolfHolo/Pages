@@ -464,6 +464,29 @@
             align-items: center;
         }
         
+        /* 单音色时的样式优化 */
+        .compare-playlist.single-voice .compare-playlist-controls {
+            display: none;
+        }
+        
+        .compare-playlist.single-voice .compare-playlist-header {
+            padding: 0.5rem 0;
+            margin-bottom: 0.5rem;
+        }
+        
+        .compare-playlist.single-voice .compare-playlist-title {
+            font-size: 0.8rem;
+        }
+        
+        .compare-playlist.single-voice .compare-list {
+            padding-bottom: 0.3rem;
+        }
+        
+        .compare-playlist.single-voice .compare-item {
+            background: linear-gradient(135deg, rgba(212, 117, 78, 0.08), rgba(232, 168, 124, 0.05));
+            border-color: rgba(212, 117, 78, 0.2);
+        }
+        
         .compare-list {
             display: flex;
             gap: 0.5rem;
@@ -1589,8 +1612,10 @@
                         <li><strong>语气：</strong>如 "Say cheerfully:", "Say in a whisper:", "Say dramatically:"</li>
                         <li><strong>情感：</strong>如 "Say excitedly:", "Say calmly:", "Say mysteriously:"</li>
                         <li><strong>快捷键：</strong>Ctrl/Cmd + Enter 生成，Space 播放/暂停，← → 切换音色，💡 查看完整快捷键</li>
-                        <li><strong>多音色对比：</strong>点击"🎭 多音色对比"，勾选2个以上音色批量生成对比</li>
-                        <li><strong>播放器：</strong>页面底部播放器始终可见，支持波形可视化和完整播放列表控制</li>
+                        <li><strong>智能生成：</strong>未选择音色时，首次提醒，再次点击自动随机选择女性音色</li>
+                        <li><strong>多音色对比：</strong>点击"🎭 多音色对比"进入多选模式，勾选2个以上音色批量生成</li>
+                        <li><strong>统一播放列表：</strong>单音色和多音色都使用播放列表管理，支持循环、随机等模式</li>
+                        <li><strong>播放器：</strong>页面底部播放器始终可见，生成新内容会自动替换旧内容</li>
                         <li><strong>内存管理：</strong>关闭页面自动清理，或在设置中手动清理缓存</li>
                     </ul>
                 </div>
@@ -1624,11 +1649,11 @@
                 <span>暂无音频，输入文本后点击"生成语音"开始使用</span>
             </div>
             
-            <!-- 对比播放列表（集成在播放器内） -->
+            <!-- 播放列表（统一管理单音色和多音色） -->
             <div class="compare-playlist" id="comparePlaylist">
                 <div class="compare-playlist-header">
                     <div class="compare-playlist-title">
-                        <span>🎭 音色对比</span>
+                        <span id="playlistTitle">🎙️ 当前音色</span>
                         <span id="comparePosition" style="font-size: 0.75rem; color: var(--text-secondary); font-weight: 400;"></span>
                     </div>
                     <div class="compare-playlist-controls">
@@ -1640,7 +1665,7 @@
                     </div>
                 </div>
                 <div class="compare-list" id="compareList">
-                    <!-- 对比结果将动态生成 -->
+                    <!-- 音色列表将动态生成 -->
                 </div>
             </div>
             
@@ -2517,8 +2542,32 @@
             btnText.innerHTML = '<span class="loading-spinner"></span> 生成中...';
             
             try {
+                // 检查是否有多音色对比列表
+                if (state.compareResults.length > 0) {
+                    // 清理旧的对比列表
+                    state.compareResults.forEach(item => {
+                        if (item.audioUrl) {
+                            URL.revokeObjectURL(item.audioUrl);
+                        }
+                    });
+                    state.compareResults = [];
+                    state.currentCompareIndex = -1;
+                    closeComparePlaylist();
+                }
+                
                 const { audioUrl, wavBlob } = await callTTSAPI(text, state.selectedVoice);
-                playAudio(audioUrl, wavBlob);
+                
+                // 将单音色也转换为播放列表格式（统一管理）
+                state.compareResults = [{
+                    voice: state.selectedVoice,
+                    audioUrl,
+                    wavBlob,
+                    text,
+                    success: true
+                }];
+                state.currentCompareIndex = 0;
+                
+                showComparePlaylist();
                 addToHistory(text, state.selectedVoice);
                 showToast('生成成功！', 'success');
                 updateCacheStatus();
@@ -2844,6 +2893,23 @@
             
             playlist.classList.add('active');
             player.classList.add('has-playlist');
+            
+            // 单音色时添加特殊类，隐藏多余控制
+            const isSingleVoice = state.compareResults.length === 1;
+            const playlistTitle = document.getElementById('playlistTitle');
+            
+            if (isSingleVoice) {
+                playlist.classList.add('single-voice');
+                if (playlistTitle) {
+                    playlistTitle.textContent = '🎙️ 当前音色';
+                }
+            } else {
+                playlist.classList.remove('single-voice');
+                if (playlistTitle) {
+                    playlistTitle.textContent = '🎭 音色对比';
+                }
+            }
+            
             updateCompareToggleBtn();
             updateComparePosition();
             
@@ -3049,7 +3115,14 @@
             
             if (state.compareResults.length > 0) {
                 btn.style.display = 'inline-block';
-                btn.textContent = `🎭 播放列表 (${state.compareResults.length})`;
+                
+                // 单音色和多音色显示不同文本
+                if (state.compareResults.length === 1) {
+                    btn.textContent = `🎙️ 当前播放`;
+                } else {
+                    btn.textContent = `🎭 播放列表 (${state.compareResults.length})`;
+                }
+                
                 const playlist = document.getElementById('comparePlaylist');
                 btn.classList.toggle('active', playlist && playlist.classList.contains('active'));
             } else {
@@ -3061,6 +3134,12 @@
         function updateComparePosition() {
             const el = document.getElementById('comparePosition');
             if (!el) return;
+            
+            // 单音色时不显示位置
+            if (state.compareResults.length === 1) {
+                el.textContent = '';
+                return;
+            }
             
             if (state.currentCompareIndex >= 0 && state.compareResults.length > 0) {
                 el.textContent = `(${state.currentCompareIndex + 1}/${state.compareResults.length})`;

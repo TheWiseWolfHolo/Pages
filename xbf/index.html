@@ -1,0 +1,579 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>小红书「平价小饰品」0-1 起盘手册（浙江金华 | 30–90天）</title>
+<style>
+:root {
+  --bg: #ffffff;
+  --fg: #1f2937;
+  --muted: #6b7280;
+  --brand: #c81e1e;
+  --card: #f9fafb;
+  --line: #e5e7eb;
+  --good: #16a34a;
+  --warn: #d97706;
+  --bad: #dc2626;
+}
+@media (prefers-color-scheme: dark) {
+  :root {
+    --bg: #0b0f17;
+    --fg: #e5e7eb;
+    --muted: #9ca3af;
+    --brand: #f87171;
+    --card: #111827;
+    --line: #1f2937;
+    --good: #22c55e;
+    --warn: #f59e0b;
+    --bad: #ef4444;
+  }
+}
+html, body { height: 100%; }
+body {
+  margin:0; background: var(--bg); color: var(--fg);
+  font: 16px/1.6 -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "PingFang SC", "Hiragino Sans GB", "Noto Sans CJK SC", "Source Han Sans SC", "Microsoft YaHei", Helvetica, Arial, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", sans-serif;
+}
+a { color: var(--brand); text-decoration: none; }
+a:hover { text-decoration: underline; }
+.container { display: grid; grid-template-columns: 280px 1fr; gap: 24px; max-width: 1280px; margin: 0 auto; padding: 24px; }
+aside { position: sticky; top: 12px; height: calc(100vh - 24px); overflow:auto; border-right: 1px dashed var(--line); padding-right: 12px; }
+aside h2 { font-size: 14px; margin: 8px 0; color: var(--muted); font-weight: 600; }
+nav ul { list-style: none; padding-left: 0; margin: 0; }
+nav li { margin: 6px 0; }
+nav a { display: block; padding: 6px 10px; border-radius: 8px; }
+nav a.active { background: var(--card); }
+header.topbar {
+  position: sticky; top:0; z-index: 40; backdrop-filter: blur(6px);
+  display:flex; align-items:center; gap:12px; padding:10px 16px;
+  border-bottom:1px solid var(--line); background: color-mix(in srgb, var(--bg), transparent 5%);
+}
+.badge { display:inline-block; font-size:12px; padding:2px 8px; border-radius:999px; background:var(--card); border:1px solid var(--line); color:var(--muted); }
+.tag { display:inline-block; font-size:12px; padding:3px 8px; border-radius:8px; background:var(--card); border:1px solid var(--line); margin-right:6px; margin-bottom:6px; }
+.card { background: var(--card); border: 1px solid var(--line); border-radius: 14px; padding: 16px; }
+h1 { font-size: 28px; margin: 8px 0; }
+h2 { font-size: 22px; margin-top: 28px; }
+h3 { font-size: 18px; margin-top: 18px; }
+.kpi { display:grid; grid-template-columns: repeat(4, 1fr); gap:12px; }
+.kpi .item { border:1px solid var(--line); border-radius:12px; padding:12px; }
+.kpi .num { font-size:22px; font-weight:700; }
+.grid-2 { display:grid; grid-template-columns: repeat(2, 1fr); gap:14px; }
+.grid-3 { display:grid; grid-template-columns: repeat(3, 1fr); gap:14px; }
+.grid-4 { display:grid; grid-template-columns: repeat(4, 1fr); gap:14px; }
+table { width:100%; border-collapse:collapse; margin: 10px 0; }
+th, td { border-bottom:1px solid var(--line); padding:8px; vertical-align: top; }
+th { color:var(--muted); text-align:left; }
+code, pre { background: var(--card); border:1px solid var(--line); border-radius:10px; padding:2px 6px; }
+pre { padding:12px; overflow:auto; }
+details { border:1px solid var(--line); border-radius:10px; padding:10px 12px; background: color-mix(in srgb, var(--card), transparent 30%); }
+details > summary { cursor:pointer; font-weight:600; }
+.btn { display:inline-flex; align-items:center; gap:8px; padding:8px 12px; border:1px solid var(--line); border-radius:10px; cursor:pointer; background:var(--bg); }
+.btn.primary { background: var(--brand); color:white; border-color: transparent; }
+.btn:hover { filter: brightness(1.05); }
+.toolbar { display:flex; gap:10px; flex-wrap:wrap; }
+.search { width:100%; display:flex; gap:8px; }
+.search input { flex:1; padding:10px; border-radius:10px; border:1px solid var(--line); background:var(--bg); color:var(--fg); }
+footer { margin:40px 0; color:var(--muted); }
+blockquote { border-left:4px solid var(--line); margin: 6px 0; padding-left: 10px; color: var(--muted); }
+.small { font-size: 13px; color: var(--muted); }
+hr.sep { border:0; border-top:1px dashed var(--line); margin: 18px 0; }
+.t-right { text-align:right; }
+.sticky-cta {
+  position: fixed; bottom: 14px; right: 14px; display:flex; gap:10px;
+}
+.checkbox-list input[type="checkbox"] { margin-right: 8px; transform: translateY(1px); }
+.mark { background: #fff3cd; color: #856404; border: 1px solid #ffeeba; padding: 1px 6px; border-radius: 6px; }
+</style>
+</head>
+<body>
+<header class="topbar">
+  <div class="badge">金华&义乌 · 2025-11-09</div>
+  <strong>小红书「平价小饰品」0-1 起盘手册</strong>
+  <span class="small">（可打印 / 可搜索 / 可折叠 / 暗黑模式跟随系统）</span>
+  <div style="margin-left:auto" class="toolbar">
+    <button class="btn" onclick="window.print()">🖨️ 导出 PDF</button>
+    <a class="btn" href="#csv">📥 下载CSV模板</a>
+  </div>
+</header>
+
+<div class="container">
+  <aside>
+    <h2>目录</h2>
+    <nav id="toc"></nav>
+    <hr class="sep" />
+    <div class="search">
+      <input id="search" placeholder="站内搜索（输入关键词）…" />
+      <button class="btn" onclick="clearSearch()">清空</button>
+    </div>
+    <p class="small">提示：点击目录高亮定位；所有要点已配“来源+核验日期”。</p>
+  </aside>
+
+  <main>
+    <section id="tldr" class="card">
+      <h1>一页结论（TL;DR）</h1>
+      <div class="grid-2">
+        <div>
+          <h3>目标用户画像（假设，可用数据校准）</h3>
+          <ul>
+            <li><b>年龄：</b>18–30，学生/初入职场为主，偏女性。</li>
+            <li><b>城市：</b>一线/新一线/二线为主，三四线增长明显。</li>
+            <li><b>审美：</b>“通勤极简/软萌治愈/复古港风/新中式串珠”四大风格；偏好“成套感、薄金属感、点状微亮”。</li>
+            <li><b>价格带：</b>￥9–49（入门主攻9–29），追求“看起来不便宜”。</li>
+          </ul>
+          <p class="small">数据参考：QuestMobile与千瓜等第三方对小红书人群结构的公开报告（见文末“参考来源”）。</p>
+        </div>
+        <div>
+          <h3>最可行细分与差异化</h3>
+          <ul>
+            <li><b>“通勤极简·抗氧/不过敏”线</b>：S925/医用不锈钢/电镀加厚，强调佩戴舒适与常戴不暗沉。</li>
+            <li><b>“猫系治愈·软萌礼物”线</b>：沿用你现有“猫”受众与静物拍摄优势，猫作场景元素，不涉活体交易。</li>
+            <li><b>“国风串珠·可定制”线</b>：小单快返+号召力强，支持DIY&改长短。</li>
+          </ul>
+        </div>
+      </div>
+      <div class="grid-2">
+        <div>
+          <h3>30天起盘路线图（从0到可转化）</h3>
+          <ol>
+            <li><b>D1–3：</b>账号定位与合规检查；准备基础拍摄布景与固定光位；下单 <b>5–8个</b>打样SKU（不同风格/价位）。</li>
+            <li><b>D4–10：</b>静物+上手试戴 <b>10条笔记</b>（模板见后）；建立2个合集；开通店铺或完成个体户资料。</li>
+            <li><b>D11–20：</b>上架首批15–20个SKU；完善商品标识（材质/过敏提示/含银）；固化客服话术与售后SOP。</li>
+            <li><b>D21–30：</b>围绕“1主风格”集中发 <b>10条</b>；做一次<b>小额薯条</b>AB测试；形成复盘与下一批补货清单。</li>
+          </ol>
+        </div>
+        <div>
+          <h3>关键里程碑（KPI阈值）</h3>
+          <div class="kpi">
+            <div class="item"><div class="num">≥20</div><div class="small">首月累计笔记数</div></div>
+            <div class="item"><div class="num">≥6%</div><div class="small">曝光→阅读CTR（封面/标题合格线）</div></div>
+            <div class="item"><div class="num">≥12%</div><div class="small">阅读→赞藏互动率</div></div>
+            <div class="item"><div class="num">≥1.5%</div><div class="small">店铺UV→下单转化（首月）</div></div>
+          </div>
+          <p class="small">以上为运营经验阈值，非官方指标；作为红/黄/绿灯自检用。</p>
+        </div>
+      </div>
+    </section>
+
+    <section id="rules" class="card">
+      <h2>2) 平台与合规速查（小红书/商品/登记税务）</h2>
+      <h3>小红书商家开店与费用要点</h3>
+      <ul>
+        <li><b>入驻主体：</b>可用个人身份证或个体工商户入驻；具体材料与费用以小红书“商家/学习中心”最新页面为准。</li>
+        <li><b>佣金与结算：</b>官方学习中心明确存在 <b>5%佣金率 + T+7结算</b> 的说明场景（不同类目以后台显示为准）。</li>
+        <li><b>发货/客服/售后：</b>平台有《商家发货管理》《售后服务》《七天无理由退换货规范》等明确规则，须遵守。</li>
+      </ul>
+      <p class="small">权威来源：小红书电商学习中心（规则/帮助）；见文末链接与核验日期。</p>
+
+      <h3>内容与审核红线（做笔记/直播必须遵守）</h3>
+      <ul>
+        <li><b>禁止私信导流留联系方式：</b>2025年1月起，小红书对欢迎语/自动回复等场景明确禁留微信/电话等直链联系方式。</li>
+        <li><b>广告法“绝对化用语”：</b>避免“国家级/最高级/最佳/唯一/第一”等极限词与无法证明的功效承诺。</li>
+        <li><b>知识产权：</b>严禁售假与侵权外观；平台对售假情节严重将清退并三倍赔付消费者。</li>
+      </ul>
+
+      <h3>商品合规与标签最小清单</h3>
+      <ul>
+        <li><b>标识标准：</b>执行 <b>GB/T 31912-2015《饰品 标识》</b>，标出材质、镀层/表面处理、尺寸/色号、执行标准号等。</li>
+        <li><b>银含量与标注：</b>银饰参考 <b>GB 11887-2012</b>（贵金属纯度与命名）；“S925/Ag925”代表含银 ≥92.5%。</li>
+        <li><b>过敏提示：</b>对镍敏/耳钉针材质、镀层厚度、保养方法需明确提示；建议标注“<span class="mark">非贵金属饰品</span>”。</li>
+      </ul>
+
+      <h3>经营登记与税务（金华）</h3>
+      <ul>
+        <li><b>开业登记：</b>“浙江政务服务网—企业登记全程电子化平台”在线办理个体户开业。</li>
+        <li><b>小规模纳税人优惠：</b>增值税小规模纳税人 <b>月销售额≤10万元</b>（季度≤30万元）免征增值税（至<b>2027-12-31</b>）。</li>
+        <li><b>年度报告：</b>市场主体按规定在全国企业信用信息公示系统年报（一般至次年<b>6月30日</b>）；具体以当地窗口为准。</li>
+      </ul>
+
+      <details><summary>来源与最后核验</summary>
+        <ul class="small">
+          <li>小红书 · 电商学习中心（规则/帮助、七天无理由、售后、发货、佣金与结算等）— <a href="https://school.xiaohongshu.com/rule" target="_blank">规则中心</a>、<a href="https://school.xiaohongshu.com/rule/detail/17/2492" target="_blank">七天无理由</a>、<a href="https://school.xiaohongshu.com/helper/detail/1986" target="_blank">售后工作台</a>、<a href="https://school.xiaohongshu.com/helper/detail/1745" target="_blank">佣金/T+7说明</a>、<a href="https://school.xiaohongshu.com/rule/detail/17/3311" target="_blank">发货管理</a>（核验：2025-11-09）</li>
+          <li>小红书在线协议/社区条款— <a href="https://agree.xiaohongshu.com/h5/terms/ZXXY20220408001/-1" target="_blank">用户协议</a>、<a href="https://agree.xiaohongshu.com/h5/terms/ZXXY20221213003/-1" target="_blank">社区规范</a>（核验：2025-11-09）</li>
+          <li>关于<b>禁止留联系方式导流</b>报道— <a href="https://finance.sina.com.cn/wm/2025-01-09/doc-ineekuyn9300352.shtml" target="_blank">新浪财经 2025-01-09</a>（核验：2025-11-09）</li>
+          <li>广告法“绝对化用语”— 市监总局《<a href="https://www.samr.gov.cn/ggjgs/tzgg/art/2023/art_183b5cb48d9e4f0dba67f9f912a913ba.html" target="_blank">执法指南</a>》（2023年第6号）（核验：2025-11-09）</li>
+          <li>饰品标识国家标准— <a href="https://openstd.samr.gov.cn/bzgk/std/newGbInfo?hcno=0CD2AE59F3156F39FF519D67AF1C3B05" target="_blank">GB/T 31912-2015</a>（核验：2025-11-09）</li>
+          <li>贵金属纯度与命名— <a href="https://openstd.samr.gov.cn/bzgk/gb/newGbInfo?hcno=160D097531C48C91014D54AEA0D0671A" target="_blank">GB 11887-2012</a>（核验：2025-11-09）</li>
+          <li>个体户登记入口— <a href="https://gswsdj.zjzwfw.gov.cn/" target="_blank">浙江政务服务网·企业登记</a>；金华市监局官网 <a href="https://scjgj.jinhua.gov.cn/" target="_blank">scjgj.jinhua.gov.cn</a>（核验：2025-11-09）</li>
+          <li>增值税小规模纳税人免征政策— 国家税务总局解读 <a href="https://www.chinatax.gov.cn/chinatax/n810356/n3010387/c5220298/content.html" target="_blank">月销≤10万免征（至2027）</a>（核验：2025-11-09）</li>
+        </ul>
+      </details>
+    </section>
+
+    <section id="track" class="card">
+      <h2>3) 赛道与对手研究方法（聚焦“小红书小饰品”）</h2>
+      <p>由于小红书站内数据需登录/权限，本文件提供<strong>采样方法 + 模板</strong>，你可按流程抓取“头部/腰部/长尾”各≥10个样本：</p>
+      <ol>
+        <li><b>关键词：</b>“通勤耳饰/极简耳钉/显脸瘦项链/复古港风耳夹/新中式串珠/学生平价手链”等；按<b>综合/最新</b>筛选。</li>
+        <li><b>记录项：</b>账号名、价格带、SKU结构、爆款特征、笔记类型（图文/视频/清单/测评/开箱）、标题钩子、发布时间频率、互动。</li>
+        <li><b>分层：</b>按粉丝与笔记互动分为头部（≥20万粉或单条1万赞藏）、腰部（2–20万粉/单条1千–1万赞藏）、长尾（<2万粉）。</li>
+      </ol>
+      <p><b>可复制模板：</b>见文末CSV“对手样本抓取表”，含字段与评分维度。</p>
+
+      <h3>可复制的内容模板（静物拍摄友好）</h3>
+      <div class="grid-2">
+        <div>
+          <ul>
+            <li><b>模特上手+近景细节</b>：1个自然光/固定补光位，左手/耳侧三角构图；背景统一。</li>
+            <li><b>三件成套展示</b>：同色系耳饰/项链/戒指成套，封面打出“<code>成套更显精致</code>”。</li>
+            <li><b>通勤穿搭对比</b>：同一白衬衫下三种耳饰“上班/约会/面试”快速切换。</li>
+            <li><b>猫系治愈场景</b>：猫出镜1秒作“情绪锚点”，主角仍为饰品；避免引起误解的活体交易表述。</li>
+          </ul>
+        </div>
+        <div>
+          <ul>
+            <li><b>开箱/质感检视</b>：镀层/抛光/针材质/扣力等“5项质检镜头”。</li>
+            <li><b>清单型</b>：“学生党9–19元清单/显白耳饰TOP10/显脸小的项链合集”。</li>
+            <li><b>测评型</b>：S925 vs 不锈钢佩戴一周色差对比（含保养提示）。</li>
+            <li><b>直播预告</b>：清单+体验感标题，直播后补“回放清单”。</li>
+          </ul>
+        </div>
+      </div>
+
+      <h3>容易踩坑的模板</h3>
+      <ul>
+        <li>封面堆字/拼图过多、产品主体太小；</li>
+        <li>夸大功效与“绝对化用语”；</li>
+        <li>露出他牌Logo/IP样式易涉侵权；</li>
+        <li>过度“站外引流”表述、留私信联系方式；</li>
+        <li>无佩戴场景，只有散拍静物，点击率低。</li>
+      </ul>
+
+      <h3>“爆款因子”检查清单</h3>
+      <table>
+        <thead><tr><th>维度</th><th>关键点</th></tr></thead>
+        <tbody>
+          <tr><td>审美关键词</td><td>极简、细闪、显脸小、轻复古、法式、影子感、通勤、显白、猫系治愈、新中式、串珠</td></tr>
+          <tr><td>镜头语言</td><td>45°侧脸/耳侧近景；拇指/食指衬托；微摇镜</td></tr>
+          <tr><td>妆造与布光</td><td>清淡底妆+耳周控油；固定柔光+自然光补；背景统一冷暖</td></tr>
+          <tr><td>取景</td><td>桌面纹理/白衬衫/书页/木质；猫咪短出镜</td></tr>
+          <tr><td>配乐</td><td>纯音乐/轻爵士/lofi；避免侵权音乐</td></tr>
+          <tr><td>封面文案</td><td>“上班也要小发光”“显脸小耳饰清单”“9.9起成套感”</td></tr>
+        </tbody>
+      </table>
+    </section>
+
+    <section id="supply" class="card">
+      <h2>4) 供应链与质控</h2>
+      <h3>1688 / 拼多多拿货策略</h3>
+      <ul>
+        <li><b>筛选条件：</b>近90天差评关键词（掉色/掉钻/易断/过敏）、纠纷率、退换率、历史成交、是否<b>支持寄样</b>。</li>
+        <li><b>对话与寄样话术：</b>“做小红书通勤极简风，先测装配与镀层，能寄2–3款样吗？有<b>加厚电镀</b>/<b>S925银针</b>版本吗？”</li>
+        <li><b>议价点：</b>阶梯价（≥50/≥200件）、混批、返单周期、包装（防氧化袋+擦银布）。</li>
+      </ul>
+
+      <h3>义乌线下“走市”路线（不点名商家）</h3>
+      <ol>
+        <li><b>国际商贸城一区·二楼：</b>头饰/珠宝饰品主集聚；同层配件与配饰链条完整。</li>
+        <li><b>补充带：</b>一区三楼（饰品配件/礼品工艺）—便于拿配件与包装。</li>
+        <li><b>记录模板：</b>档口号、主打材质、起订量、打样周期、是否可寄样、退换规则、近30天爆款价位。</li>
+      </ol>
+      <p class="small">来源：义乌官方市场纵览、义博会与义乌购等公开信息（见文末链接）。</p>
+
+      <h3>来样质检SOP（含AQL）</h3>
+      <ol>
+        <li><b>外观：</b>划痕/镀层均匀/钻爪毛刺；色差对比卡。</li>
+        <li><b>安全与舒适：</b>耳针/耳夹夹力、挂扣回弹；尖锐毛刺打磨。</li>
+        <li><b>耐久：</b>镀层摩擦测试（擦银布30次）、扣力开合20次；必要时盐雾/汗液模拟。</li>
+        <li><b>过敏风险：</b>针材质注明S925银针/不锈钢针；避免镍超标配件。</li>
+        <li><b>包装：</b>自封防氧化袋+干燥片+防压纸盒；套装另加OPP袋分隔。</li>
+        <li><b>AQL抽检建议：</b>参考 <b>GB/T 2828.1-2012</b>，一般检验水平II；建议 AQL：主要缺陷 1.5、次要 4.0。</li>
+      </ol>
+      <details><summary>标准与市场信息来源</summary>
+        <ul class="small">
+          <li>AQL抽检标准：<a href="https://std.samr.gov.cn/gb/search/gbDetailed?id=71F772D7E146D3A7E05397BE0A0AB82A" target="_blank">GB/T 2828.1-2012（国家标准平台）</a></li>
+          <li>义乌市场分布：<a href="https://www.yiwufair.com/about/sczl/gjsmc1/" target="_blank">义乌国际商贸城一区</a>、<a href="https://www.chinagoods.com/markets" target="_blank">中国小商品城·实体市场</a></li>
+        </ul>
+      </details>
+    </section>
+
+    <section id="pricing" class="card">
+      <h2>5) 定价与单量测算（含模型字段）</h2>
+      <h3>三档定价与毛利目标</h3>
+      <table>
+        <thead><tr><th>价位</th><th>建议品类</th><th>目标毛利率</th><th>促销组合</th></tr></thead>
+        <tbody>
+          <tr><td>￥9–19</td><td>发夹/发圈/基础耳钉</td><td>≥55%</td><td>满29-5、3件9折；搭配<b>经济寄</b>达</td></tr>
+          <tr><td>￥19–29</td><td>S925银针耳饰/细链项链</td><td>≥60%</td><td>满49包邮；2件95折</td></tr>
+          <tr><td>￥29–49</td><td>项链+耳饰成套/不锈钢防水系列</td><td>≥65%</td><td>满69-10；3件88折</td></tr>
+        </tbody>
+      </table>
+
+      <h3>快递方案对比（假设区间，<span class="mark">待与本地网点确认</span>）</h3>
+      <table>
+        <thead><tr><th>方案</th><th>适用</th><th>单票成本区间</th><th>预案</th></tr></thead>
+        <tbody>
+          <tr><td>经济</td><td>小件<300g/华东内</td><td>￥3.5–5.0（议价）</td><td>丢损先行赔付≤商品价；备用二网点</td></tr>
+          <tr><td>标准</td><td>≥300g 或跨大区</td><td>￥5.0–8.0（议价）</td><td>加固包装+破损图证快速重发</td></tr>
+        </tbody>
+      </table>
+      <p class="small">价格波动大，以义乌/金华本地网点报价与签约为准；政策参考：浙江省邮政管理局；行业动态可参考中国快递协会。</p>
+
+      <h3 id="unit">单位经济学字段（CSV表头见文末）</h3>
+      <pre><code>建议核心字段：sku, 风格线, 进货价, 包材, 运费(经济/标准), 平台佣金率, 优惠让利, 内容成本, 退换损耗率, 平均件数, 建议售价, 毛利额, 毛利率, 保本销量(月)</code></pre>
+    </section>
+
+    <section id="ops" class="card">
+      <h2>6) 起盘作战手册（0–30 / 31–60 / 61–90天）</h2>
+      <h3>目标/KPI与动作清单</h3>
+      <div class="grid-3">
+        <div class="card" style="background:transparent;border:1px dashed var(--line)">
+          <h3>0–30天（冷启动）</h3>
+          <ul class="checkbox-list">
+            <li><label><input type="checkbox" /> 明确“主风格+副风格”各1条线</label></li>
+            <li><label><input type="checkbox" /> 打样5–8款，形成首批选品</label></li>
+            <li><label><input type="checkbox" /> 建2个合集：清单/上新</label></li>
+            <li><label><input type="checkbox" /> 发布10–15条（图文8/视频2–5）</label></li>
+            <li><label><input type="checkbox" /> 店铺基础装修/客服话术上线</label></li>
+          </ul>
+          <p class="small t-right">KPI：20条/≥6%CTR/≥12%互动率</p>
+        </div>
+        <div class="card" style="background:transparent;border:1px dashed var(--line)">
+          <h3>31–60天（放大）</h3>
+          <ul class="checkbox-list">
+            <li><label><input type="checkbox" /> 调整为“1主风格强攻”</label></li>
+            <li><label><input type="checkbox" /> 每周至少6条；直播试播1次</label></li>
+            <li><label><input type="checkbox" /> 薯条小额AB（封面/标题/人群）</label></li>
+            <li><label><input type="checkbox" /> KOC 5–10人试用反馈</label></li>
+            <li><label><input type="checkbox" /> 建立退换/差评SOP与脚本</label></li>
+          </ul>
+          <p class="small t-right">KPI：UV→下单≥1.5%；SKU动销≥30%</p>
+        </div>
+        <div class="card" style="background:transparent;border:1px dashed var(--line)">
+          <h3>61–90天（稳定）</h3>
+          <ul class="checkbox-list">
+            <li><label><input type="checkbox" /> 成套搭配/客单价提升计划</label></li>
+            <li><label><input type="checkbox" /> 每周直播2次（复盘清单）</label></li>
+            <li><label><input type="checkbox" /> 深化一条“国风/极简”主线</label></li>
+            <li><label><input type="checkbox" /> 供应链稳定返单/质检抽检</label></li>
+            <li><label><input type="checkbox" /> 线下快闪或同城自提验证</label></li>
+          </ul>
+          <p class="small t-right">KPI：复购率≥10%，月GMV为月固定成本3–5倍</p>
+        </div>
+      </div>
+
+      <h3>账号搭建与笔记栏目</h3>
+      <ul>
+        <li><b>昵称/简介：</b>包含风格关键词+材质（如“S925/通勤极简小饰品”）。</li>
+        <li><b>栏目：</b>上新/清单/通勤穿搭/礼物/保养。</li>
+        <li><b>合集：</b>“9–19元清单”“职场显精致套装”“猫系治愈合集”。</li>
+      </ul>
+
+      <h3>内容流水线（附3套×10条批量脚本）</h3>
+      <ol>
+        <li><b>选题池→脚本→拍摄→剪辑→封面→标题→发布→复盘</b>一条龙；固定化模板，周更≥6。</li>
+      </ol>
+      <details open><summary>脚本套装 A｜通勤极简（10条）</summary>
+        <ol>
+          <li>1套白衬衫耳饰对比（显脸小/显白/沉稳）</li>
+          <li>上班日常“细闪耳钉三天佩戴记录”</li>
+          <li>项链层叠：两条细链不踩雷公式</li>
+          <li>戒指松紧/码数快速量指围</li>
+          <li>“面试友好”三件套（耳钉+细链+素戒）</li>
+          <li>一周佩戴不暗沉的镀层怎么选</li>
+          <li>不露 logo 的职场高级感配饰</li>
+          <li>“素色通勤包”与金色饰品的配色</li>
+          <li>通勤小礼物：29元以内清单</li>
+          <li>直播预告：通勤极简上新</li>
+        </ol>
+      </details>
+      <details><summary>脚本套装 B｜猫系治愈（10条）</summary>
+        <ol>
+          <li>猫作情绪锚点：1秒出镜+饰品近景</li>
+          <li>猫咪日光下的“细闪感”测试</li>
+          <li>猫主人不怕勾线的耳饰挑选</li>
+          <li>小小礼物开箱：猫友好包装</li>
+          <li>“猫爪”元素但不过度可爱</li>
+          <li>猫抓测试（安全性/无尖锐）</li>
+          <li>治愈系配乐与静物摆件搭配</li>
+          <li>猫系穿搭：毛衣+细链显脸小</li>
+          <li>粉丝留言清单挑选 5 款回购</li>
+          <li>直播回放清单</li>
+        </ol>
+      </details>
+      <details><summary>脚本套装 C｜国风串珠（10条）</summary>
+        <ol>
+          <li>玉米链×串珠：显白配色三法则</li>
+          <li>按脸型选耳饰：圆脸/方脸/鹅蛋脸</li>
+          <li>DIY改长短：3分钟换扣实拍</li>
+          <li>“考试/约会/家宴”三场景搭配</li>
+          <li>新中式上班也能戴？通勤亲和版</li>
+          <li>礼盒装29元—49元方案</li>
+          <li>S925银针 vs 不锈钢针舒适度</li>
+          <li>串珠五金强度测试</li>
+          <li>国风清单TOP10</li>
+          <li>直播预告+回放清单</li>
+        </ol>
+      </details>
+
+      <h3>冷启动获客与低预算投流</h3>
+      <ul>
+        <li><b>关键词布局：</b>标题前 10 字放入风格/问题词（如“显脸小/显白/通勤/9.9起”）。</li>
+        <li><b>笔记矩阵：</b>同一SKU生成3视角（静物/上手/清单），合并进合集相互导流。</li>
+        <li><b>私信/KOC：</b>统一话术：先体验非商业合作，再征反馈许可；避免留外部联系方式。</li>
+        <li><b>薯条（低预算）：</b>挑自然数据已过中位的笔记小额测试（如￥75–200）；仅测<b>封面/标题</b>。起量随APP参数。</li>
+      </ul>
+      <p class="small">薯条、聚光广告参数以APP/平台后台实时显示为准，版本更新可能变化（本报告不承诺起投/费率，均以实际为准）。</p>
+    </section>
+
+    <section id="risk" class="card">
+      <h2>7) 风险清单与对策</h2>
+      <table>
+        <thead><tr><th>风险</th><th>触发</th><th>预案</th></tr></thead>
+        <tbody>
+          <tr><td>平台合规</td><td>留联系方式、绝对化用语、侵权外观</td><td>笔记审核前自检；违规词库；必要时下架整改</td></tr>
+          <tr><td>质量/过敏</td><td>掉色/过敏评价</td><td>S925/不锈钢优先；保养说明随单；7天无理由按规处理</td></tr>
+          <tr><td>物流</td><td>丢损/时效</td><td>双网点；先行赔付；打包加固</td></tr>
+          <tr><td>差评公关</td><td>图文对比差异</td><td>回访/换货/部分退款；封面与实物一致性审查</td></tr>
+          <tr><td>现金流</td><td>备货过深</td><td>小单快返；动销未达30%严控加单</td></tr>
+        </tbody>
+      </table>
+    </section>
+
+    <section id="metrics" class="card">
+      <h2>8) 指标看板（复制即用）</h2>
+      <h3>转化漏斗与诊断</h3>
+      <table>
+        <thead><tr><th>环节</th><th>阈值</th><th>异常诊断</th><th>动作</th></tr></thead>
+        <tbody>
+          <tr><td>曝光→阅读CTR</td><td>≥6%</td><td>封面/标题吸引弱</td><td>更换前3字钩子；放大主体</td></tr>
+          <tr><td>阅读→赞藏</td><td>≥12%</td><td>内容无场景/套装不足</td><td>增加佩戴镜头/成套</td></tr>
+          <tr><td>赞藏→店铺UV</td><td>≥20%</td><td>导购弱/无合集导流</td><td>笔记挂车/合集置顶</td></tr>
+          <tr><td>UV→下单</td><td>≥1.5%</td><td>价格/服务不清晰</td><td>满减/包邮阈值优化；客服话术</td></tr>
+          <tr><td>复购</td><td>≥10%</td><td>无成套/补货慢</td><td>推出2+1套装/礼盒</td></tr>
+        </tbody>
+      </table>
+
+      <h3>周度复盘（CSV表头见文末）</h3>
+      <pre><code>周次, 新发笔记数, 暴光, 阅读, 点赞, 收藏, 评论, 主页访问, 关注新增, 店铺UV, 下单数, GMV, 退款率, 最优封面, 最优标题, 最优脚本, 待改进点</code></pre>
+    </section>
+
+    <section id="offline" class="card">
+      <h2>9) 线下落地预研（为实体店做准备）</h2>
+      <ul>
+        <li><b>低成本试点：</b>义乌/金华本地快闪（周末2天）、同城自提点；联名美甲/摄影店建立“配饰角”。</li>
+        <li><b>选址方法：</b>看同行密度/人流分布/租售比；试算<b>坪效=月GMV/经营面积</b>。</li>
+        <li><b>坪效测算表头：</b>商圈、人流、租金、人员、坪数、月GMV、毛利率、坪效、回本期。</li>
+      </ul>
+    </section>
+
+    <section id="budget" class="card">
+      <h2>情景预算：￥1,000 / ￥5,000 / ￥20,000 起盘方案与预期</h2>
+      <table>
+        <thead><tr><th>预算</th><th>资源配置</th><th>30/60/90天KPI区间（经验值）</th></tr></thead>
+        <tbody>
+          <tr>
+            <td>￥1,000</td>
+            <td>打样5–8款；基础布光与背景；包材；少量运费</td>
+            <td>30天：20条笔记、阅读1–3万；60天：下单30–80；90天：月GMV 2k–5k</td>
+          </tr>
+          <tr>
+            <td>￥5,000</td>
+            <td>首批15–20SKU；小额薯条测试；KOC5–10人；直播试播</td>
+            <td>30天：阅读3–8万；60天：下单120–300；90天：月GMV 8k–2.5万</td>
+          </tr>
+          <tr>
+            <td>￥20,000</td>
+            <td>SKU 40+；稳定补货；每周直播2次；小额持续投放</td>
+            <td>30天：阅读8–20万；60天：下单400–900；90天：月GMV 3万–8万</td>
+          </tr>
+        </tbody>
+      </table>
+      <p class="small">以上为保守经验区间，非平台承诺；与内容质量、供给、价格带、履约体验强相关。</p>
+    </section>
+
+    <section id="csv" class="card">
+      <h2>10) 模板下载（CSV）</h2>
+      <ul>
+        <li><a href="sandbox:/mnt/data/unit_economics.csv">单位经济学模板（CSV）</a></li>
+        <li><a href="sandbox:/mnt/data/weekly_dashboard.csv">周报看板模板（CSV）</a></li>
+        <li><a href="sandbox:/mnt/data/competitor_sample.csv">对手样本抓取表（CSV）</a></li>
+      </ul>
+      <p class="small">可直接导入表格工具；字段与示例已内置。</p>
+    </section>
+
+    <section id="refs" class="card">
+      <h2>参考来源与核验日期</h2>
+      <table>
+        <thead><tr><th>主题</th><th>来源</th><th>核验日期</th></tr></thead>
+        <tbody>
+          <tr><td>小红书规则/帮助/售后/发货/佣金</td><td>
+            <a href="https://school.xiaohongshu.com/rule" target="_blank">规则中心</a> |
+            <a href="https://school.xiaohongshu.com/rule/detail/17/2492" target="_blank">七天无理由</a> |
+            <a href="https://school.xiaohongshu.com/helper/detail/1986" target="_blank">售后工作台</a> |
+            <a href="https://school.xiaohongshu.com/helper/detail/1745" target="_blank">佣金/T+7</a> |
+            <a href="https://school.xiaohongshu.com/rule/detail/17/3311" target="_blank">发货管理</a>
+          </td><td>2025-11-09</td></tr>
+          <tr><td>社区协议/规范</td><td><a href="https://agree.xiaohongshu.com/h5/terms/ZXXY20220408001/-1" target="_blank">用户协议</a>；<a href="https://agree.xiaohongshu.com/h5/terms/ZXXY20221213003/-1" target="_blank">社区规范</a></td><td>2025-11-09</td></tr>
+          <tr><td>私信导流禁止（新闻）</td><td><a href="https://finance.sina.com.cn/wm/2025-01-09/doc-ineekuyn9300352.shtml" target="_blank">新浪财经 2025-01-09</a></td><td>2025-11-09</td></tr>
+          <tr><td>广告法极限词</td><td><a href="https://www.samr.gov.cn/ggjgs/tzgg/art/2023/art_183b5cb48d9e4f0dba67f9f912a913ba.html" target="_blank">市监总局公告（2023年第6号）</a></td><td>2025-11-09</td></tr>
+          <tr><td>饰品标识</td><td><a href="https://openstd.samr.gov.cn/bzgk/std/newGbInfo?hcno=0CD2AE59F3156F39FF519D67AF1C3B05" target="_blank">GB/T 31912-2015</a></td><td>2025-11-09</td></tr>
+          <tr><td>银纯度/命名</td><td><a href="https://openstd.samr.gov.cn/bzgk/gb/newGbInfo?hcno=160D097531C48C91014D54AEA0D0671A" target="_blank">GB 11887-2012</a></td><td>2025-11-09</td></tr>
+          <tr><td>AQL抽检</td><td><a href="https://std.samr.gov.cn/gb/search/gbDetailed?id=71F772D7E146D3A7E05397BE0A0AB82A" target="_blank">GB/T 2828.1-2012</a></td><td>2025-11-09</td></tr>
+          <tr><td>浙江政务/金华市监</td><td><a href="https://gswsdj.zjzwfw.gov.cn/" target="_blank">浙江政务服务网</a>；<a href="https://scjgj.jinhua.gov.cn/" target="_blank">金华市市场监督管理局</a></td><td>2025-11-09</td></tr>
+          <tr><td>增值税小规模免征</td><td><a href="https://www.chinatax.gov.cn/chinatax/n810356/n3010387/c5220298/content.html" target="_blank">国家税务总局</a></td><td>2025-11-09</td></tr>
+          <tr><td>义乌市场分布</td><td><a href="https://www.yiwufair.com/about/sczl/gjsmc1/" target="_blank">义乌国际商贸城一区</a>；<a href="https://www.chinagoods.com/markets" target="_blank">中国小商品城·实体市场</a></td><td>2025-11-09</td></tr>
+          <tr><td>小红书用户画像（第三方）</td><td><a href="https://www.questmobile.com.cn/research/report/1871401635281997826/" target="_blank">QuestMobile 2024新媒体生态盘点</a>；<a href="https://www.qian-gua.com/blog/detail/2898.html" target="_blank">千瓜 2024活跃用户报告</a></td><td>2025-11-09</td></tr>
+          <tr><td>薯条/聚光（参考）</td><td><a href="https://ad.xiaohongshu.com/help/docs?id=3775" target="_blank">聚光帮助中心</a>；<a href="https://ad.xiaohongshu.com/aurora/ad/manage/campaign" target="_blank">聚光平台</a></td><td>2025-11-09</td></tr>
+          <tr><td>快递监管/行业协会</td><td><a href="https://zj.spb.gov.cn/" target="_blank">浙江省邮政管理局</a>；<a href="https://www.cea.org.cn/" target="_blank">中国快递协会</a></td><td>2025-11-09</td></tr>
+        </tbody>
+      </table>
+      <p class="small">注：除国家标准/政府/小红书官方入口外，行业数据与教程均为第三方参考，后台版本可能更新，均以平台实际页面为准。</p>
+    </section>
+
+    <footer>
+      <p>© 2025-11-09 · 可自行转发分享此HTML文件。建议打印为PDF保存；若需补充样本数据，可直接在CSV模板中填充。</p>
+    </footer>
+  </main>
+</div>
+
+<div class="sticky-cta">
+  <a class="btn primary" href="#tldr">回到顶部</a>
+</div>
+
+<script>
+// Build TOC
+const toc = document.getElementById('toc');
+const sections = document.querySelectorAll('main section');
+sections.forEach(s => {
+  const id = s.id;
+  const h = s.querySelector('h1,h2');
+  if(!h) return;
+  const a = document.createElement('a');
+  a.href = '#' + id;
+  a.textContent = h.textContent;
+  const li = document.createElement('li');
+  li.appendChild(a);
+  toc.appendChild(li);
+});
+// Active highlight
+const links = toc.querySelectorAll('a');
+const obs = new IntersectionObserver(entries => {
+  entries.forEach(e => {
+    const id = e.target.id;
+    const l = toc.querySelector(`a[href='#${id}']`);
+    if(l) l.classList.toggle('active', e.isIntersecting);
+  });
+}, {rootMargin: '-30% 0px -65% 0px'});
+sections.forEach(s => obs.observe(s));
+
+// Search filter
+const input = document.getElementById('search');
+const clearSearch = window.clearSearch = () => { input.value=''; doSearch(''); }
+const doSearch = (q) => {
+  q = q.toLowerCase().trim();
+  sections.forEach(s => {
+    const txt = s.innerText.toLowerCase();
+    s.style.display = q && !txt.includes(q) ? 'none' : '';
+  });
+};
+input.addEventListener('input', e => doSearch(e.target.value));
+
+// Checklist persistence
+document.querySelectorAll('.checkbox-list input[type="checkbox"]').forEach((cb, idx) => {
+  const key = 'chk_' + idx;
+  cb.checked = localStorage.getItem(key) === '1';
+  cb.addEventListener('change', () => localStorage.setItem(key, cb.checked ? '1' : '0'));
+});
+</script>
+</body>
+</html>

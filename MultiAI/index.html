@@ -3,21 +3,71 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>多AI角色群聊</title>
+    <title>MulitiAI · 多AI角色群聊工作台</title>
     <!-- Vditor for Markdown preview -->
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/vditor@3.11.2/dist/index.css" />
     <script src="https://cdn.jsdelivr.net/npm/vditor@3.11.2/dist/method.js"></script>
     <style>
+        /* === Brand typefaces === */
+        @font-face {
+            font-family: 'TiemposText';
+            src: url('./tiempos/TIEMPOSTEXT-REGULAR-WEBFONT-FVBKCKML.woff2') format('woff2');
+            font-weight: 400;
+            font-style: normal;
+            font-display: swap;
+        }
+        @font-face {
+            font-family: 'TiemposText';
+            src: url('./tiempos/TIEMPOSTEXT-SEMIBOLD-WEBFONT-CKUQAWUP.woff2') format('woff2');
+            font-weight: 600;
+            font-style: normal;
+            font-display: swap;
+        }
+        @font-face {
+            font-family: 'TiemposText';
+            src: url('./tiempos/TIEMPOSTEXT-REGULARITALIC-WEBFONT-DRLEWHES.woff2') format('woff2');
+            font-weight: 400;
+            font-style: italic;
+            font-display: swap;
+        }
+        @font-face {
+            font-family: 'PingFangSC';
+            src: url('./pingfang/PingFangSC-Light.woff2') format('woff2');
+            font-weight: 300;
+            font-style: normal;
+            font-display: swap;
+        }
+        @font-face {
+            font-family: 'PingFangSC';
+            src: url('./pingfang/PingFangSC-Regular.woff2') format('woff2');
+            font-weight: 400;
+            font-style: normal;
+            font-display: swap;
+        }
+        @font-face {
+            font-family: 'PingFangSC';
+            src: url('./pingfang/PingFangSC-Semibold.woff2') format('woff2');
+            font-weight: 600;
+            font-style: normal;
+            font-display: swap;
+        }
         * {
             margin: 0;
             padding: 0;
             box-sizing: border-box;
         }
+        ::-webkit-scrollbar { width: 8px; height: 8px; }
+        ::-webkit-scrollbar-track { background: transparent; }
+        ::-webkit-scrollbar-thumb { background: color-mix(in oklab, var(--brand) 35%, transparent); border-radius: 999px; }
+        ::-webkit-scrollbar-thumb:hover { background: color-mix(in oklab, var(--brand) 55%, transparent); }
 
         body {
-            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            height: 100dvh;
+            font-family: "TiemposText", "PingFangSC", "PingFang SC", -apple-system, BlinkMacSystemFont, "Segoe UI", "Helvetica Neue", Arial, sans-serif;
+            background:
+                radial-gradient(circle at top right, color-mix(in oklab, var(--brand) 28%, transparent), transparent 55%),
+                linear-gradient(160deg, var(--app-bg) 0%, color-mix(in oklab, var(--app-bg) 80%, #fff5ef) 30%, var(--app-bg) 100%);
+            min-height: 100dvh;
+            color: var(--text);
             overflow: hidden;
         }
 
@@ -36,65 +86,171 @@
             pointer-events: auto;
         }
 
+        .app-shell {
+            position: relative;
+            min-height: 100dvh;
+            padding: 24px clamp(16px, 4vw, 48px);
+        }
+        .app-shell::after {
+            content: "";
+            position: absolute;
+            inset: 32px;
+            border-radius: 40px;
+            pointer-events: none;
+            border: 1px solid rgba(201, 100, 66, 0.08);
+            box-shadow: inset 0 0 80px rgba(201, 100, 66, 0.03);
+        }
+        .ambient-orb {
+            position: absolute;
+            width: 420px;
+            height: 420px;
+            filter: blur(80px);
+            opacity: 0.35;
+            z-index: 0;
+            animation: floatOrb 16s ease-in-out infinite alternate;
+        }
+        .ambient-orb.orb-left {
+            top: 40px;
+            left: 0;
+            background: radial-gradient(circle, rgba(201,100,66,0.35) 0%, transparent 65%);
+        }
+        .ambient-orb.orb-right {
+            bottom: 0;
+            right: 0;
+            background: radial-gradient(circle, rgba(109,70,52,0.4) 0%, transparent 60%);
+            animation-direction: alternate-reverse;
+        }
+        @keyframes floatOrb {
+            0% { transform: translate3d(0,0,0) scale(1); }
+            100% { transform: translate3d(-40px, 30px, 0) scale(1.05); }
+        }
+
         .container {
+            position: relative;
+            z-index: 1;
             display: flex;
-            height: 100dvh;
+            height: calc(100dvh - 48px);
             max-width: 1800px;
             margin: 0 auto;
-            gap: 16px;
+            gap: 18px;
             padding: 16px;
+            border-radius: 28px;
+            background: color-mix(in oklab, var(--panel) 94%, transparent);
+            box-shadow: var(--shadow-lg);
+            backdrop-filter: blur(20px);
         }
 
-        .sidebar {
-            width: 280px;
-            background: white;
-            border-radius: var(--radius);
-            padding: 16px;
-            display: flex;
-            flex-direction: column;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
-        }
-
+        .sidebar,
         .sidebar-right {
             width: 300px;
-            background: white;
-            border-radius: var(--radius);
-            padding: 16px;
+            background: linear-gradient(165deg, var(--panel) 0%, #fff7f2 100%);
+            border-radius: var(--radius-lg);
+            padding: 24px;
             display: flex;
             flex-direction: column;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+            box-shadow: var(--shadow-md);
+            border: 1px solid var(--border);
+            position: relative;
+            overflow: hidden;
+        }
+        .sidebar,
+        .sidebar-right,
+        .main-content {
+            animation: fadeSlide 0.6s ease both;
+        }
+        .sidebar::after,
+        .sidebar-right::after {
+            content: "";
+            position: absolute;
+            inset: 0;
+            border-radius: inherit;
+            pointer-events: none;
+            background: radial-gradient(circle at 20% 20%, rgba(201,100,66,0.08), transparent 55%);
+            opacity: 0.7;
+        }
+        .sidebar-right { animation-delay: .08s; }
+        .main-content { animation-delay: .12s; }
+        .sidebar > *,
+        .sidebar-right > * {
+            position: relative;
+            z-index: 1;
         }
 
         .main-content {
             flex: 1;
             display: flex;
             flex-direction: column;
-            background: white;
-            border-radius: var(--radius);
-            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+            background: var(--panel);
+            border-radius: var(--radius-lg);
+            box-shadow: var(--shadow-lg);
             position: relative;
             overflow: hidden;
+            border: 1px solid var(--border);
+        }
+
+        @keyframes fadeSlide {
+            from { opacity: 0; transform: translateY(12px); }
+            to { opacity: 1; transform: translateY(0); }
         }
 
         /* ===== Welcome section ===== */
-        .welcome-screen { display: flex; flex-direction: column; align-items: center; gap: 14px; padding: 26px 0 }
-        .welcome-logo { font-size: 108px; font-weight: 300; line-height: 1.0; letter-spacing: .04em; color: var(--panel); }
-
-        /* Two-column table-like layout for actions */
-        .welcome-actions { display: grid; grid-template-columns: 1fr 1fr; column-gap: 16px; row-gap: 8px; align-items: start; max-width: 720px; margin: 8px auto 0; }
-        .welcome-actions .wa-desc { text-align: right; color: color-mix(in oklab, var(--text) 30%, transparent); margin-top: 6px; }
-        .welcome-actions .wa-action { text-align: left; display: flex; flex-wrap: wrap; gap: 8px; }
-        .welcome-actions button { color: color-mix(in oklab, var(--text) 55%, transparent); font-size: 85%;}
+        .welcome-screen {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 18px;
+            padding: 36px 32px;
+            border-radius: 28px;
+            border: 1px dashed color-mix(in oklab, var(--brand) 45%, transparent);
+            background: radial-gradient(circle at top, rgba(201,100,66,0.08), transparent 65%);
+            box-shadow: 0 24px 60px rgba(57, 42, 33, 0.08);
+        }
+        .welcome-logo {
+            font-size: clamp(52px, 8vw, 86px);
+            font-weight: 600;
+            letter-spacing: 0.12em;
+            color: var(--brand);
+            text-transform: uppercase;
+        }
+        .welcome-lead {
+            font-size: 1rem;
+            text-align: center;
+            color: color-mix(in oklab, var(--text) 70%, transparent);
+            max-width: 560px;
+        }
+        .welcome-badges {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 10px;
+        }
+        .welcome-badges span {
+            padding: 6px 14px;
+            border-radius: 999px;
+            background: color-mix(in oklab, var(--brand) 10%, transparent);
+            color: color-mix(in oklab, var(--text) 65%, transparent);
+            font-size: 0.85rem;
+            border: 1px solid color-mix(in oklab, var(--brand) 35%, transparent);
+        }
+        .welcome-actions {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 12px;
+            justify-content: center;
+        }
+        .welcome-actions .btn {
+            min-width: 140px;
+        }
 
         h2 {
             margin-bottom: 15px;
-            color: #333;
+            color: var(--text);
             font-size: 18px;
         }
 
         h3 {
             margin-bottom: 10px;
-            color: #333;
+            color: var(--text);
             font-size: 16px;
         }
 
@@ -143,18 +299,20 @@
         }
 
         .user-bar {
-            background: #f0f4ff;
-            padding: 12px;
-            border-radius: var(--radius-sm);
-            margin-bottom: 15px;
+            background: color-mix(in oklab, var(--muted) 80%, transparent);
+            padding: 14px 16px;
+            border-radius: var(--radius);
+            margin-bottom: 18px;
             display: flex;
             justify-content: space-between;
             align-items: center;
+            border: 1px solid var(--border);
+            box-shadow: var(--shadow-sm);
         }
 
         .user-info {
             font-size: 14px;
-            color: #333;
+            color: var(--text);
         }
 
         .list-container {
@@ -164,33 +322,37 @@
         }
 
         .item {
-            background: #f5f5f5;
-            padding: 12px;
-            margin-bottom: 10px;
-            border-radius: var(--radius-sm);
+            background: var(--panel);
+            padding: 14px 16px;
+            margin-bottom: 12px;
+            border-radius: var(--radius);
             cursor: pointer;
-            transition: all 0.2s;
-            border: 2px solid transparent;
+            transition: transform var(--transition), box-shadow var(--transition), border-color var(--transition);
+            border: 1px solid var(--border);
+            box-shadow: var(--shadow-sm);
         }
 
         .item:hover {
-            background: #e8e8e8;
+            transform: translateY(-2px);
+            border-color: color-mix(in oklab, var(--brand) 25%, var(--border));
+            box-shadow: 0 18px 32px rgba(57, 42, 33, 0.08);
         }
 
         .item.active {
-            border-color: #667eea;
-            background: #f0f4ff;
+            border-color: var(--brand);
+            background: color-mix(in oklab, var(--brand) 8%, var(--panel));
+            box-shadow: 0 24px 40px rgba(201, 100, 66, 0.14);
         }
 
         .item-name {
             font-weight: 600;
-            color: #333;
+            color: var(--text);
             margin-bottom: 4px;
         }
 
         .item-desc {
             font-size: 12px;
-            color: #666;
+            color: color-mix(in oklab, var(--text) 65%, transparent);
             margin-bottom: 4px;
         }
 
@@ -219,18 +381,17 @@
         .role-muted { color: color-mix(in oklab, var(--text) 55%, transparent); font-size: 0.9em; }
 
         .btn {
-            padding: 8px 16px;
-            border: none;
+            padding: 10px 16px;
             border-radius: var(--radius-xs);
             cursor: pointer;
-            font-size: 16px;
-            transition: all 0.2s;
+            font-size: 14px;
+            transition: var(--transition);
             font-weight: 500;
+            border: 1px solid transparent;
         }
 
         .btn-icon {
             display: inline-block;
-            /* font-size: 16px; */
             margin-right: 8px;
             line-height: 1;
         }
@@ -240,43 +401,47 @@
         }
 
         .btn-primary {
-            background: #667eea;
-            color: white;
+            background: var(--brand);
+            color: var(--brand-contrast);
+            border-color: var(--brand);
         }
 
         .btn-primary:hover {
-            background: #5568d3;
+            filter: brightness(0.95);
         }
 
         .btn-secondary {
-            background: #e0e0e0;
-            color: #333;
-            font-size: 12px;
-            padding: 4px 8px;
+            background: var(--panel);
+            color: var(--text);
+            border-color: var(--border);
+            font-size: 13px;
+            padding: 6px 12px;
         }
 
         .btn-secondary:hover {
-            background: #d0d0d0;
+            background: var(--muted);
         }
 
         .btn-danger {
-            background: #ef4444;
-            color: white;
-            font-size: 12px;
-            padding: 4px 8px;
+            background: var(--error);
+            color: #fff;
+            font-size: 13px;
+            padding: 6px 12px;
+            border-color: var(--error);
         }
 
         .btn-danger:hover {
-            background: #dc2626;
+            filter: brightness(0.95);
         }
 
         .btn-success {
-            background: #10b981;
-            color: white;
+            background: var(--success);
+            color: #fff;
+            border-color: var(--success);
         }
 
         .btn-success:hover {
-            background: #059669;
+            filter: brightness(0.95);
         }
 
         .btn:disabled {
@@ -286,8 +451,8 @@
 
         .chat-header {
             padding: 18px 24px;
-            border-bottom: 1px solid #e0e0e0;
-            background: #f7f9ff;
+            border-bottom: 1px solid var(--border);
+            background: color-mix(in oklab, var(--panel) 92%, transparent);
             display: flex;
             align-items: center;
             justify-content: space-between;
@@ -311,7 +476,7 @@
         .chat-header-info h2 {
             margin: 0;
             font-size: 20px;
-            color: #1f2937;
+            color: var(--text);
             white-space: nowrap;
             overflow: hidden;
             text-overflow: ellipsis;
@@ -319,7 +484,7 @@
 
         .chat-header-subtitle {
             font-size: 12px;
-            color: #6b7280;
+            color: color-mix(in oklab, var(--text) 55%, transparent);
             display: none;
         }
 
@@ -331,14 +496,14 @@
             flex: 1;
             overflow-y: auto;
             padding: 20px;
-            background: #f9fafb;
+            background: var(--muted);
         }
 
         /* 系统提示（元信息/上下文锚点）样式 */
         .system-message {
             text-align: center;
             font-size: 12px;
-            color: #6b7280;
+            color: color-mix(in oklab, var(--text) 60%, transparent);
             margin: 14px 0;
             line-height: 1.4;
             padding: 0 8px;
@@ -347,10 +512,10 @@
             /* 为了兼容旧版浏览器 */
             word-wrap: break-word;
         }
-        .system-message.system-info { color: #64748b; }
-        .system-message.system-success { color: #16a34a; }
-        .system-message.system-warning { color: #b45309; }
-        .system-message.system-error { color: #b91c1c; }
+        .system-message.system-info { color: color-mix(in oklab, var(--text) 60%, transparent); }
+        .system-message.system-success { color: var(--success); }
+        .system-message.system-warning { color: var(--warning); }
+        .system-message.system-error { color: var(--error); }
 
         .message {
             margin-bottom: 20px;
@@ -413,21 +578,21 @@
 
         .message-name {
             font-weight: 600;
-            color: #333;
+            color: var(--text);
         }
 
         .message-time {
             font-size: 12px;
-            color: #999;
+            color: color-mix(in oklab, var(--text) 45%, transparent);
         }
 
         .message-text {
-            background: white;
-            padding: 12px;
-            border-radius: var(--radius-sm);
-            color: #333;
-            line-height: 1.5;
-            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+            background: var(--panel);
+            padding: 14px;
+            border-radius: var(--radius);
+            color: var(--text);
+            line-height: 1.6;
+            box-shadow: var(--shadow-sm);
             white-space: pre-wrap;
             word-break: break-word;
             position: relative;
@@ -492,8 +657,9 @@
         .message.streaming .message-text { background: transparent; box-shadow: none; padding: 2px 0; }
 
         .message.user .message-text {
-            background: #667eea;
-            color: white;
+            background: var(--brand);
+            color: var(--brand-contrast);
+            border-color: color-mix(in oklab, var(--brand) 65%, var(--border));
         }
 
         /* 同一条消息内的分组气泡容器 */
@@ -501,7 +667,7 @@
 
         .chat-input {
             padding: 20px;
-            border-top: 1px solid #e0e0e0;
+            border-top: 1px solid var(--border);
             display: flex;
             align-items: end;
             gap: 10px;
@@ -510,7 +676,7 @@
         .chat-input textarea {
             flex: 1;
             padding: 12px;
-            border: 1px solid #d0d0d0;
+            border: 1px solid var(--border);
             border-radius: var(--radius-sm);
             font-size: 14px;
             resize: none;
@@ -562,7 +728,7 @@
         }
 
         .modal-content {
-            background: white;
+            background: var(--panel);
             padding: 30px;
             border-radius: var(--radius);
             width: 90%;
@@ -570,10 +736,12 @@
             max-height: 85vh;
             overflow-y: auto;
             margin: auto;
+            border: 1px solid var(--border);
+            box-shadow: var(--shadow-lg);
         }
 
         .modal-header h3 {
-            color: #333;
+            color: var(--text);
             font-size: 20px;
         }
 
@@ -584,7 +752,7 @@
         .form-group label {
             display: block;
             margin-bottom: 5px;
-            color: #555;
+            color: color-mix(in oklab, var(--text) 75%, transparent);
             font-weight: 500;
             font-size: 14px;
         }
@@ -594,10 +762,12 @@
         .form-group select {
             width: 100%;
             padding: 10px;
-            border: 1px solid #d0d0d0;
+            border: 1px solid var(--border);
             border-radius: var(--radius-xs);
             font-size: 14px;
             font-family: inherit;
+            background: var(--control-bg);
+            color: var(--text);
         }
 
         .form-group textarea {
@@ -634,7 +804,7 @@
             width: 8px;
             height: 8px;
             border-radius: 50%;
-            background: #999;
+            background: color-mix(in oklab, var(--brand) 35%, var(--panel));
             margin: 0 2px;
             animation: typing 1.4s infinite;
         }
@@ -663,16 +833,17 @@
 
         .empty-state {
             text-align: center;
-            padding: 40px 0px;
-            color: #999;
+            padding: 60px 20px;
+            color: color-mix(in oklab, var(--text) 55%, transparent);
         }
 
         .checkbox-list {
             max-height: 200px;
             overflow-y: auto;
-            border: 1px solid #d0d0d0;
+            border: 1px solid var(--border);
             border-radius: var(--radius-xs);
             padding: 10px;
+            background: var(--panel);
         }
 
         .checkbox-item {
@@ -688,7 +859,7 @@
 
         .section-divider {
             height: 1px;
-            background: #e0e0e0;
+            background: var(--border);
             margin: 20px 0;
         }
 
@@ -707,9 +878,9 @@
 
         .config-section {
             padding: 15px;
-            background: #f9fafb;
+            background: var(--muted);
             border-radius: var(--radius-xs);
-            border: 1px solid #e0e0e0;
+            border: 1px solid var(--border);
         }
 
         .config-section.hidden {
@@ -720,8 +891,8 @@
             display: inline-block;
             width: 20px;
             height: 20px;
-            border: 3px solid #f3f3f3;
-            border-top: 3px solid #667eea;
+            border: 3px solid color-mix(in oklab, var(--border) 70%, transparent);
+            border-top: 3px solid var(--brand);
             border-radius: 50%;
             animation: spin 1s linear infinite;
         }
@@ -770,8 +941,8 @@
         }
 
         .sidebar-toggle {
-            background: white;
-            border: 1px solid #e0e0e0;
+            background: var(--panel);
+            border: 1px solid var(--border);
             padding: 8px 12px;
             border-radius: var(--radius-xs);
             cursor: pointer;
@@ -780,23 +951,23 @@
         }
 
         .sidebar-toggle:hover {
-            background: #f5f5f5;
+            background: color-mix(in oklab, var(--muted) 80%, var(--panel));
         }
 
         @media (max-width: 1200px) {
             .container {
-                gap: 10px;
-                padding: 10px;
+                gap: 12px;
+                padding: 12px;
             }
 
             .sidebar {
-                padding: 10px;
+                padding: 18px;
                 width: 25vw;
                 max-width: 280px;
             }
 
             .sidebar-right {
-                padding: 10px;
+                padding: 18px;
                 width: 28vw;
                 max-width: 300px;
             }
@@ -819,6 +990,8 @@
                 flex-direction: column;
                 gap: 0;
                 padding: 0;
+                height: auto;
+                border-radius: 0;
             }
 
             .sidebar, .sidebar-right {
@@ -858,6 +1031,8 @@
                 flex: 1;
                 border-radius: 0;
                 margin: 0;
+                border-left: none;
+                border-right: none;
             }
 
             .sidebar-toggle {
@@ -924,6 +1099,7 @@
         @media (max-width: 480px) {
             .container {
                 padding: 0;
+                height: auto;
             }
 
             .sidebar, .sidebar-right {
@@ -1006,21 +1182,10 @@
             min-width: 300px;
         }
 
-        .toast.success {
-            border-left: 4px solid #10b981;
-        }
-
-        .toast.error {
-            border-left: 4px solid #ef4444;
-        }
-
-        .toast.info {
-            border-left: 4px solid #3b82f6;
-        }
-
-        .toast.warning {
-            border-left: 4px solid #f59e0b;
-        }
+        .toast.success { border-left: 4px solid var(--success); }
+        .toast.error { border-left: 4px solid var(--error); }
+        .toast.info { border-left: 4px solid color-mix(in oklab, var(--brand) 45%, transparent); }
+        .toast.warning { border-left: 4px solid var(--warning); }
 
         .toast-icon {
             font-size: 20px;
@@ -1089,66 +1254,66 @@
         
         /* ===== Modern UI: Design Tokens ===== */
         :root {
-            --app-bg: hsl(220 14% 97%);
-            --panel: hsl(0 0% 100%);
-            --text: hsl(224 71% 4%);
-            --muted: hsl(220 14% 96%);
-            --border: hsl(220 13% 91%);
-            --table-bg: hsl(220 14% 95%);
+            --app-bg: #f7f1ed;
+            --panel: #fffdfb;
+            --text: #392a21;
+            --muted: #f2e7df;
+            --border: #eadfd8;
+            --table-bg: #f5ede7;
 
-            --brand: hsl(246 83% 60%);
-            --brand-contrast: hsl(0 0% 100%);
-            --success: hsl(160 84% 39%);
-            --warning: hsl(36 100% 45%);
-            --error: hsl(0 84% 60%);
+            --brand: #c96442;
+            --brand-light: #f3b19b;
+            --brand-dark: #8e442a;
+            --brand-contrast: #fff6f2;
+            --success: #4b9e8a;
+            --warning: #d78c28;
+            --error: #c25050;
 
-            --radius: 12px;
-            --radius-lg: 14px;
-            --radius-sm: 8px;
+            --radius: 14px;
+            --radius-lg: 18px;
+            --radius-sm: 10px;
             --radius-xs: 6px;
-            --shadow-sm: 0 2px 8px rgba(0,0,0,0.06);
-            --shadow-md: 0 6px 16px rgba(0,0,0,0.08);
-            --shadow-lg: 0 12px 32px rgba(0,0,0,0.12);
-            --transition: 200ms cubic-bezier(.2,.7,.2,1);
-            --focus-ring: 0 0 0 3px color-mix(in oklab, var(--brand) 35%, transparent);
-            --control-bg: hsl(0 0% 100%);
+            --shadow-sm: 0 4px 18px rgba(57, 42, 33, 0.07);
+            --shadow-md: 0 18px 40px rgba(57, 42, 33, 0.08);
+            --shadow-lg: 0 28px 60px rgba(57, 42, 33, 0.12);
+            --transition: 260ms cubic-bezier(.25,.8,.25,1);
+            --focus-ring: 0 0 0 3px rgba(201, 100, 66, 0.25);
+            --control-bg: #fffdfb;
 
-            --bubble-bg-ai: var(--panel);
-            --bubble-bg-user: color-mix(in oklab, var(--brand) 18%, var(--panel));
-            --bubble-fg-user: var(--text);
+            --bubble-bg-ai: #fffaf6;
+            --bubble-bg-user: #ffeae0;
+            --bubble-fg-user: #4b2f24;
 
-            /* Soft danger tokens for subtle destructive actions */
-            --danger-soft-bg: hsl(0 100% 97%);
-            --danger-soft-bg-hover: hsl(0 100% 95%);
-            --danger-soft-bg-active: hsl(0 100% 93%);
-            --danger-soft-border: hsl(0 92% 88%);
-            --danger-soft-fg: hsl(0 70% 30%);
+            --danger-soft-bg: #fbe8e6;
+            --danger-soft-bg-hover: #f5d1cd;
+            --danger-soft-bg-active: #edbcb6;
+            --danger-soft-border: #e39b93;
+            --danger-soft-fg: #a43a32;
         }
 
         @media (prefers-color-scheme: dark) {
             :root {
-                --app-bg: hsl(224 14% 10%);
-                --panel: hsl(224 14% 12%);
-                --text: hsl(0 0% 98%);
-                --muted: hsl(224 14% 16%);
-                --border: hsl(224 14% 22%);
-                --table-bg: hsl(224 14% 3%);
-                --control-bg: hsl(224 14% 16%);
+                --app-bg: #1b1512;
+                --panel: #261c17;
+                --text: #f7ede6;
+                --muted: #2f211b;
+                --border: #3c2b23;
+                --table-bg: #1d1410;
+                --control-bg: #2f211b;
 
-                --shadow-sm: 0 2px 8px rgba(0,0,0,0.5);
-                --shadow-md: 0 6px 16px rgba(0,0,0,0.55);
-                --shadow-lg: 0 12px 32px rgba(0,0,0,0.6);
+                --shadow-sm: 0 2px 12px rgba(0,0,0,0.55);
+                --shadow-md: 0 10px 24px rgba(0,0,0,0.6);
+                --shadow-lg: 0 28px 60px rgba(0,0,0,0.65);
 
-                --bubble-bg-ai: hsl(224 14% 16%);
-                --bubble-bg-user: color-mix(in oklab, var(--brand) 26%, var(--panel));
-                --bubble-fg-user: var(--text);
+                --bubble-bg-ai: #2f211b;
+                --bubble-bg-user: rgba(201, 100, 66, 0.25);
+                --bubble-fg-user: #ffe7db;
 
-                /* Dark theme soft danger */
-                --danger-soft-bg: hsl(0 60% 20%);
-                --danger-soft-bg-hover: hsl(0 60% 24%);
-                --danger-soft-bg-active: hsl(0 60% 18%);
-                --danger-soft-border: hsl(0 60% 28%);
-                --danger-soft-fg: hsl(0 85% 90%);
+                --danger-soft-bg: #4a201f;
+                --danger-soft-bg-hover: #5b2523;
+                --danger-soft-bg-active: #431917;
+                --danger-soft-border: #71312d;
+                --danger-soft-fg: #ffcdc6;
             }
         }
 
@@ -1157,7 +1322,43 @@
         /* .container { max-width: 1600px; gap: 16px; } */
         .sidebar, .sidebar-right { background: var(--panel); border: 1px solid var(--border); border-radius: var(--radius-lg); box-shadow: var(--shadow-md); }
         .sidebar-right-header { display: flex; justify-content: space-between; align-items: center; margin: 3px 0 16px 0; }
-        .sidebar-left-header { display: flex; justify-content: space-between; align-items: center; margin: 3px 0 16px 0; }
+        .sidebar-left-header { display: flex; justify-content: space-between; align-items: center; margin: 0 0 20px 0; }
+        .brand-mark {
+            display: flex;
+            align-items: center;
+            gap: 14px;
+        }
+        .brand-logo {
+            width: 48px;
+            height: 48px;
+            border-radius: 16px;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            background: rgba(201, 100, 66, 0.12);
+            border: 1px solid rgba(201, 100, 66, 0.25);
+            box-shadow: 0 10px 20px rgba(201, 100, 66, 0.12);
+        }
+        .brand-logo img {
+            width: 32px;
+            height: 32px;
+            object-fit: contain;
+        }
+        .brand-text {
+            display: flex;
+            flex-direction: column;
+            line-height: 1.2;
+        }
+        .brand-name {
+            font-size: 1.4rem;
+            font-weight: 600;
+            letter-spacing: 0.06em;
+            color: var(--brand);
+        }
+        .brand-tagline {
+            font-size: 0.85rem;
+            color: color-mix(in oklab, var(--text) 55%, transparent);
+        }
         .sidebar-right-actions { display: flex; align-items: center; gap: 8px; }
         .main-content { background: var(--panel); border: 1px solid var(--border); border-radius: var(--radius-lg); box-shadow: var(--shadow-lg); }
 
@@ -1166,7 +1367,17 @@
         .item:hover { background: color-mix(in oklab, var(--muted) 70%, var(--panel)); }
         .item.active { border-color: var(--brand); background: color-mix(in oklab, var(--brand) 8%, var(--muted)); }
 
-        .btn { height: 36px; padding: 0 14px; border-radius: 10px; font-size: 14px; font-weight: 600; border: 1px solid transparent; transition: background var(--transition), color var(--transition), border-color var(--transition), box-shadow var(--transition); }
+        .btn {
+            height: 40px;
+            padding: 0 16px;
+            border-radius: 12px;
+            font-size: 14px;
+            font-weight: 600;
+            border: 1px solid transparent;
+            transition: transform var(--transition), background var(--transition), color var(--transition), border-color var(--transition), box-shadow var(--transition);
+        }
+        .btn:hover:not(:disabled) { transform: translateY(-1px); }
+        .btn:active:not(:disabled) { transform: translateY(0); }
         .btn:focus-visible { outline: none; box-shadow: var(--focus-ring); }
         .btn-primary { background: var(--brand); color: var(--brand-contrast); border-color: var(--brand); }
         .btn-primary:hover { filter: brightness(0.95); }
@@ -1276,48 +1487,44 @@
 
         /* ===== Manual theme override (data-theme) + contrast fixes ===== */
         :root[data-theme="light"] {
-            --app-bg: hsl(220 14% 97%);
-            --panel: hsl(0 0% 100%);
-            --text: hsl(224 71% 4%);
-            --muted: hsl(220 14% 96%);
-            --border: hsl(220 13% 91%);
-            --table-bg: hsl(220 14% 95%);
-            --control-bg: hsl(0 0% 100%);
-            --bubble-bg-ai: var(--panel);
-            --bubble-bg-user: color-mix(in oklab, var(--brand) 18%, var(--panel));
-            --bubble-fg-user: var(--text);
-            --shadow-sm: 0 2px 8px rgba(0,0,0,0.06);
-            --shadow-md: 0 6px 16px rgba(0,0,0,0.08);
-            --shadow-lg: 0 12px 32px rgba(0,0,0,0.12);
-
-            /* Soft danger tokens for subtle destructive actions */
-            --danger-soft-bg: hsl(0 100% 97%);
-            --danger-soft-bg-hover: hsl(0 100% 95%);
-            --danger-soft-bg-active: hsl(0 100% 93%);
-            --danger-soft-border: hsl(0 92% 88%);
-            --danger-soft-fg: hsl(0 70% 30%);
+            --app-bg: #f7f1ed;
+            --panel: #fffdfb;
+            --text: #392a21;
+            --muted: #f2e7df;
+            --border: #eadfd8;
+            --table-bg: #f5ede7;
+            --control-bg: #fffdfb;
+            --bubble-bg-ai: #fffaf6;
+            --bubble-bg-user: #ffeae0;
+            --bubble-fg-user: #4b2f24;
+            --shadow-sm: 0 4px 18px rgba(57, 42, 33, 0.07);
+            --shadow-md: 0 18px 40px rgba(57, 42, 33, 0.08);
+            --shadow-lg: 0 28px 60px rgba(57, 42, 33, 0.12);
+            --danger-soft-bg: #fbe8e6;
+            --danger-soft-bg-hover: #f5d1cd;
+            --danger-soft-bg-active: #edbcb6;
+            --danger-soft-border: #e39b93;
+            --danger-soft-fg: #a43a32;
         }
         :root[data-theme="dark"] {
-            --app-bg: hsl(224 14% 10%);
-            --panel: hsl(224 14% 12%);
-            --text: hsl(0 0% 98%);
-            --muted: hsl(224 14% 16%);
-            --border: hsl(224 14% 22%);
-            --table-bg: hsl(224 14% 3%);
-            --control-bg: hsl(224 14% 16%);
-            --bubble-bg-ai: hsl(224 14% 16%);
-            --bubble-bg-user: color-mix(in oklab, var(--brand) 26%, var(--panel));
-            --bubble-fg-user: var(--text);
-            --shadow-sm: 0 2px 8px rgba(0,0,0,0.5);
-            --shadow-md: 0 6px 16px rgba(0,0,0,0.55);
-            --shadow-lg: 0 12px 32px rgba(0,0,0,0.6);
-
-            /* Dark theme soft danger */
-            --danger-soft-bg: hsl(0 60% 20%);
-            --danger-soft-bg-hover: hsl(0 60% 24%);
-            --danger-soft-bg-active: hsl(0 60% 18%);
-            --danger-soft-border: hsl(0 60% 28%);
-            --danger-soft-fg: hsl(0 85% 90%);
+            --app-bg: #1b1512;
+            --panel: #261c17;
+            --text: #f7ede6;
+            --muted: #2f211b;
+            --border: #3c2b23;
+            --table-bg: #1d1410;
+            --control-bg: #2f211b;
+            --bubble-bg-ai: #2f211b;
+            --bubble-bg-user: rgba(201, 100, 66, 0.25);
+            --bubble-fg-user: #ffe7db;
+            --shadow-sm: 0 2px 12px rgba(0,0,0,0.55);
+            --shadow-md: 0 10px 24px rgba(0,0,0,0.6);
+            --shadow-lg: 0 28px 60px rgba(0,0,0,0.65);
+            --danger-soft-bg: #4a201f;
+            --danger-soft-bg-hover: #5b2523;
+            --danger-soft-bg-active: #431917;
+            --danger-soft-border: #71312d;
+            --danger-soft-fg: #ffcdc6;
         }
 
         /* Contrast-safe text and surfaces */
@@ -1402,13 +1609,24 @@
     </style>
 </head>
 <body>
-    <div class="toast-container" id="toastContainer"></div>
-    <div class="container">
+    <div class="app-shell">
+        <div class="ambient-orb orb-left"></div>
+        <div class="ambient-orb orb-right"></div>
+        <div class="toast-container" id="toastContainer"></div>
+        <div class="container">
         <div class="sidebar">
-            <h1 class="sidebar-left-header">
-                <span>Aithos</span>
+            <header class="sidebar-left-header">
+                <div class="brand-mark">
+                    <span class="brand-logo">
+                        <img src="Logo.png" alt="MulitiAI 标志" />
+                    </span>
+                    <div class="brand-text">
+                        <span class="brand-name">MulitiAI</span>
+                        <span class="brand-tagline">多智能角色协作栈</span>
+                    </div>
+                </div>
                 <button class="sidebar-toggle btn btn-secondary" id="collapseLeftSidebarBtn" aria-label="收起左侧栏">⟨</button>
-            </h1>
+            </header>
             <!-- <h2>群聊列表</h2> -->
             <div class="list-container" id="groupList"></div>
             <div class="user-bar">
@@ -1459,7 +1677,7 @@
         </div>
     </div>
 
-    <div class="sidebar-overlay" id="sidebarOverlay"></div>
+        <div class="sidebar-overlay" id="sidebarOverlay"></div>
 
     <!-- 用户设置模态框 -->
     <div class="modal" id="userSettingsModal">
@@ -1607,7 +1825,7 @@
                 </div>
                 <div class="form-group">
                     <label>头像颜色</label>
-                    <input type="color" id="agentColor" value="#667eea">
+                    <input type="color" id="agentColor" value="#c96442">
                 </div>
                 
                 <div class="section-divider"></div>
@@ -1736,7 +1954,7 @@
                 <div class="form-group" id="permVisionExprWrap" style="display:none;">
                     <label>自定义规则（直接填写索引与范围，示例：1,2,8:0 或 -4:-1 或 9: 或 :0 或 1,3,-2）</label>
                     <input type="text" id="permVisionExpr" placeholder="例如：1,2,8:0 或 -4:-1">
-                    <div id="permVisionError" style="display:none; color:#b91c1c; font-size:12px; margin-top:6px;"></div>
+                    <div id="permVisionError" style="display:none; color:var(--error); font-size:12px; margin-top:6px;"></div>
                 </div>
 
                 <div class="modal-actions">
@@ -1801,11 +2019,12 @@
         </div>
     </div>
 
-    
+    </div>
 
     <script type="module">
         const qs = (s, r=document) => r.querySelector(s);
         const qsa = (s, r=document) => Array.from(r.querySelectorAll(s));
+        const BRAND_COLOR = '#c96442';
 
         let OpenAI;
         
@@ -2950,7 +3169,7 @@
                 <div class="item" data-user-entry="true">
                     <div class="item-header">
                         <div class="item-name">
-                            <span class="agent-color" style="background: #667eea"></span>
+                            <span class="agent-color" style="background: var(--brand)"></span>
                             ${escapeHtml(globalSettings.userName)} <span class="role-muted">(用户)</span>
                         </div>
                         <div class="item-actions" style="margin-top:0;"></div>
@@ -3079,7 +3298,7 @@
 
             const isUser = msg.role === 'user';
             const agent = isUser ? null : agents.find(a => a.id === msg.agentId);
-            const color = isUser ? '#667eea' : (agent ? agent.color : '#999');
+            const color = isUser ? BRAND_COLOR : (agent ? agent.color : '#999');
             const name = isUser ? (globalSettings.userName||'用户') : (agent ? agent.name : '未知');
             const timeHtml = `<span class="message-time">${formatTime(msg.timestamp)}</span>`;
             const headerExtra = [];
@@ -3522,14 +3741,21 @@
             
             if (!group || !group.messages || group.messages.length === 0) {
                 el.chatMessages.innerHTML = `<div class="empty-state">
-                <div id="welcomeScreen" class="welcome-screen">
-                    <div class="welcome-logo">AITHOS</div>
-                    <div class="welcome-actions">
-                        <div class="wa-desc">打开用户设置</div><div class="wa-action"><button class="btn btn-secondary" id="welcomeSettingsBtn"><span class="btn-icon">⚙️</span><span class="btn-text">用户设置</span></button></div>
-                        <div class="wa-desc">创建角色</div><div class="wa-action"><button class="btn btn-secondary" id="welcomeCreateAgentBtn"><span class="btn-icon">👤</span><span class="btn-text">创建角色</span></button></div>
-                        <div class="wa-desc">选择或创建群聊</div><div class="wa-action"><button class="btn btn-secondary" id="welcomeCreateGroupBtn"><span class="btn-icon">✚</span><span class="btn-text">创建群聊</span></button><button class="btn btn-secondary" id="welcomeSelectGroupBtn"><span class="btn-icon">☰</span><span class="btn-text">选择群聊</span></button></div>
+                <section id="welcomeScreen" class="welcome-screen">
+                    <div class="welcome-logo">MulitiAI</div>
+                    <p class="welcome-lead">多智能体群聊工作台 · 以优雅的排版、动画与权限体系，协同构思、推理与决策。</p>
+                    <div class="welcome-badges">
+                        <span>全局/角色 API</span>
+                        <span>多模态提示流</span>
+                        <span>高级权限视野</span>
                     </div>
-                </div>
+                    <div class="welcome-actions">
+                        <button class="btn btn-secondary" id="welcomeSettingsBtn"><span class="btn-icon">⚙️</span><span class="btn-text">配置全局</span></button>
+                        <button class="btn btn-secondary" id="welcomeCreateAgentBtn"><span class="btn-icon">👥</span><span class="btn-text">打造角色</span></button>
+                        <button class="btn btn-primary" id="welcomeCreateGroupBtn"><span class="btn-icon">✚</span><span class="btn-text">新建群聊</span></button>
+                        <button class="btn btn-secondary" id="welcomeSelectGroupBtn"><span class="btn-icon">☰</span><span class="btn-text">打开已有</span></button>
+                    </div>
+                </section>
                 </div>`;
                 return;
             }
@@ -3594,7 +3820,7 @@
                     return '';
                 }
                 const agent = isUser ? null : agents.find(a => a.id === msg.agentId);
-                const color = isUser ? '#667eea' : (agent ? agent.color : '#999');
+                const color = isUser ? BRAND_COLOR : (agent ? agent.color : '#999');
                 const name = isUser ? globalSettings.userName : (agent ? agent.name : '未知');
                 let contentElement;
                 if (isUser) {
@@ -3778,10 +4004,10 @@
                 el.permVisionExprWrap.style.display = 'none';
                 if (el.permVisionError) { el.permVisionError.style.display = 'none'; el.permVisionError.textContent=''; }
                 // 预构建群成员列表（包含用户在首位）
-                const members = [{ id: '__user__', name: globalSettings.userName, color: '#667eea' }]
+                const members = [{ id: '__user__', name: globalSettings.userName, color: BRAND_COLOR }]
                     .concat((group.agentIds||[]).map(id => agents.find(a=>a.id===id)).filter(Boolean));
                 const buildList = (container) => {
-                    container.innerHTML = members.map(m => `<div class="checkbox-item"><input type="checkbox" id="perm_${container.id}_${m.id}" value="${m.id}"><label for="perm_${container.id}_${m.id}" style="margin:0;"><span class="agent-color" style="background:${m.color||'#667eea'}"></span>${escapeHtml(m.name)}</label></div>`).join('');
+                    container.innerHTML = members.map(m => `<div class="checkbox-item"><input type="checkbox" id="perm_${container.id}_${m.id}" value="${m.id}"><label for="perm_${container.id}_${m.id}" style="margin:0;"><span class="agent-color" style="background:${m.color||BRAND_COLOR}"></span>${escapeHtml(m.name)}</label></div>`).join('');
                 };
                 buildList(el.permICanSeeList);
                 buildList(el.permCanSeeMeList);
@@ -3855,10 +4081,10 @@
             if (group) {
                 const s = getAgentGroupSettings(group, agent.id);
                 // members list
-                const members = [{ id: '__user__', name: globalSettings.userName, color: '#667eea' }]
+                const members = [{ id: '__user__', name: globalSettings.userName, color: BRAND_COLOR }]
                     .concat((group.agentIds||[]).map(id => agents.find(a=>a.id===id)).filter(Boolean));
                 const buildList = (container, selectedArr) => {
-                    container.innerHTML = members.map(m => `<div class="checkbox-item"><input type="checkbox" id="perm_${container.id}_${m.id}" value="${m.id}" ${Array.isArray(selectedArr)&&selectedArr.includes(m.id)?'checked':''}><label for="perm_${container.id}_${m.id}" style="margin:0;"><span class="agent-color" style="background:${m.color||'#667eea'}"></span>${escapeHtml(m.name)}</label></div>`).join('');
+                    container.innerHTML = members.map(m => `<div class="checkbox-item"><input type="checkbox" id="perm_${container.id}_${m.id}" value="${m.id}" ${Array.isArray(selectedArr)&&selectedArr.includes(m.id)?'checked':''}><label for="perm_${container.id}_${m.id}" style="margin:0;"><span class="agent-color" style="background:${m.color||BRAND_COLOR}"></span>${escapeHtml(m.name)}</label></div>`).join('');
                 };
                 // iCanSee
                 const seeMode = (s.perspective?.iCanSee==='all')?'all':'custom';
@@ -4928,7 +5154,7 @@
                 name: el.agentName?.value || '',
                 role: el.agentRole?.value || '',
                 prompt: el.agentPrompt?.value || '',
-                color: el.agentColor?.value || '#667eea',
+                color: el.agentColor?.value || BRAND_COLOR,
                 useGlobal: useGlobal,
                 model: (el.agentModel?.value || globalSettings.model || '')
             };
@@ -4987,7 +5213,7 @@
         }
 
         function generateRandomColor() {
-            const colors = ['#667eea', '#764ba2', '#f093fb', '#4facfe', '#43e97b', '#fa709a', '#30cfd0', '#a8edea', '#ff6b6b', '#4ecdc4'];
+            const colors = ['#c96442', '#8e442a', '#f3b19b', '#f4c7ab', '#d78555', '#4b9e8a', '#d4a373', '#6f4c3e', '#f2a97b', '#b25638'];
             return colors[Math.floor(Math.random() * colors.length)];
         }
 

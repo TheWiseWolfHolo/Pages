@@ -16,13 +16,13 @@
         :root {
             --primary: #ff6b35;
             --secondary: #f7931e;
-            --accent: #b8860b; /* 亮色模式下更柔和的金色文字 */
+            --accent: #b8860b;
             --dark: #0a0a0a;
-            --light: #1a1a1a; /* 亮色主题正文色 */
+            --light: #1a1a1a;
             --success: #2e7d32;
-            --code-bg: #f6f8fa; /* 亮色代码块背景 */
+            --code-bg: #f6f8fa;
             --glow: rgba(184, 134, 11, 0.45);
-            color-scheme: light; /* 告诉浏览器使用亮色外观，避免强制暗黑干扰 */
+            color-scheme: light;
         }
 
         body {
@@ -39,8 +39,8 @@
             left: 0;
             width: 100%;
             height: 100%;
-            z-index: 999; /* 顶层渲染萤火虫，但不遮挡交互 */
-            pointer-events: none; /* 不阻挡交互 */
+            z-index: 999;
+            pointer-events: none;
         }
 
         /* 导航栏 */
@@ -116,14 +116,8 @@
         }
 
         @keyframes fadeIn {
-            from {
-                opacity: 0;
-                transform: translateY(20px);
-            }
-            to {
-                opacity: 1;
-                transform: translateY(0);
-            }
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
         }
 
         .hero-content {
@@ -136,17 +130,16 @@
             font-family: 'Cinzel', serif;
             font-size: clamp(2.5em, 6vw, 5em);
             color: var(--accent);
-            background: none !important; /* 彻底关闭渐变，杜绝矩形底色 */
+            background: none !important;
             -webkit-background-clip: initial;
             -webkit-text-fill-color: currentColor;
             display: inline-block;
             margin-bottom: 30px;
             animation: glow 3s ease-in-out infinite;
-            transform: translateZ(0); /* 独立合成层，降低与背景重绘的干扰 */
+            transform: translateZ(0);
             will-change: transform;
         }
 
-        /* 夜间模式：为避免滤镜与动态背景叠加造成轻微闪动，改为静态柔光 */
         @media (prefers-color-scheme: dark) {
             .hero h1 { animation: none; text-shadow: 0 0 24px rgba(184,134,11,.35); }
         }
@@ -237,14 +230,8 @@
         .model-card:nth-child(3) { animation-delay: 0.3s; }
 
         @keyframes slideUp {
-            from {
-                opacity: 0;
-                transform: translateY(30px);
-            }
-            to {
-                opacity: 1;
-                transform: translateY(0);
-            }
+            from { opacity: 0; transform: translateY(30px); }
+            to { opacity: 1; transform: translateY(0); }
         }
 
         .model-card::before {
@@ -278,17 +265,9 @@
             font-size: 2em;
         }
 
-        .model-logo.openai {
-            background: linear-gradient(135deg, #10a37f, #1a7f64);
-        }
-
-        .model-logo.anthropic {
-            background: linear-gradient(135deg, #d4a574, #b8935f);
-        }
-
-        .model-logo.google {
-            background: linear-gradient(135deg, #4285f4, #34a853);
-        }
+        .model-logo.openai { background: linear-gradient(135deg, #10a37f, #1a7f64); }
+        .model-logo.anthropic { background: linear-gradient(135deg, #d4a574, #b8935f); }
+        .model-logo.google { background: linear-gradient(135deg, #4285f4, #34a853); }
 
         .model-info h3 {
             font-size: 1.5em;
@@ -316,9 +295,7 @@
             border-bottom: 1px solid rgba(0, 0, 0, 0.06);
         }
 
-        .model-item:last-child {
-            border-bottom: none;
-        }
+        .model-item:last-child { border-bottom: none; }
 
         .model-status {
             width: 8px;
@@ -347,7 +324,6 @@
             border: 1px solid rgba(255, 215, 0, 0.1);
         }
 
-        /* 模型过滤 */
         .models-toolbar { display:flex; justify-content:center; margin: 10px 0 30px; }
         .model-filter { width: min(520px, 90%); background: rgba(255,255,255,.04); border: 1px solid rgba(255,215,0,.2); color: var(--light); padding: 12px 14px; border-radius: 12px; outline: none; }
         .model-filter::placeholder { color: rgba(255,255,255,.6); }
@@ -397,15 +373,8 @@
             border: none;
         }
 
-        .copy-btn:hover {
-            background: rgba(255, 215, 0, 0.2);
-            transform: scale(1.05);
-        }
-
-        .copy-btn.copied {
-            background: rgba(76, 175, 80, 0.2);
-            color: var(--success);
-        }
+        .copy-btn:hover { background: rgba(255, 215, 0, 0.2); transform: scale(1.05); }
+        .copy-btn.copied { background: rgba(76, 175, 80, 0.2); color: var(--success); }
 
         /* 提示信息 */
         .info-box {
@@ -419,20 +388,9 @@
             gap: 15px;
         }
 
-        .info-icon {
-            font-size: 1.5em;
-            color: var(--success);
-        }
-
-        .info-text {
-            flex: 1;
-            color: var(--light);
-            line-height: 1.6;
-        }
-
-        .info-text strong {
-            color: var(--accent);
-        }
+        .info-icon { font-size: 1.5em; color: var(--success); }
+        .info-text { flex: 1; color: var(--light); line-height: 1.6; }
+        .info-text strong { color: var(--accent); }
 
         /* 快速开始 */
         .quickstart {
@@ -464,18 +422,9 @@
 
         .code-copy { position: absolute; top: 10px; left: 10px; background: rgba(184,134,11,.08); border: 1px solid rgba(184,134,11,.25); color: #8d6e00; padding: 4px 10px; border-radius: 8px; font-size: .85em; cursor: pointer; user-select: none; }
 
-        .code-comment {
-            color: #6A9955;
-        }
-
-        .code-keyword {
-            color: #C586C0;
-        }
-
-        .code-string {
-            color: #CE9178;
-        }
-
+        .code-comment { color: #6A9955; }
+        .code-keyword { color: #C586C0; }
+        .code-string { color: #CE9178; }
         .code-variable { color: #005cc5; }
 
         /* FAQ精简版 */
@@ -490,87 +439,36 @@
         }
 
         .faq-card { background: #ffffff; border-radius: 15px; padding: 30px; border: 1px solid rgba(0,0,0,0.06); transition: transform 0.3s ease, background 0.3s ease, opacity .3s ease; box-shadow: 0 6px 20px rgba(0,0,0,.05); }
+        .faq-card:hover { background: rgba(255, 255, 255, 0.05); transform: translateY(-3px); }
 
-        .faq-card:hover {
-            background: rgba(255, 255, 255, 0.05);
-            transform: translateY(-3px);
-        }
-
-        .faq-card h4 {
-            color: var(--accent);
-            margin-bottom: 15px;
-            font-size: 1.2em;
-        }
-
-        .faq-card p {
-            color: var(--light);
-            opacity: 0.9;
-            line-height: 1.6;
-        }
+        .faq-card h4 { color: var(--accent); margin-bottom: 15px; font-size: 1.2em; }
+        .faq-card p { color: var(--light); opacity: 0.9; line-height: 1.6; }
 
         /* 页脚 */
         footer { padding: 50px; background: #fafafa; text-align: center; border-top: 1px solid rgba(0, 0, 0, 0.06); }
+        .footer-title { font-family: 'Cinzel', serif; font-size: 2em; color: #8d6e00; margin-bottom: 20px; }
+        .footer-text { color: var(--light); opacity: 0.9; margin-bottom: 30px; }
+
+        /* 移除了 footer-links 相关样式 */
 
         /* 进场动画 */
         .reveal { opacity: 0; transform: translateY(16px); }
         .reveal.show { opacity: 1; transform: translateY(0); transition: opacity .6s ease, transform .6s ease; }
 
-        /* 降低动效（系统偏好） */
         @media (prefers-reduced-motion: reduce) {
             .hero { animation: none; }
             .badge { animation: none; }
             .model-card, .faq-card, .reveal, .reveal.show { transition: none !important; transform: none !important; }
         }
 
-        .footer-title { font-family: 'Cinzel', serif; font-size: 2em; color: #8d6e00; margin-bottom: 20px; }
-
-        .footer-text {
-            color: var(--light);
-            opacity: 0.9;
-            margin-bottom: 30px;
-        }
-
-        .footer-links {
-            display: flex;
-            justify-content: center;
-            gap: 30px;
-            flex-wrap: wrap;
-        }
-
-        .footer-link {
-            color: var(--light);
-            text-decoration: none;
-            opacity: 0.7;
-            transition: all 0.3s ease;
-        }
-
-        .footer-link:hover { color: #8d6e00; opacity: 1; }
-
         /* 响应式 */
         @media (max-width: 768px) {
-            nav {
-                padding: 15px 20px;
-            }
-
-            .nav-links {
-                display: none;
-            }
-
-            .core-models {
-                grid-template-columns: 1fr;
-            }
-
-            .config-grid {
-                grid-template-columns: 1fr;
-            }
-
-            .hero h1 {
-                font-size: 2.5em;
-            }
-
-            .faq-grid {
-                grid-template-columns: 1fr;
-            }
+            nav { padding: 15px 20px; }
+            .nav-links { display: none; }
+            .core-models { grid-template-columns: 1fr; }
+            .config-grid { grid-template-columns: 1fr; }
+            .hero h1 { font-size: 2.5em; }
+            .faq-grid { grid-template-columns: 1fr; }
         }
     </style>
 </head>
@@ -633,15 +531,15 @@
                 <div class="model-list">
                     <div class="model-item">
                         <span class="model-status"></span>
-                        <span class="model-name">gpt-5.1系列</span>
+                        <span class="model-name">gpt-5.2全系列</span>
                     </div>
                     <div class="model-item">
                         <span class="model-status"></span>
-                        <span class="model-name">gpt-5系列</span>
+                        <span class="model-name">gpt-5.1全系列</span>
                     </div>
                     <div class="model-item">
                         <span class="model-status"></span>
-                        <span class="model-name">o3</span>
+                        <span class="model-name">gpt-5全系列</span>
                     </div>
                     <div class="model-item">
                         <span class="model-status"></span>
@@ -662,19 +560,15 @@
                 <div class="model-list">
                     <div class="model-item">
                         <span class="model-status"></span>
-                        <span class="model-name">claude-opus-4.5</span>
+                        <span class="model-name">claude-opus全系列</span>
                     </div>
                     <div class="model-item">
                         <span class="model-status"></span>
-                        <span class="model-name">claude-opus-4.1</span>
+                        <span class="model-name">claude-sonnet全系列</span>
                     </div>
                     <div class="model-item">
                         <span class="model-status"></span>
-                        <span class="model-name">claude-sonnet-4.5</span>
-                    </div>
-                    <div class="model-item">
-                        <span class="model-status"></span>
-                        <span class="model-name">claude-sonnet-4</span>
+                        <span class="model-name">claude-haiku全系列</span>
                     </div>
                 </div>
             </div>
@@ -691,19 +585,19 @@
                 <div class="model-list">
                     <div class="model-item">
                         <span class="model-status"></span>
-                        <span class="model-name">gemini-3-pro-preview</span>
+                        <span class="model-name">gemini-3全系列</span>
                     </div>
                     <div class="model-item">
                         <span class="model-status"></span>
-                        <span class="model-name">gemini-2.5-pro</span>
+                        <span class="model-name">gemini-2.5全系列</span>
                     </div>
                     <div class="model-item">
                         <span class="model-status"></span>
-                        <span class="model-name">gemini-3-pro-image-preview</span>
+                        <span class="model-name">nano-banana-pro</span>
                     </div>
                     <div class="model-item">
                         <span class="model-status"></span>
-                        <span class="model-name">gemini-2.5-flash-image</span>
+                        <span class="model-name">nano-banana</span>
                     </div>
                 </div>
             </div>
@@ -727,8 +621,8 @@
                 <div class="config-item">
                     <div class="config-label">API Endpoint</div>
                     <div class="config-value">
-                        <span>https://wolfholo.top</span>
-                        <button class="copy-btn" onclick="copyToClipboard(this, 'https://wolfholo.top')">复制</button>
+                        <span>https://api.wolfholo.top</span>
+                        <button class="copy-btn" onclick="copyToClipboard(this, 'https://api.wolfholo.top')">复制</button>
                     </div>
                 </div>
                 <div class="config-item">
@@ -753,12 +647,12 @@
                 
                 <span class="code-variable">client</span> = OpenAI(<br>
                 &nbsp;&nbsp;&nbsp;&nbsp;<span class="code-variable">api_key</span>=<span class="code-string">"your-api-key"</span>,  <span class="code-comment"># 申请获得的key</span><br>
-                &nbsp;&nbsp;&nbsp;&nbsp;<span class="code-variable">base_url</span>=<span class="code-string">"https://wolfholo.top/v1"</span><br>
+                &nbsp;&nbsp;&nbsp;&nbsp;<span class="code-variable">base_url</span>=<span class="code-string">"https://api.wolfholo.top/v1"</span><br>
                 )<br><br>
                 
                 <span class="code-comment"># 使用任意支持的模型</span><br>
                 <span class="code-variable">response</span> = client.chat.completions.create(<br>
-                &nbsp;&nbsp;&nbsp;&nbsp;<span class="code-variable">model</span>=<span class="code-string">"gpt-5"</span>,  <span class="code-comment"># 或 claude-opus-4.1, gemini-2.5-pro 等</span><br>
+                &nbsp;&nbsp;&nbsp;&nbsp;<span class="code-variable">model</span>=<span class="code-string">"gpt-5"</span>,  <span class="code-comment"># 或 claude-opus, gemini-3 等</span><br>
                 &nbsp;&nbsp;&nbsp;&nbsp;<span class="code-variable">messages</span>=[<br>
                 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;{<span class="code-string">"role"</span>: <span class="code-string">"user"</span>, <span class="code-string">"content"</span>: <span class="code-string">"Hello!"</span>}<br>
                 &nbsp;&nbsp;&nbsp;&nbsp;]<br>
@@ -771,11 +665,11 @@
                 <span class="code-lang">cURL</span>
                 <button class="code-copy" onclick="copyCode(this)">复制</button>
                 <span class="code-comment"># 直接使用 cURL 请求</span><br>
-                curl https://wolfholo.top/v1/chat/completions \<br>
+                curl https://api.wolfholo.top/v1/chat/completions \<br>
                 &nbsp;&nbsp;-H <span class="code-string">"Content-Type: application/json"</span> \<br>
                 &nbsp;&nbsp;-H <span class="code-string">"Authorization: Bearer your-api-key"</span> \<br>
                 &nbsp;&nbsp;-d '{<br>
-                &nbsp;&nbsp;&nbsp;&nbsp;<span class="code-string">"model"</span>: <span class="code-string">"claude-opus-4.1"</span>,<br>
+                &nbsp;&nbsp;&nbsp;&nbsp;<span class="code-string">"model"</span>: <span class="code-string">"claude-opus"</span>,<br>
                 &nbsp;&nbsp;&nbsp;&nbsp;<span class="code-string">"messages"</span>: [{<span class="code-string">"role"</span>: <span class="code-string">"user"</span>, <span class="code-string">"content"</span>: <span class="code-string">"Hello!"</span>}]<br>
                 &nbsp;&nbsp;}'
             </div>
@@ -813,17 +707,10 @@
         </div>
     </section>
 
-    <!-- 页脚 -->
+    <!-- 页脚 (链接已删除) -->
     <footer>
         <div class="footer-title">WolfHolo</div>
         <p class="footer-text">让AI的智慧如同赫萝的智慧一样，自由流动，惠及所有人</p>
-        
-        <div class="footer-links">
-            <a href="#" class="footer-link">GitHub</a>
-            <a href="#" class="footer-link">文档</a>
-            <a href="#" class="footer-link">社区</a>
-            <a href="#" class="footer-link">联系我们</a>
-        </div>
         
         <div style="margin-top: 30px; opacity: 0.7;">
             © 2025 Holo AI Share | 纯公益项目
@@ -876,24 +763,20 @@
         }
 
         const particles = [];
-        const NUM = isDark ? 100 : 60; /* 降低密度：夜间100，日间60 */
+        const NUM = isDark ? 100 : 60;
         for (let i = 0; i < NUM; i++) particles.push(new Particle());
 
-        let scrollOffset = 0; // 用于视差位移
+        let scrollOffset = 0;
 
         function animateParticles() {
             ctx.clearRect(0, 0, canvas.width, canvas.height);
-            
-            // 视差平移：随滚动缓慢上移
             const off = (scrollOffset % canvas.height);
             ctx.save();
             ctx.translate(0, -off);
             particles.forEach(particle => { particle.update(); particle.draw(); });
-            // 补一层平铺，避免出现空带
             ctx.translate(0, canvas.height);
             particles.forEach(particle => { particle.draw(); });
             ctx.restore();
-            // 避免粒子覆盖标题：为标题区域留出透明窗口
             const title = document.querySelector('.hero h1');
             if (title) {
                 const r = title.getBoundingClientRect();
@@ -904,13 +787,11 @@
                 const h = Math.min(canvas.height, r.height + pad * 2);
                 ctx.clearRect(x, y, w, h);
             }
-            
             requestAnimationFrame(animateParticles);
         }
 
         animateParticles();
 
-        // 跟随系统夜间模式动态调整亮度
         if (window.matchMedia) {
             const mq = window.matchMedia('(prefers-color-scheme: dark)');
             mq.addEventListener('change', (e) => {
@@ -920,13 +801,11 @@
             });
         }
 
-        // 窗口大小调整
         window.addEventListener('resize', () => {
             canvas.width = window.innerWidth;
             canvas.height = window.innerHeight;
         });
 
-        // 导航栏滚动效果 + 粒子视差
         window.addEventListener('scroll', () => {
             const navbar = document.getElementById('navbar');
             if (window.scrollY > 100) {
@@ -934,10 +813,9 @@
             } else {
                 navbar.classList.remove('scrolled');
             }
-            scrollOffset = window.scrollY * 0.15; // 视差因子
+            scrollOffset = window.scrollY * 0.15;
         });
 
-        // 复制功能
         function writeClipboard(text, onDone){
             const ok = () => { if (onDone) onDone(); };
             if (navigator.clipboard && window.isSecureContext) {
@@ -965,7 +843,6 @@
             });
         }
 
-        // 平滑滚动
         document.querySelectorAll('a[href^="#"]').forEach(anchor => {
             anchor.addEventListener('click', function (e) {
                 e.preventDefault();
@@ -976,7 +853,6 @@
             });
         });
 
-        // 滚动激活导航
         const navLinks = Array.from(document.querySelectorAll('.nav-links a[href^="#"]'));
         const sections = ['#models', '#quickstart', '#faq'];
         function updateActive() {
@@ -990,7 +866,6 @@
         window.addEventListener('scroll', updateActive);
         updateActive();
 
-        // 代码复制（快速开始）
         function copyCode(btn) {
             const block = btn.parentElement;
             const cloned = block.cloneNode(true);
@@ -1001,13 +876,11 @@
             });
         }
 
-        // 滚动显隐
         const io = new IntersectionObserver((entries) => {
             entries.forEach(e => { if (e.isIntersecting) e.target.classList.add('show'); });
         }, { threshold: 0.12 });
         document.querySelectorAll('.reveal').forEach(el => io.observe(el));
 
-        // 模型搜索过滤
         const filterInput = document.getElementById('model-filter');
         if (filterInput) {
             filterInput.addEventListener('input', (e) => {

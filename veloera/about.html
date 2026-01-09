@@ -1,672 +1,786 @@
 <!DOCTYPE html>
-<html lang="zh-CN">
+<html lang="zh-CN" class="light">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>WolfHolo · 麦田与旅途</title>
-    <!-- 引入古典衬线字体族 -->
+    <title>WolfHolo · 麦田与旅途 | Volume 2026</title>
+    
+    <!-- 引入 Tailwind CSS (v3.4 用于快速构建，配合自定义样式) -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    
+    <!-- 引入 Google Fonts: Cormorant Garamond (标题), Crimson Pro (正文), Cinzel (展示/标签) -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600;700&family=Cormorant+Garamond:ital,wght@0,400;0,600;1,400&family=Crimson+Pro:ital,wght@0,300;0,400;0,600;1,400&family=JetBrains+Mono:wght@400&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;500;600;700;800&family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;0,700;1,400&family=Crimson+Pro:ital,wght@0,300;0,400;0,600;1,400&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
     
-    <style>
-        /* ==================== 
-           设计令牌 (Tokens) 
-           ==================== */
-        :root {
-            /* 浅色模式 (羊皮纸白昼) */
-            --bg-paper: #F2EFE9;
-            --bg-overlay: #EBE5D9; /* 卡片背景 */
-            --text-main: #2B221B;  /* 深褐墨色 */
-            --text-muted: #5C4D42;
-            --accent-brass: #9D8248; /* 暗黄铜 */
-            --accent-crimson: #8B2635;
-            --border-wood: #D4C5B0;
-            --shadow-soft: 0 4px 12px rgba(43, 34, 27, 0.05);
-            --shadow-lift: 0 12px 24px rgba(43, 34, 27, 0.1);
-            
-            /* 字体栈 */
-            --font-heading: 'Cormorant Garamond', serif;
-            --font-body: 'Crimson Pro', serif;
-            --font-display: 'Cinzel', serif;
-            --font-code: 'JetBrains Mono', monospace;
-        }
+    <!-- 图标库 -->
+    <script src="https://unpkg.com/lucide@latest"></script>
 
-        @media (prefers-color-scheme: dark) {
-            :root {
-                /* 深色模式 (深夜图书馆) */
-                --bg-paper: #1C1714; /* 深红木色 */
-                --bg-overlay: #251E19; /* 陈旧橡木 */
-                --text-main: #E8DFD4;  /* 羊皮纸色 */
-                --text-muted: #9C8B7A; /* 褪色墨水 */
-                --accent-brass: #C9A962; /* 抛光黄铜 */
-                --accent-crimson: #8B2635; /* 封蜡红 */
-                --border-wood: #4A3F35; /* 木纹 */
-                --shadow-soft: 0 4px 12px rgba(0, 0, 0, 0.3);
-                --shadow-lift: 0 12px 24px rgba(0, 0, 0, 0.5);
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    fontFamily: {
+                        heading: ['"Cormorant Garamond"', 'serif'],
+                        body: ['"Crimson Pro"', 'serif'],
+                        display: ['"Cinzel"', 'serif'],
+                        mono: ['"JetBrains Mono"', 'monospace'],
+                    },
+                    colors: {
+                        // 定义语义化颜色变量，具体值在 CSS 中定义
+                        bg: 'var(--bg)',
+                        'bg-alt': 'var(--bg-alt)',
+                        fg: 'var(--fg)',
+                        muted: 'var(--muted)',
+                        'muted-fg': 'var(--muted-fg)',
+                        border: 'var(--border)',
+                        accent: 'var(--accent)',
+                        'accent-sec': 'var(--accent-sec)',
+                    },
+                    backgroundImage: {
+                        'brass-gradient': 'linear-gradient(180deg, #D4B872 0%, #C9A962 50%, #B8953F 100%)',
+                    }
+                }
             }
         }
+    </script>
 
-        /* 强制覆盖模式 (JS切换用) */
-        body.light-mode {
-            --bg-paper: #F2EFE9; --bg-overlay: #EBE5D9; --text-main: #2B221B; --text-muted: #5C4D42;
-            --accent-brass: #9D8248; --border-wood: #D4C5B0; --shadow-soft: 0 4px 12px rgba(43,34,27,0.05);
-            --shadow-lift: 0 12px 24px rgba(43,34,27,0.1);
-        }
-        body.dark-mode {
-            --bg-paper: #1C1714; --bg-overlay: #251E19; --text-main: #E8DFD4; --text-muted: #9C8B7A;
-            --accent-brass: #C9A962; --border-wood: #4A3F35; --shadow-soft: 0 4px 12px rgba(0,0,0,0.3);
-            --shadow-lift: 0 12px 24px rgba(0,0,0,0.5);
+    <style>
+        /* =========================================
+           Design Tokens & Global Styles
+           ========================================= */
+        :root {
+            /* 默认白昼模式 (Aged Parchment Style) */
+            --bg: #F2E8DC; /* 暖色羊皮纸背景 */
+            --bg-alt: #FCF7F0; /* 较亮的卡片背景 */
+            --fg: #2C241B; /* 深褐色墨水 */
+            --muted: #E6DCC0; /* 磨损的纸张 */
+            --muted-fg: #6B5D4D; /* 褪色墨水 */
+            --border: #C7B59D; /* 纸张边缘 */
+            --accent: #B08D55; /* 抛光铜色 */
+            --accent-sec: #8B2635; /* 印泥红/绯红 */
+            --shadow-color: rgba(44, 36, 27, 0.1);
         }
 
-        /* ==================== 
-           全局基础样式 
-           ==================== */
-        * { margin: 0; padding: 0; box-sizing: border-box; }
-        
+        .dark {
+            /* 黑夜模式 (Library at Night - 遵循设计文档) */
+            --bg: #1C1714; /* 深红木色 */
+            --bg-alt: #251E19; /* 陈年橡木 */
+            --fg: #E8DFD4; /* 古董羊皮纸 */
+            --muted: #3D332B; /* 磨损皮革 */
+            --muted-fg: #9C8B7A; /* 褪色墨迹 */
+            --border: #4A3F35; /* 木纹 */
+            --accent: #C9A962; /* 抛光黄铜 */
+            --accent-sec: #8B2635; /* 图书馆绯红 */
+            --shadow-color: rgba(0, 0, 0, 0.4);
+        }
+
+        /* 基础设置 */
+        html { scroll-behavior: smooth; }
         body {
-            font-family: var(--font-body);
-            background-color: var(--bg-paper);
-            color: var(--text-main);
-            font-size: 18px;
-            line-height: 1.6;
-            overflow-x: hidden;
+            background-color: var(--bg);
+            color: var(--fg);
             transition: background-color 0.5s ease, color 0.5s ease;
+            overflow-x: hidden;
+            -webkit-font-smoothing: antialiased;
         }
 
-        /* 纹理遮罩 - 纸张噪点 */
-        body::before {
-            content: "";
+        /* =========================================
+           Textures & Atmosphere
+           ========================================= */
+        
+        /* 纸张噪点纹理 */
+        .texture-overlay {
             position: fixed;
             top: 0; left: 0; width: 100%; height: 100%;
-            background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.65' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)' opacity='0.05'/%3E%3C/svg%3E");
+            pointer-events: none;
+            z-index: 50;
+            opacity: 0.04;
+            background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.65' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)'/%3E%3C/svg%3E");
+        }
+
+        /* 暗角效果 (Vignette) */
+        .vignette-overlay {
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            pointer-events: none;
+            z-index: 49;
+            background: radial-gradient(ellipse at center, transparent 0%, transparent 40%, rgba(28, 23, 20, 0.3) 100%);
+        }
+
+        /* =========================================
+           Typography Special Effects
+           ========================================= */
+        
+        /* 首字下沉 (Drop Cap) */
+        .drop-cap::first-letter {
+            float: left;
+            font-family: 'Cinzel', serif;
+            font-size: 4.5rem;
+            line-height: 0.8;
+            margin-right: 0.75rem;
+            margin-top: 0.25rem;
+            color: var(--accent);
+            text-shadow: 2px 2px 0px var(--shadow-color);
+        }
+
+        /* 雕刻文字效果 (Engraved) */
+        .engraved-text {
+            text-shadow: 0px 1px 0px rgba(255,255,255,0.1), 0px -1px 0px rgba(0,0,0,0.3);
+        }
+
+        /* 罗马数字卷标 */
+        .volume-label::before {
+            content: "Volume ";
+            opacity: 0.7;
+            font-size: 0.6em;
+            letter-spacing: 0.2em;
+        }
+
+        /* =========================================
+           Components: Cards & Borders
+           ========================================= */
+        
+        /* 古典卡片 */
+        .academia-card {
+            background-color: var(--bg-alt);
+            border: 1px solid var(--border);
+            position: relative;
+            transition: all 0.4s ease-out;
+            box-shadow: inset 0 1px 0 rgba(255,255,255,0.05);
+        }
+
+        .academia-card:hover {
+            border-color: var(--accent);
+            box-shadow: 0 10px 30px var(--shadow-color);
+            transform: translateY(-2px);
+        }
+
+        /* 角落花纹 (Corner Flourish) */
+        .corner-flourish::before, .corner-flourish::after {
+            content: "";
+            position: absolute;
+            width: 16px; height: 16px;
+            border: 1px solid var(--accent);
             opacity: 0.4;
-            pointer-events: none;
-            z-index: 9998;
+            transition: all 0.3s ease;
         }
-
-        /* 晕影效果 - 聚焦中心 */
-        body::after {
-            content: "";
-            position: fixed;
-            top: 0; left: 0; width: 100%; height: 100%;
-            background: radial-gradient(ellipse at center, transparent 0%, transparent 40%, rgba(28, 23, 20, 0.4) 100%);
-            pointer-events: none;
-            z-index: 9997;
-        }
-
-        h1, h2, h3 { font-family: var(--font-heading); font-weight: 400; }
-        a { text-decoration: none; color: inherit; transition: all 0.3s ease; }
-        
-        /* 选中态样式 (模拟高亮笔) */
-        ::selection { background: var(--accent-brass); color: #1C1714; }
-
-        /* ==================== 
-           组件样式 
-           ==================== */
-
-        /* 导航栏 */
-        nav {
-            position: fixed; top: 0; width: 100%; z-index: 1000;
-            padding: 24px 50px;
-            border-bottom: 1px solid transparent;
-            transition: all 0.4s ease;
-        }
-        nav.scrolled {
-            background: var(--bg-paper); /* 不透明以遮挡内容 */
-            padding: 16px 50px;
-            border-bottom: 1px solid var(--border-wood);
-            box-shadow: var(--shadow-soft);
-        }
-        /* 导航背景的毛玻璃在古典风格中改为半透明纸张感 */
-        nav.scrolled::before {
-            content: ""; position: absolute; inset: 0;
-            background: var(--bg-paper); opacity: 0.95; z-index: -1;
-        }
-
-        .nav-content { max-width: 1200px; margin: 0 auto; display: flex; justify-content: space-between; align-items: center; }
-        
-        .logo {
-            font-family: var(--font-display);
-            font-size: 1.4em;
-            letter-spacing: 0.1em;
-            color: var(--text-main);
-            display: flex; align-items: center; gap: 12px;
-            font-weight: 600;
-        }
-        .logo span:first-child { font-size: 1.2em; filter: sepia(0.8); } /* 让Emoji也复古 */
-
-        .nav-links { display: flex; gap: 32px; list-style: none; }
-        .nav-links a {
-            font-family: var(--font-display);
-            font-size: 0.8em;
-            text-transform: uppercase;
-            letter-spacing: 0.1em;
-            color: var(--text-muted);
-            padding: 8px 0;
-            position: relative;
-        }
-        .nav-links a::after {
-            content: "✶"; /* 装饰符号 */
-            position: absolute; bottom: -10px; left: 50%; transform: translateX(-50%) scale(0);
-            color: var(--accent-brass); font-size: 12px; transition: transform 0.3s ease;
-        }
-        .nav-links a:hover, .nav-links a.active { color: var(--accent-brass); }
-        .nav-links a:hover::after, .nav-links a.active::after { transform: translateX(-50%) scale(1); }
-
-        /* 主题切换按钮 */
-        .theme-toggle {
-            cursor: pointer; background: none; border: 1px solid var(--border-wood);
-            color: var(--accent-brass); padding: 8px; border-radius: 50%;
-            display: flex; align-items: center; justify-content: center;
-            transition: all 0.3s;
-        }
-        .theme-toggle:hover { background: var(--accent-brass); color: var(--bg-paper); }
-
-        /* Hero 区域 */
-        .hero {
-            min-height: 85vh;
-            display: flex; flex-direction: column; justify-content: center; align-items: center;
-            text-align: center; position: relative;
-            padding: 160px 20px 80px;
-        }
-        /* 拱形装饰边框 - 模拟窗户/建筑 */
-        .hero::before {
-            content: ""; position: absolute;
-            top: 50%; left: 50%; transform: translate(-50%, -50%);
-            width: 80%; height: 80%;
-            border: 1px solid var(--border-wood);
-            border-radius: 40% 40% 0 0 / 20% 20% 0 0;
-            opacity: 0.3; pointer-events: none;
-            z-index: -1;
-        }
-
-        .hero h1 {
-            font-size: clamp(3rem, 8vw, 5.5rem);
-            line-height: 1;
-            margin-bottom: 30px;
-            color: transparent;
-            /* 黄铜渐变字 */
-            background: linear-gradient(180deg, #D4B872 0%, var(--accent-brass) 50%, #B8953F 100%);
-            -webkit-background-clip: text;
-            background-clip: text;
-            /* 雕刻阴影 */
-            text-shadow: 1px 1px 1px rgba(0,0,0,0.2), -1px -1px 0 rgba(255,255,255,0.05);
-            letter-spacing: -0.02em;
+        .corner-flourish:hover::before, .corner-flourish:hover::after {
+            opacity: 1;
+            width: 24px; height: 24px;
         }
         
-        .hero-subtitle {
-            font-family: var(--font-display);
-            color: var(--accent-brass);
-            font-size: 1.1em; letter-spacing: 0.25em; text-transform: uppercase;
-            margin-bottom: 24px;
-        }
+        .corner-top-left::before { top: 6px; left: 6px; border-right: none; border-bottom: none; }
+        .corner-top-right::after { top: 6px; right: 6px; border-left: none; border-bottom: none; }
+        /* 仅在重要卡片使用底部花纹 */
+        .corner-full::before { bottom: 6px; left: 6px; border-right: none; border-top: none; top: auto; }
+        .corner-full::after { bottom: 6px; right: 6px; border-left: none; border-top: none; top: auto; }
 
-        .hero-description {
-            max-width: 700px;
-            font-size: 1.25em;
-            color: var(--text-muted);
-            position: relative;
-        }
-        /* 首字母下沉 */
-        .hero-description::first-letter {
-            float: left; font-family: var(--font-display);
-            font-size: 3.5em; line-height: 0.8;
-            padding-right: 12px; padding-top: 4px;
-            color: var(--accent-brass);
-            text-shadow: 2px 2px 0 rgba(0,0,0,0.2);
-        }
-
-        /* 章节通用 */
-        .main-section { max-width: 1100px; margin: 0 auto; padding: 100px 24px; position: relative; }
-        
-        /* 装饰分割线 */
+        /* 装饰性分割线 */
         .ornate-divider {
-            height: 1px; width: 100%; margin: 60px 0 80px;
-            background: linear-gradient(90deg, transparent 0%, var(--border-wood) 20%, var(--accent-brass) 50%, var(--border-wood) 80%, transparent 100%);
-            position: relative; display: flex; justify-content: center; align-items: center;
+            height: 1px;
+            width: 100%;
+            background: linear-gradient(90deg, transparent 0%, var(--border) 20%, var(--accent) 50%, var(--border) 80%, transparent 100%);
+            position: relative;
+            margin: 3rem 0;
+            opacity: 0.6;
         }
         .ornate-divider::after {
-            content: "❦"; /* 装饰符号 */
-            background: var(--bg-paper);
-            padding: 0 16px; color: var(--accent-brass);
-            font-size: 20px;
+            content: "✦";
+            position: absolute;
+            left: 50%; top: 50%;
+            transform: translate(-50%, -50%);
+            background-color: var(--bg);
+            padding: 0 10px;
+            color: var(--accent);
+            font-size: 14px;
         }
 
-        .section-header { text-align: center; margin-bottom: 60px; }
-        .volume-label {
-            font-family: var(--font-display);
-            font-size: 0.75rem; color: var(--accent-brass);
-            letter-spacing: 0.3em; text-transform: uppercase;
-            display: block; margin-bottom: 8px;
+        /* 蜡封徽章 (Wax Seal) */
+        .wax-badge {
+            background: radial-gradient(circle at 30% 30%, #a63446, #7a1f2e);
+            border: 2px solid #631521;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.3), inset 0 2px 4px rgba(255,255,255,0.2);
+            color: #E8DFD4;
+            font-family: 'Cinzel', serif;
+            text-shadow: 0 1px 2px rgba(0,0,0,0.5);
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            padding: 4px 12px;
+            border-radius: 999px; /* 椭圆 */
+            font-size: 0.75rem;
+            letter-spacing: 0.1em;
+            transform: rotate(-2deg);
+            transition: transform 0.3s;
         }
-        .section-title { font-size: 3rem; color: var(--text-main); margin-bottom: 16px; }
+        .wax-badge:hover { transform: rotate(0deg) scale(1.05); }
 
-        /* 卡片网格 */
-        .grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 32px; }
+        /* =========================================
+           Interactive Elements
+           ========================================= */
         
-        .card {
-            background: var(--bg-overlay);
-            border: 1px solid var(--border-wood);
+        /* 导航栏 */
+        .nav-glass {
+            background: var(--bg-alt);
+            border-bottom: 1px solid var(--border);
+            /* 顶部装饰条 */
+            box-shadow: 0 4px 20px rgba(0,0,0,0.1), inset 0 1px 0 rgba(255,255,255,0.05);
+        }
+        .nav-link {
+            font-family: 'Cinzel', serif;
+            letter-spacing: 0.05em;
+            position: relative;
+            color: var(--fg);
+        }
+        .nav-link::after {
+            content: '';
+            position: absolute;
+            bottom: -4px; left: 0; width: 0%; height: 1px;
+            background-color: var(--accent);
+            transition: width 0.3s ease;
+        }
+        .nav-link:hover::after, .nav-link.active::after { width: 100%; }
+        .nav-link.active { color: var(--accent); }
+
+        /* 按钮 - 黄铜质感 */
+        .btn-brass {
+            background: var(--bg);
+            border: 1px solid var(--accent);
+            color: var(--accent);
+            font-family: 'Cinzel', serif;
+            letter-spacing: 0.15em;
+            text-transform: uppercase;
+            font-size: 0.75rem;
+            padding: 0.5rem 1.5rem;
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+            z-index: 1;
+        }
+        .btn-brass::before {
+            content: '';
+            position: absolute;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: var(--accent);
+            z-index: -1;
+            transform: scaleX(0);
+            transform-origin: right;
+            transition: transform 0.3s ease-out;
+        }
+        .btn-brass:hover {
+            color: var(--bg); /* 文字变深色 */
+            border-color: var(--accent);
+        }
+        .dark .btn-brass:hover { color: #1C1714; }
+        .btn-brass:hover::before {
+            transform: scaleX(1);
+            transform-origin: left;
+        }
+
+        /* 时间线 */
+        .timeline-line {
+            position: absolute;
+            left: 0; top: 0; bottom: 0;
+            width: 2px;
+            background: var(--border);
+            margin-left: 9px;
+        }
+        .timeline-dot {
+            width: 12px; height: 12px;
+            background: var(--bg);
+            border: 2px solid var(--accent);
+            border-radius: 50%;
+            z-index: 10;
+            position: relative;
+            box-shadow: 0 0 0 4px var(--bg); /* Create gap */
+        }
+        .timeline-item:hover .timeline-dot {
+            background: var(--accent);
+            box-shadow: 0 0 10px var(--accent);
+        }
+
+        /* 代码块 - 类似古籍记录或黑板 */
+        .code-manuscript {
+            background-color: #1A1614; /* 始终深色，模拟黑板或深色墨水瓶 */
+            border: 2px solid var(--border);
+            border-radius: 4px;
+            font-family: 'JetBrains Mono', monospace;
+            position: relative;
+            box-shadow: inset 0 0 30px rgba(0,0,0,0.5);
+        }
+        .code-manuscript::before {
+            /* 顶部金属夹 */
+            content: "";
+            position: absolute;
+            top: -6px; left: 50%; transform: translateX(-50%);
+            width: 60px; height: 12px;
+            background: #888;
+            background: linear-gradient(90deg, #444, #999, #444);
             border-radius: 2px;
-            padding: 40px 32px;
-            position: relative;
-            transition: all 0.4s ease;
-        }
-        /* 卡片悬停效果：边框变色，微上浮 */
-        .card:hover {
-            border-color: var(--accent-brass);
-            transform: translateY(-4px);
-            box-shadow: var(--shadow-lift);
-        }
-        /* 角落花纹 (Corner Flourish) */
-        .card::before, .card::after {
-            content: ""; position: absolute; width: 12px; height: 12px;
-            border: 1px solid var(--accent-brass);
-            transition: all 0.4s ease; opacity: 0.3;
-        }
-        .card::before { top: 6px; left: 6px; border-right: none; border-bottom: none; }
-        .card::after { bottom: 6px; right: 6px; border-left: none; border-top: none; }
-        .card:hover::before, .card:hover::after { opacity: 1; width: 20px; height: 20px; }
-
-        .card h3 {
-            font-size: 1.8rem; color: var(--text-main); margin-bottom: 16px;
-            font-family: var(--font-heading);
-        }
-        .card p { font-size: 1.05rem; color: var(--text-muted); }
-
-        /* 标签 */
-        .badges { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 20px; }
-        .badge {
-            font-family: var(--font-display); font-size: 0.7em;
-            letter-spacing: 0.1em; text-transform: uppercase;
-            color: var(--accent-brass);
-            border: 1px solid var(--border-wood);
-            padding: 6px 12px;
-            border-radius: 20px; /* 唯一保留圆角的地方，像火漆印的边缘 */
+            box-shadow: 0 2px 4px rgba(0,0,0,0.3);
         }
 
-        /* 代码块 - 账本风格 */
-        .code-block {
-            background: rgba(0,0,0,0.2); /* 无论日夜都稍微加深 */
-            border: 1px double var(--border-wood);
-            padding: 40px 24px 24px;
-            margin-top: 24px;
-            position: relative;
-            font-family: var(--font-code);
-            font-size: 0.9em;
-            color: var(--text-muted);
-            overflow-x: auto;
+        /* 动画 */
+        .fade-up {
+            opacity: 0;
+            transform: translateY(20px);
+            transition: opacity 0.8s ease-out, transform 0.8s ease-out;
         }
-        .code-lang {
-            position: absolute; top: 0; right: 0;
-            background: var(--border-wood); color: var(--bg-paper);
-            padding: 4px 12px; font-family: var(--font-display); font-size: 0.7em;
-        }
-        .code-copy {
-            position: absolute; top: 12px; left: 12px;
-            background: transparent; border: 1px solid var(--accent-brass);
-            color: var(--accent-brass);
-            font-family: var(--font-display);
-            font-size: 0.7em; padding: 4px 12px;
-            cursor: pointer; transition: all 0.2s;
-        }
-        .code-copy:hover { background: var(--accent-brass); color: var(--bg-paper); }
-
-        /* 时间线 - 编年史风格 */
-        .timeline { 
-            border-left: 2px solid var(--border-wood); 
-            margin-left: 20px; padding-left: 40px; 
-            margin-top: 40px;
-        }
-        .tl-item { position: relative; margin-bottom: 50px; }
-        /* 时间节点 - 黄铜铆钉 */
-        .tl-item::before {
-            content: ""; position: absolute; left: -46px; top: 6px;
-            width: 10px; height: 10px; background: var(--bg-paper);
-            border: 2px solid var(--accent-brass); transform: rotate(45deg); /* 菱形节点 */
-            transition: background 0.3s;
-        }
-        .tl-item:hover::before { background: var(--accent-brass); }
-        
-        .tl-date {
-            font-family: var(--font-display); color: var(--accent-brass);
-            font-size: 0.9em; letter-spacing: 0.1em; margin-bottom: 4px;
-        }
-        .tl-title { font-family: var(--font-heading); font-size: 1.6em; color: var(--text-main); }
-
-        /* 页脚 */
-        footer {
-            padding: 100px 20px 40px;
-            text-align: center;
-            border-top: 1px solid var(--border-wood);
-            position: relative;
-        }
-        /* 页脚装饰 */
-        footer::before {
-            content: "✦"; position: absolute; top: -12px; left: 50%; transform: translateX(-50%);
-            background: var(--bg-paper); padding: 0 20px; color: var(--border-wood); font-size: 24px;
-        }
-        .footer-logo {
-            font-family: var(--font-display); font-size: 2em;
-            color: var(--accent-brass); margin-bottom: 20px; display: block;
+        .fade-up.visible {
+            opacity: 1;
+            transform: translateY(0);
         }
 
-        /* 响应式 */
-        @media (max-width: 768px) {
-            .nav-links { display: none; } /* 移动端简化：隐藏菜单，只留Logo和主题开关 */
-            .hero h1 { font-size: 2.5rem; }
-            .hero-description::first-letter { font-size: 3em; }
-            .main-section { padding: 60px 20px; }
-            .card { padding: 24px; }
-            .timeline { padding-left: 24px; }
-            .tl-item::before { left: -30px; }
+        /* 拱形门 (Arch) - 特征性设计 */
+        .arch-top {
+            border-radius: 40% 40% 0 0 / 20% 20% 0 0;
         }
 
-        /* 进场动画 */
-        .reveal { opacity: 0; transform: translateY(20px); transition: all 0.8s ease-out; }
-        .reveal.show { opacity: 1; transform: translateY(0); }
-
-        /* 粒子画布 */
-        #particles-bg { position: fixed; top: 0; left: 0; width: 100%; height: 100%; z-index: -1; pointer-events: none; }
+        /* 滚动条 */
+        ::-webkit-scrollbar { width: 8px; }
+        ::-webkit-scrollbar-track { background: var(--bg); }
+        ::-webkit-scrollbar-thumb { background: var(--border); border-radius: 4px; }
+        ::-webkit-scrollbar-thumb:hover { background: var(--accent); }
     </style>
 </head>
-<body id="top" class="dark-mode"> <!-- 默认为古典深色模式 -->
-    <canvas id="particles-bg"></canvas>
+<body id="top" class="antialiased selection:bg-[#C9A962] selection:text-[#1C1714]">
+    
+    <!-- 全局纹理覆盖 -->
+    <div class="texture-overlay"></div>
+    <div class="vignette-overlay"></div>
 
-    <nav id="navbar">
-        <div class="nav-content">
-            <a href="#top" class="logo">
-                <span>🐺</span>
-                <span>HOLO AI</span>
+    <!-- 导航栏 -->
+    <nav id="navbar" class="fixed top-0 w-full z-40 transition-all duration-300 py-4 nav-glass">
+        <div class="max-w-7xl mx-auto px-6 md:px-12 flex justify-between items-center">
+            <!-- LOGO -->
+            <a href="#top" class="flex items-center gap-3 group">
+                <div class="relative w-10 h-10 flex items-center justify-center border border-accent rounded-full group-hover:bg-accent/10 transition-colors">
+                    <span class="text-xl">🐺</span>
+                </div>
+                <div class="flex flex-col">
+                    <span class="font-display font-bold text-lg tracking-widest text-accent group-hover:text-accent-sec transition-colors">HOLO AI</span>
+                    <span class="font-display text-[10px] uppercase tracking-[0.3em] opacity-60">Volume 2026</span>
+                </div>
             </a>
-            <ul class="nav-links">
-                <li><a href="#origin" class="active">I. 缘起</a></li>
-                <li><a href="#overview">II. 概览</a></li>
-                <li><a href="#oath">III. 约定</a></li>
-                <li><a href="#journey">IV. 里程碑</a></li>
-                <li><a href="#traveler">V. 致旅人</a></li>
+
+            <!-- 桌面菜单 -->
+            <ul class="hidden md:flex gap-8 items-center">
+                <li><a class="nav-link text-sm uppercase active" href="#origin">缘起</a></li>
+                <li><a class="nav-link text-sm uppercase" href="#overview">概览</a></li>
+                <li><a class="nav-link text-sm uppercase" href="#oath">约定</a></li>
+                <li><a class="nav-link text-sm uppercase" href="#journey">里程碑</a></li>
+                <li><a class="nav-link text-sm uppercase" href="#traveler">致旅人</a></li>
             </ul>
-            <button class="theme-toggle" id="themeBtn" aria-label="切换日夜模式">
-                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                    <circle cx="12" cy="12" r="5"></circle>
-                    <line x1="12" y1="1" x2="12" y2="3"></line>
-                    <line x1="12" y1="21" x2="12" y2="23"></line>
-                    <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line>
-                    <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line>
-                    <line x1="1" y1="12" x2="3" y2="12"></line>
-                    <line x1="21" y1="12" x2="23" y2="12"></line>
-                    <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line>
-                    <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>
-                </svg>
-            </button>
+
+            <!-- 功能区：主题切换 -->
+            <div class="flex items-center gap-4">
+                <button id="theme-toggle" class="p-2 rounded-full border border-border hover:border-accent text-accent transition-all" aria-label="切换主题">
+                    <i data-lucide="sun" class="w-4 h-4 hidden dark:block"></i>
+                    <i data-lucide="moon" class="w-4 h-4 block dark:hidden"></i>
+                </button>
+            </div>
         </div>
     </nav>
 
-    <section class="hero">
-        <div class="hero-subtitle">Volume I : The Beginning</div>
-        <h1>风与麦香之间</h1>
-        <p class="hero-description">
-            若你在风里听见麦穗彼此碰触的声响，那便是旅途开始的暗语。
-            我们愿把拾来的智慧切成可分的片：
-            统一接口、免费开放，涵盖 GPT-5、Claude-Opus、Gemini-3 等最新模型，供旅人取用。
-        </p>
+    <!-- Hero 区域 -->
+    <section class="relative min-h-[85vh] flex items-center justify-center px-6 pt-32 pb-20 overflow-hidden">
+        <!-- 装饰性背景字 -->
+        <div class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 text-[15vw] font-display text-accent opacity-[0.03] select-none pointer-events-none whitespace-nowrap">
+            WOLF HOLO
+        </div>
+
+        <div class="relative max-w-4xl mx-auto text-center z-10 fade-up">
+            <div class="mb-6 flex justify-center">
+                <span class="inline-block px-4 py-1 border-t border-b border-accent/50 text-accent font-display text-xs tracking-[0.4em] uppercase">Est. 2026</span>
+            </div>
+            
+            <h1 class="font-heading text-6xl md:text-8xl mb-6 leading-[0.9] text-fg">
+                风与麦香之间<span class="text-accent">.</span>
+            </h1>
+            
+            <p class="font-display text-lg md:text-2xl text-muted-fg tracking-wide mb-10 italic">
+                “一段从麦田出发的故事”
+            </p>
+
+            <div class="ornate-divider max-w-lg mx-auto my-8"></div>
+
+            <div class="max-w-2xl mx-auto text-left font-body text-lg md:text-xl leading-relaxed text-fg/90 drop-cap">
+                <p>
+                    若你在风里听见麦穗彼此碰触的声响，那便是旅途开始的暗语。
+                    我们愿把拾来的智慧切成可分的片：
+                    统一接口、免费开放，涵盖 GPT-5、Claude-Opus、Gemini-3 等最新模型，供旅人取用。
+                </p>
+            </div>
+
+            <div class="mt-12">
+                <a href="#origin" class="btn-brass inline-block">开启卷轴</a>
+            </div>
+        </div>
     </section>
 
-    <div class="ornate-divider"></div>
-
-    <main class="main-section">
-        <div class="section-header reveal">
-            <span class="volume-label">Volume I</span>
-            <h2 id="origin" class="section-title">缘起</h2>
-        </div>
-
-        <div class="grid reveal">
-            <div class="card">
-                <h3>麦田之语</h3>
-                <p>风说：谷粒熟了。月说：颜色正好。我们不过依着季节行事，把见过的好东西留下一些，摆在篝火旁。若你伸手，便能取走一捧金色的光。</p>
+    <!-- 主体内容 -->
+    <main class="max-w-6xl mx-auto px-6 pb-32">
+        
+        <!-- Section: 缘起 -->
+        <section id="origin" class="py-24 fade-up">
+            <div class="text-center mb-16">
+                <span class="font-display text-accent text-sm tracking-[0.25em] uppercase block mb-2">Volume I</span>
+                <h2 class="font-heading text-5xl text-fg">缘起</h2>
             </div>
-            <div class="card">
-                <h3>月下的约定</h3>
-                <p>智慧如酒，须细品；如火，亦须节制。我们不喧哗，不争抢，只在合适的时辰里点亮一盏灯，照亮脚边的路。</p>
-                <div class="badges">
-                    <span class="badge">麦香</span>
-                    <span class="badge">琥珀色月光</span>
-                    <span class="badge">清风</span>
-                    <span class="badge">篝火</span>
+
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+                <!-- Card 1 -->
+                <div class="academia-card p-8 rounded corner-flourish corner-top-left">
+                    <div class="mb-4 text-accent">
+                        <i data-lucide="wheat" class="w-8 h-8"></i>
+                    </div>
+                    <h3 class="font-heading text-2xl mb-4 text-fg">麦田之语</h3>
+                    <p class="font-body text-lg text-muted-fg leading-relaxed">
+                        风说：谷粒熟了。月说：颜色正好。我们不过依着季节行事，把见过的好东西留下一些，摆在篝火旁。若你伸手，便能取走一捧金色的光。
+                    </p>
+                </div>
+
+                <!-- Card 2 -->
+                <div class="academia-card p-8 rounded corner-flourish relative bg-accent/5 dark:bg-accent/5 border-accent/30">
+                    <div class="absolute -top-3 right-6 z-10">
+                        <span class="wax-badge shadow-lg">PROMISE</span>
+                    </div>
+                    <div class="mb-4 text-accent">
+                        <i data-lucide="flame" class="w-8 h-8"></i>
+                    </div>
+                    <h3 class="font-heading text-2xl mb-4 text-fg">月下的约定</h3>
+                    <p class="font-body text-lg text-muted-fg leading-relaxed mb-6">
+                        智慧如酒，须细品；如火，亦须节制。我们不喧哗，不争抢，只在合适的时辰里点亮一盏灯，照亮脚边的路。
+                    </p>
+                    <div class="flex flex-wrap gap-2">
+                        <span class="text-xs font-display tracking-widest text-accent border border-accent/30 px-2 py-1">麦香</span>
+                        <span class="text-xs font-display tracking-widest text-accent border border-accent/30 px-2 py-1">琥珀色月光</span>
+                        <span class="text-xs font-display tracking-widest text-accent border border-accent/30 px-2 py-1">清风</span>
+                    </div>
+                </div>
+
+                <!-- Card 3 -->
+                <div class="academia-card p-8 rounded corner-flourish corner-top-right">
+                    <div class="mb-4 text-accent">
+                        <i data-lucide="feather" class="w-8 h-8"></i>
+                    </div>
+                    <h3 class="font-heading text-2xl mb-4 text-fg">路上的见闻</h3>
+                    <p class="font-body text-lg text-muted-fg leading-relaxed">
+                        见过雷雨后的麦田，也见过清晨的薄雾。偶尔有好心人添了木柴，也有旅人留下箴言。我们把它们记下，待有人问起，便一一讲给他听。
+                    </p>
                 </div>
             </div>
-            <div class="card">
-                <h3>路上的见闻</h3>
-                <p>见过雷雨后的麦田，也见过清晨的薄雾。偶尔有好心人添了木柴，也有旅人留下箴言。我们把它们记下，待有人问起，便一一讲给他听。</p>
-            </div>
-        </div>
+        </section>
 
         <div class="ornate-divider"></div>
 
-        <div class="section-header reveal">
-            <span class="volume-label">Volume II</span>
-            <h2 id="overview" class="section-title">概览</h2>
-        </div>
-        
-        <div class="grid reveal">
-            <div class="card">
-                <h3>全模型支持</h3>
-                <p style="margin-bottom: 16px;">我们已同步更新至市面最前沿的模型版本：</p>
-                <ul style="list-style: none; padding-left: 0; color: var(--text-muted);">
-                    <li style="margin-bottom:8px"><strong>✦ ChatGPT：</strong> gpt-5.2 / 5.1 / 5 全系列</li>
-                    <li style="margin-bottom:8px"><strong>✦ Claude：</strong> Opus / Sonnet / Haiku 全系列</li>
-                    <li style="margin-bottom:8px"><strong>✦ Gemini：</strong> Gemini 3 / 2.5 全系列</li>
-                    <li><strong>✦ Others：</strong> Grok, DeepSeek, Qwen 等</li>
-                </ul>
+        <!-- Section: 概览 -->
+        <section id="overview" class="py-24 fade-up">
+            <div class="text-center mb-16">
+                <span class="font-display text-accent text-sm tracking-[0.25em] uppercase block mb-2">Volume II</span>
+                <h2 class="font-heading text-5xl text-fg">概览</h2>
             </div>
-            <div class="card">
-                <h3>极简接入</h3>
-                <p>完全兼容 OpenAI 接口规范。只需更改 <code>base_url</code> 和 <code>api_key</code>，即可无缝切换所有模型。</p>
-                
-                <div class="code-block">
-                    <span class="code-lang">Python Scroll</span>
-                    <button class="code-copy" onclick="copyCode(this)">COPY</button>
-from openai import OpenAI
 
-# 配置接入点
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-12 items-start">
+                <!-- Text Content -->
+                <div class="space-y-8">
+                    <div class="academia-card p-10 rounded-sm border-l-4 border-l-accent">
+                        <h3 class="font-heading text-3xl mb-4 text-fg">全模型支持</h3>
+                        <p class="font-body text-lg text-muted-fg mb-6">我们已同步更新至市面最前沿的模型版本，如同一座包罗万象的藏书楼：</p>
+                        <ul class="space-y-3 font-body text-lg text-fg/80">
+                            <li class="flex items-start gap-3">
+                                <span class="text-accent mt-1">✦</span>
+                                <span><strong class="font-bold text-fg">ChatGPT：</strong> gpt-5.2 / 5.1 / 5 全系列、chatgpt-4o</span>
+                            </li>
+                            <li class="flex items-start gap-3">
+                                <span class="text-accent mt-1">✦</span>
+                                <span><strong class="font-bold text-fg">Claude：</strong> Opus / Sonnet / Haiku 全系列</span>
+                            </li>
+                            <li class="flex items-start gap-3">
+                                <span class="text-accent mt-1">✦</span>
+                                <span><strong class="font-bold text-fg">Gemini：</strong> Gemini 3 / 2.5 全系列、Nano-Banana</span>
+                            </li>
+                            <li class="flex items-start gap-3">
+                                <span class="text-accent mt-1">✦</span>
+                                <span><strong class="font-bold text-fg">Others：</strong> Grok, DeepSeek, Qwen, GLM 等</span>
+                            </li>
+                        </ul>
+                    </div>
+
+                    <div class="pl-4">
+                        <h3 class="font-heading text-3xl mb-2 text-fg">极简接入</h3>
+                        <p class="font-body text-lg text-muted-fg">完全兼容 OpenAI 接口规范。只需更改基址与密钥，即可无缝切换。</p>
+                    </div>
+                </div>
+
+                <!-- Code Block -->
+                <div class="code-manuscript p-6 overflow-hidden">
+                    <div class="flex justify-between items-center mb-4 border-b border-white/10 pb-2">
+                        <span class="text-accent font-display text-xs tracking-widest">PYTHON SCRIPT</span>
+                        <button onclick="copyCode(this)" class="text-xs text-muted-fg hover:text-accent transition-colors font-mono cursor-pointer flex items-center gap-1">
+                            <i data-lucide="copy" class="w-3 h-3"></i> <span>COPY</span>
+                        </button>
+                    </div>
+                    <pre class="font-mono text-sm leading-relaxed overflow-x-auto text-[#E8DFD4]"><code><span class="text-[#9C8B7A]"># 配置接入点</span>
+<span class="text-[#C9A962]">from</span> openai <span class="text-[#C9A962]">import</span> OpenAI
+
 client = OpenAI(
-    api_key="your-api-key", 
-    base_url="https://api.wolfholo.top/v1"
+    api_key=<span class="text-[#8B2635]">"your-api-key"</span>, 
+    base_url=<span class="text-[#8B2635]">"https://api.wolfholo.top/v1"</span>
 )
 
-# 畅享最新模型
+<span class="text-[#9C8B7A]"># 畅享最新模型</span>
 resp = client.chat.completions.create(
-    model="gpt-5",  # 或 claude-opus, gemini-3
-    messages=[{"role": "user", "content": "Hello!"}]
+    model=<span class="text-[#8B2635]">"gpt-5"</span>,  <span class="text-[#9C8B7A]"># 或 claude-opus, gemini-3</span>
+    messages=[{<span class="text-[#8B2635]">"role"</span>: <span class="text-[#8B2635]">"user"</span>, <span class="text-[#8B2635]">"content"</span>: <span class="text-[#8B2635]">"Hello!"</span>}]
 )
-print(resp.choices[0].message.content)
+<span class="text-[#C9A962]">print</span>(resp.choices[0].message.content)</code></pre>
                 </div>
             </div>
-        </div>
+        </section>
 
-        <div class="ornate-divider"></div>
-
-        <div class="section-header reveal">
-            <span class="volume-label">Volume III</span>
-            <h2 id="oath" class="section-title">约定</h2>
-        </div>
-        
-        <div class="grid reveal">
-            <div class="card">
-                <h3>静默的约定</h3>
-                <p>我们不夺取不属于自己的东西；不以喧嚣求名；不以贪欲伤人。若有余力，便添一束柴；若感温暖，便留下足迹。</p>
+        <!-- Section: 约定 -->
+        <section id="oath" class="py-24 fade-up relative">
+            <!-- 背景装饰 Arch -->
+            <div class="absolute inset-0 flex justify-center items-center pointer-events-none opacity-[0.03]">
+                <div class="w-[80%] h-[80%] border-t-2 border-x-2 border-fg rounded-t-full"></div>
             </div>
-            <div class="card">
-                <h3>温柔的边界</h3>
-                <p>火堆很小，风却很大。请收敛夸张的火舌，莫让夜行者失了方向。节制本就是对旅途的敬意。</p>
+
+            <div class="text-center mb-16 relative z-10">
+                <span class="font-display text-accent text-sm tracking-[0.25em] uppercase block mb-2">Volume III</span>
+                <h2 class="font-heading text-5xl text-fg">约定</h2>
             </div>
-        </div>
 
-        <div class="ornate-divider"></div>
-
-        <div class="section-header reveal">
-            <span class="volume-label">Volume IV</span>
-            <h2 id="journey" class="section-title">里程碑</h2>
-        </div>
-
-        <div class="card reveal" style="max-width: 800px; margin: 0 auto;">
-            <div class="timeline">
-                <div class="tl-item">
-                    <div class="tl-date">MMXXVI · Q3 (2026)</div>
-                    <div class="tl-title">公共节点稳定上线</div>
-                    <div class="tl-desc">完成 OpenAI、Anthropic、Google 核心模型接入与统一鉴权，小范围试用运行稳定。</div>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-8 relative z-10">
+                <div class="academia-card p-10 text-center">
+                    <div class="mb-6 flex justify-center text-accent">
+                        <i data-lucide="scale" class="w-10 h-10"></i>
+                    </div>
+                    <h3 class="font-heading text-3xl mb-4 text-fg">静默的约定</h3>
+                    <p class="font-body text-lg text-muted-fg leading-relaxed">
+                        我们不夺取不属于自己的东西；不以喧嚣求名；不以贪欲伤人。若有余力，便添一束柴；若感温暖，便留下足迹。
+                    </p>
                 </div>
-                <div class="tl-item">
-                    <div class="tl-date">MMXXVI · Q4 (2026)</div>
-                    <div class="tl-title">全系模型迭代</div>
-                    <div class="tl-desc">同步跟进 GPT-5.2、Claude Opus、Gemini 3 等最新一代模型，扩充 API 容量。</div>
-                </div>
-                <div class="tl-item">
-                    <div class="tl-date">AETERNUM (Future)</div>
-                    <div class="tl-title">社区共建</div>
-                    <div class="tl-desc">如赫萝的旅途一般，我们期待更多旅人加入，贡献示例、节点与智慧。</div>
+
+                <div class="academia-card p-10 text-center">
+                    <div class="mb-6 flex justify-center text-accent">
+                        <i data-lucide="shield" class="w-10 h-10"></i>
+                    </div>
+                    <h3 class="font-heading text-3xl mb-4 text-fg">温柔的边界</h3>
+                    <p class="font-body text-lg text-muted-fg leading-relaxed">
+                        火堆很小，风却很大。请收敛夸张的火舌，莫让夜行者失了方向。节制本就是对旅途的敬意。
+                    </p>
                 </div>
             </div>
-        </div>
+        </section>
 
-        <div class="ornate-divider"></div>
-
-        <div class="section-header reveal">
-            <span class="volume-label">Volume V</span>
-            <h2 id="traveler" class="section-title">致旅人</h2>
-        </div>
-
-        <div class="grid reveal">
-            <div class="card">
-                <h3>在篝火旁</h3>
-                <p>有人讲交易，有人谈远方；也有人静静看着火光，把心事烤得暖一点。所有的温柔与善意，都值得被认真收藏。</p>
+        <!-- Section: 里程碑 -->
+        <section id="journey" class="py-24 fade-up max-w-4xl mx-auto">
+            <div class="text-center mb-16">
+                <span class="font-display text-accent text-sm tracking-[0.25em] uppercase block mb-2">Volume IV</span>
+                <h2 class="font-heading text-5xl text-fg">里程碑</h2>
             </div>
-            <div class="card">
-                <h3>赠言</h3>
-                <p>若你路过此处，便取一捧金色装进兜里。别着急告诉别人它从何来，只在需要时分一点给身旁的人。愿你脚下有风，心里有光。</p>
+
+            <div class="relative pl-8 md:pl-12 py-4">
+                <div class="timeline-line"></div>
+
+                <!-- Item 1 -->
+                <div class="timeline-item relative mb-16">
+                    <div class="absolute -left-[45px] top-1 flex flex-col items-center">
+                        <div class="timeline-dot"></div>
+                    </div>
+                    <div class="academia-card p-6 md:p-8 corner-flourish corner-full">
+                        <div class="flex items-center justify-between mb-2">
+                            <span class="font-display text-accent text-sm tracking-widest">2025 Q3</span>
+                            <span class="font-display text-xs text-muted-fg uppercase">Chapter I</span>
+                        </div>
+                        <h4 class="font-heading text-2xl mb-2 text-fg">公共节点稳定上线</h4>
+                        <p class="font-body text-muted-fg">完成 OpenAI、Anthropic、Google 核心模型接入与统一鉴权，小范围试用运行稳定。</p>
+                    </div>
+                </div>
+
+                <!-- Item 2 -->
+                <div class="timeline-item relative mb-16">
+                    <div class="absolute -left-[45px] top-1 flex flex-col items-center">
+                        <div class="timeline-dot"></div>
+                    </div>
+                    <div class="academia-card p-6 md:p-8 corner-flourish corner-full border-accent/40">
+                        <div class="flex items-center justify-between mb-2">
+                            <span class="font-display text-accent text-sm tracking-widest font-bold">2026 Q4</span>
+                            <span class="font-display text-xs text-muted-fg uppercase">Chapter II</span>
+                        </div>
+                        <h4 class="font-heading text-2xl mb-2 text-fg">全系模型迭代</h4>
+                        <p class="font-body text-muted-fg">同步跟进 GPT-5.2、Claude Opus、Gemini 3 等最新一代模型，扩充 API 容量。</p>
+                    </div>
+                </div>
+
+                <!-- Item 3 -->
+                <div class="timeline-item relative">
+                    <div class="absolute -left-[45px] top-1 flex flex-col items-center">
+                        <div class="timeline-dot" style="border-style: dashed;"></div>
+                    </div>
+                    <div class="pl-4">
+                        <span class="font-display text-accent text-sm tracking-widest block mb-1">FUTURE</span>
+                        <h4 class="font-heading text-2xl mb-2 text-fg">社区共建</h4>
+                        <p class="font-body text-muted-fg text-lg italic">如赫萝的旅途一般，我们期待更多旅人加入，贡献示例、节点与智慧。</p>
+                    </div>
+                </div>
             </div>
-        </div>
+        </section>
+
+        <!-- Section: 致旅人 -->
+        <section id="traveler" class="py-24 fade-up">
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-12">
+                <div class="bg-bg-alt/50 p-8 border border-border/50 rounded flex flex-col justify-center text-center md:text-left">
+                    <h3 class="font-heading text-3xl mb-4 text-fg">在篝火旁</h3>
+                    <p class="font-body text-lg text-muted-fg leading-relaxed">
+                        有人讲交易，有人谈远方；也有人静静看着火光，把心事烤得暖一点。所有的温柔与善意，都值得被认真收藏。
+                    </p>
+                </div>
+
+                <div class="academia-card p-10 text-center relative overflow-hidden group">
+                    <!-- 背景装饰 -->
+                    <div class="absolute top-0 left-0 w-full h-2 bg-brass-gradient opacity-0 group-hover:opacity-100 transition-opacity"></div>
+                    
+                    <h3 class="font-heading text-4xl mb-6 text-fg">致旅人</h3>
+                    <div class="font-body text-xl text-muted-fg leading-relaxed italic mb-8">
+                        “若你路过此处，便取一捧金色装进兜里。别着急告诉别人它从何来，只在需要时分一点给身旁的人。愿你脚下有风，心里有光。”
+                    </div>
+                    <div class="flex justify-center">
+                        <i data-lucide="compass" class="w-8 h-8 text-accent animate-pulse" style="animation-duration: 3s;"></i>
+                    </div>
+                </div>
+            </div>
+        </section>
+
     </main>
 
-    <footer>
-        <span class="footer-logo">WolfHolo</span>
-        <p class="footer-text" style="font-family: var(--font-heading); font-style: italic; font-size: 1.2em; color: var(--text-muted);">
-            "风起麦浪，月照林间；愿你的旅途总有金色相伴。"
-        </p>
-        <div style="margin-top: 30px; font-family: var(--font-display); font-size: 0.8em; letter-spacing: 0.1em; color: var(--text-muted); opacity: 0.7;">
-            © 2026 HOLO AI SHARE | EST. MMXXVI
+    <!-- 页脚 -->
+    <footer class="border-t border-border bg-bg-alt py-16 relative">
+        <div class="max-w-4xl mx-auto px-6 text-center">
+            <div class="mb-8 flex justify-center items-center gap-3 opacity-80">
+                <span class="h-px w-12 bg-accent"></span>
+                <span class="font-display text-2xl text-accent tracking-widest font-bold">WOLFHOLO</span>
+                <span class="h-px w-12 bg-accent"></span>
+            </div>
+            
+            <p class="font-body text-lg text-muted-fg mb-8">
+                风起麦浪，月照林间；愿你的旅途总有金色相伴。
+            </p>
+            
+            <div class="font-display text-xs tracking-[0.2em] text-muted-fg/60 uppercase">
+                © 2026 Holo AI Share <span class="mx-2">|</span> 纯公益项目
+            </div>
         </div>
     </footer>
 
+    <!-- Scripts -->
     <script>
-        // === 粒子背景逻辑 (适配日/夜) ===
-        const canvas = document.getElementById('particles-bg');
-        const ctx = canvas.getContext('2d');
-        let particles = [];
-        
-        // 颜色配置
-        const COLORS = {
-            dark: 'rgba(201, 169, 98, 0.6)', // 黄铜色 (夜间)
-            light: 'rgba(43, 34, 27, 0.4)'   // 墨水尘埃 (日间)
+        // 初始化 Lucide 图标
+        lucide.createIcons();
+
+        // 复制代码逻辑
+        function writeClipboard(text, onDone){
+            const ok = () => { if (onDone) onDone(); };
+            if (navigator.clipboard && window.isSecureContext) {
+                navigator.clipboard.writeText(text).then(ok).catch(() => fallback());
+            } else { fallback(); }
+            function fallback(){
+                const ta = document.createElement('textarea');
+                ta.value = text; ta.setAttribute('readonly','');
+                ta.style.position='fixed'; ta.style.left='-9999px';
+                document.body.appendChild(ta); ta.select();
+                try { document.execCommand('copy'); } catch(e) {}
+                document.body.removeChild(ta); ok();
+            }
+        }
+
+        function copyCode(btn){
+            const block = btn.closest('.code-manuscript');
+            const codeEl = block.querySelector('pre');
+            const text = codeEl.innerText.trim();
+            const originalContent = btn.innerHTML;
+            
+            writeClipboard(text, ()=>{
+                btn.innerHTML = '<span style="color:var(--accent)">已复制</span>'; 
+                setTimeout(()=> btn.innerHTML = originalContent, 2000);
+            });
+        }
+
+        // 滚动显隐动画 (Intersection Observer)
+        const observerOptions = {
+            threshold: 0.1,
+            rootMargin: "0px 0px -50px 0px"
         };
 
-        function resizeCanvas(){ 
-            canvas.width = window.innerWidth; 
-            canvas.height = window.innerHeight; 
-        }
-        
-        class Particle {
-            constructor() { this.reset(); }
-            reset() {
-                this.x = Math.random() * canvas.width;
-                this.y = Math.random() * canvas.height;
-                this.size = Math.random() * 2 + 0.5;
-                this.speedX = Math.random() * 0.4 - 0.2;
-                this.speedY = Math.random() * 0.4 - 0.2;
-                this.opacity = Math.random() * 0.5 + 0.2;
-            }
-            update() {
-                this.x += this.speedX; this.y += this.speedY;
-                if(this.x > canvas.width || this.x < 0) this.speedX *= -1;
-                if(this.y > canvas.height || this.y < 0) this.speedY *= -1;
-            }
-            draw(isDark) {
-                ctx.fillStyle = isDark ? COLORS.dark : COLORS.light;
-                ctx.globalAlpha = this.opacity;
-                ctx.beginPath();
-                ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2);
-                ctx.fill();
-            }
-        }
-
-        function initParticles() {
-            particles = Array.from({length: 60}, () => new Particle());
-        }
-
-        function animate() {
-            ctx.clearRect(0, 0, canvas.width, canvas.height);
-            const isDark = document.body.classList.contains('dark-mode');
-            particles.forEach(p => { p.update(); p.draw(isDark); });
-            requestAnimationFrame(animate);
-        }
-
-        resizeCanvas();
-        initParticles();
-        animate();
-        window.addEventListener('resize', () => { resizeCanvas(); initParticles(); });
-
-        // === 主题切换逻辑 ===
-        const themeBtn = document.getElementById('themeBtn');
-        themeBtn.addEventListener('click', () => {
-            document.body.classList.toggle('dark-mode');
-            document.body.classList.toggle('light-mode');
-        });
-
-        // === 导航栏滚动逻辑 ===
-        window.addEventListener('scroll', () => {
-            const navbar = document.getElementById('navbar');
-            if (window.scrollY > 100) navbar.classList.add('scrolled');
-            else navbar.classList.remove('scrolled');
-            
-            // 滚动激活链接
-            const sections = ['origin', 'overview', 'oath', 'journey', 'traveler'];
-            let current = '';
-            sections.forEach(id => {
-                const section = document.getElementById(id);
-                const sectionTop = section.offsetTop;
-                if (scrollY >= sectionTop - 200) current = id;
-            });
-            document.querySelectorAll('.nav-links a').forEach(a => {
-                a.classList.remove('active');
-                if (a.getAttribute('href') === '#' + current) a.classList.add('active');
-            });
-        });
-
-        // === 滚动显隐动画 ===
         const observer = new IntersectionObserver((entries) => {
-            entries.forEach(e => { if (e.isIntersecting) e.target.classList.add('show'); });
-        }, { threshold: 0.1 });
-        document.querySelectorAll('.reveal').forEach(el => observer.observe(el));
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    entry.target.classList.add('visible');
+                    observer.unobserve(entry.target); // 只触发一次
+                }
+            });
+        }, observerOptions);
 
-        // === 平滑滚动 ===
-        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
-            anchor.addEventListener('click', function (e) {
-                e.preventDefault();
-                const target = document.querySelector(this.getAttribute('href'));
-                if (target) target.scrollIntoView({ behavior: 'smooth' });
+        document.querySelectorAll('.fade-up').forEach(el => observer.observe(el));
+
+        // 滚动导航高亮
+        const sections = document.querySelectorAll('section[id]');
+        const navLinks = document.querySelectorAll('.nav-link');
+
+        window.addEventListener('scroll', () => {
+            let current = '';
+            sections.forEach(section => {
+                const sectionTop = section.offsetTop;
+                if (window.scrollY >= (sectionTop - 200)) {
+                    current = section.getAttribute('id');
+                }
+            });
+
+            navLinks.forEach(link => {
+                link.classList.remove('active');
+                if (link.getAttribute('href').includes(current)) {
+                    link.classList.add('active');
+                }
             });
         });
 
-        // === 复制功能 ===
-        function copyCode(btn) {
-            const code = btn.parentElement.innerText.replace('COPY', '').replace('Python Scroll', '').trim();
-            navigator.clipboard.writeText(code).then(() => {
-                const original = btn.textContent;
-                btn.textContent = "COPIED";
-                setTimeout(() => btn.textContent = original, 2000);
-            });
+        // 主题切换逻辑
+        const themeToggleBtn = document.getElementById('theme-toggle');
+        const htmlElement = document.documentElement;
+
+        // 检查本地存储或系统偏好
+        const savedTheme = localStorage.getItem('theme');
+        const systemDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+
+        if (savedTheme === 'dark' || (!savedTheme && systemDark)) {
+            // 用户没有指定，但我们想默认白天模式(根据prompt请求)，除非用户之前手动选了黑夜
+            // 这里逻辑改为：默认light，除非localStorage明确有dark
+             if (savedTheme === 'dark') {
+                 htmlElement.classList.add('dark');
+                 htmlElement.classList.remove('light');
+             } else {
+                 htmlElement.classList.add('light');
+                 htmlElement.classList.remove('dark');
+             }
+        } else {
+            htmlElement.classList.add('light');
+             htmlElement.classList.remove('dark');
         }
+
+        themeToggleBtn.addEventListener('click', () => {
+            if (htmlElement.classList.contains('dark')) {
+                htmlElement.classList.remove('dark');
+                htmlElement.classList.add('light');
+                localStorage.setItem('theme', 'light');
+            } else {
+                htmlElement.classList.remove('light');
+                htmlElement.classList.add('dark');
+                localStorage.setItem('theme', 'dark');
+            }
+        });
     </script>
 </body>
 </html>

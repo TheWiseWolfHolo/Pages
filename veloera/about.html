@@ -4,105 +4,376 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>WolfHolo · 麦田与旅途</title>
+    <!-- 引入古典衬线字体族 -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600;700&family=Cormorant+Garamond:ital,wght@0,400;0,600;1,400&family=Crimson+Pro:ital,wght@0,300;0,400;0,600;1,400&family=JetBrains+Mono:wght@400&display=swap" rel="stylesheet">
+    
     <style>
-        @import url('https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600&family=Noto+Sans+SC:wght@300;400;700&family=JetBrains+Mono:wght@400;600&display=swap');
-
-        * { margin: 0; padding: 0; box-sizing: border-box; }
-
+        /* ==================== 
+           设计令牌 (Tokens) 
+           ==================== */
         :root {
-            --primary: #ff6b35;
-            --secondary: #f7931e;
-            --accent: #b8860b;
-            --dark: #0a0a0a;
-            --light: #1a1a1a;
-            --success: #2e7d32;
-            --code-bg: #f6f8fa;
-            --glow: rgba(184, 134, 11, 0.45);
-            color-scheme: light;
+            /* 浅色模式 (羊皮纸白昼) */
+            --bg-paper: #F2EFE9;
+            --bg-overlay: #EBE5D9; /* 卡片背景 */
+            --text-main: #2B221B;  /* 深褐墨色 */
+            --text-muted: #5C4D42;
+            --accent-brass: #9D8248; /* 暗黄铜 */
+            --accent-crimson: #8B2635;
+            --border-wood: #D4C5B0;
+            --shadow-soft: 0 4px 12px rgba(43, 34, 27, 0.05);
+            --shadow-lift: 0 12px 24px rgba(43, 34, 27, 0.1);
+            
+            /* 字体栈 */
+            --font-heading: 'Cormorant Garamond', serif;
+            --font-body: 'Crimson Pro', serif;
+            --font-display: 'Cinzel', serif;
+            --font-code: 'JetBrains Mono', monospace;
         }
 
-        body { font-family: 'Noto Sans SC', sans-serif; background: #ffffff; overflow-x: hidden; color: var(--light); }
+        @media (prefers-color-scheme: dark) {
+            :root {
+                /* 深色模式 (深夜图书馆) */
+                --bg-paper: #1C1714; /* 深红木色 */
+                --bg-overlay: #251E19; /* 陈旧橡木 */
+                --text-main: #E8DFD4;  /* 羊皮纸色 */
+                --text-muted: #9C8B7A; /* 褪色墨水 */
+                --accent-brass: #C9A962; /* 抛光黄铜 */
+                --accent-crimson: #8B2635; /* 封蜡红 */
+                --border-wood: #4A3F35; /* 木纹 */
+                --shadow-soft: 0 4px 12px rgba(0, 0, 0, 0.3);
+                --shadow-lift: 0 12px 24px rgba(0, 0, 0, 0.5);
+            }
+        }
 
-        /* 动态背景 */
-        #particles-bg { position: fixed; top:0; left:0; width:100%; height:100%; z-index:999; pointer-events:none; }
+        /* 强制覆盖模式 (JS切换用) */
+        body.light-mode {
+            --bg-paper: #F2EFE9; --bg-overlay: #EBE5D9; --text-main: #2B221B; --text-muted: #5C4D42;
+            --accent-brass: #9D8248; --border-wood: #D4C5B0; --shadow-soft: 0 4px 12px rgba(43,34,27,0.05);
+            --shadow-lift: 0 12px 24px rgba(43,34,27,0.1);
+        }
+        body.dark-mode {
+            --bg-paper: #1C1714; --bg-overlay: #251E19; --text-main: #E8DFD4; --text-muted: #9C8B7A;
+            --accent-brass: #C9A962; --border-wood: #4A3F35; --shadow-soft: 0 4px 12px rgba(0,0,0,0.3);
+            --shadow-lift: 0 12px 24px rgba(0,0,0,0.5);
+        }
+
+        /* ==================== 
+           全局基础样式 
+           ==================== */
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        
+        body {
+            font-family: var(--font-body);
+            background-color: var(--bg-paper);
+            color: var(--text-main);
+            font-size: 18px;
+            line-height: 1.6;
+            overflow-x: hidden;
+            transition: background-color 0.5s ease, color 0.5s ease;
+        }
+
+        /* 纹理遮罩 - 纸张噪点 */
+        body::before {
+            content: "";
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.65' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)' opacity='0.05'/%3E%3C/svg%3E");
+            opacity: 0.4;
+            pointer-events: none;
+            z-index: 9998;
+        }
+
+        /* 晕影效果 - 聚焦中心 */
+        body::after {
+            content: "";
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: radial-gradient(ellipse at center, transparent 0%, transparent 40%, rgba(28, 23, 20, 0.4) 100%);
+            pointer-events: none;
+            z-index: 9997;
+        }
+
+        h1, h2, h3 { font-family: var(--font-heading); font-weight: 400; }
+        a { text-decoration: none; color: inherit; transition: all 0.3s ease; }
+        
+        /* 选中态样式 (模拟高亮笔) */
+        ::selection { background: var(--accent-brass); color: #1C1714; }
+
+        /* ==================== 
+           组件样式 
+           ==================== */
 
         /* 导航栏 */
-        nav { position: fixed; top:0; width:100%; padding: 20px 50px; background: rgba(255,255,255,0.86); backdrop-filter: blur(12px); z-index:1000; transition: all .3s ease; border-bottom:1px solid rgba(0,0,0,.06); }
-        nav.scrolled { padding: 10px 50px; background: rgba(255,255,255,.98); }
-        .nav-content { max-width:1400px; margin:0 auto; display:flex; justify-content:space-between; align-items:center; }
-        .logo { font-family:'Cinzel',serif; font-size:1.8em; color:#8d6e00; text-decoration:none; display:flex; align-items:center; gap:10px; transition: all .3s ease; }
-        .logo:hover { text-shadow: 0 0 20px var(--glow); }
-        .nav-links { display:flex; gap:30px; list-style:none; }
-        .nav-links a { color:var(--light); text-decoration:none; padding:8px 16px; border-radius:20px; transition: all .3s ease; }
-        .nav-links a:hover, .nav-links a.active { background: rgba(255,187,0,.12); color: #8d6e00; }
+        nav {
+            position: fixed; top: 0; width: 100%; z-index: 1000;
+            padding: 24px 50px;
+            border-bottom: 1px solid transparent;
+            transition: all 0.4s ease;
+        }
+        nav.scrolled {
+            background: var(--bg-paper); /* 不透明以遮挡内容 */
+            padding: 16px 50px;
+            border-bottom: 1px solid var(--border-wood);
+            box-shadow: var(--shadow-soft);
+        }
+        /* 导航背景的毛玻璃在古典风格中改为半透明纸张感 */
+        nav.scrolled::before {
+            content: ""; position: absolute; inset: 0;
+            background: var(--bg-paper); opacity: 0.95; z-index: -1;
+        }
 
-        /* Hero */
-        .hero { min-height: 70vh; display:flex; align-items:center; justify-content:center; position:relative; padding: 120px 50px 60px; background: radial-gradient(60% 50% at 50% 30%, rgba(255,107,53,.08) 0%, transparent 70%); animation: fadeIn 0.9s ease-out; text-align:center; }
-        @keyframes fadeIn { from{opacity:0; transform: translateY(20px);} to{opacity:1; transform: translateY(0);} }
-        .hero h1 { font-family:'Cinzel',serif; font-size: clamp(2.2em, 6vw, 4.2em); color: var(--accent); background: none !important; -webkit-background-clip: initial; -webkit-text-fill-color: currentColor; display:inline-block; margin-bottom:20px; animation: glow 3s ease-in-out infinite; }
-        @media (prefers-color-scheme: dark) { .hero h1 { animation: none; text-shadow: 0 0 24px rgba(184,134,11,.35); } }
-        @keyframes glow { 0%,100%{ filter: drop-shadow(0 0 30px var(--glow)); } 50%{ filter: drop-shadow(0 0 50px var(--glow)); } }
-        .hero-subtitle { font-size:1.4em; opacity:.95; margin-bottom:14px; }
-        .hero-description { font-size:1.05em; opacity:.85; max-width:900px; margin: 0 auto; line-height:1.7; }
+        .nav-content { max-width: 1200px; margin: 0 auto; display: flex; justify-content: space-between; align-items: center; }
+        
+        .logo {
+            font-family: var(--font-display);
+            font-size: 1.4em;
+            letter-spacing: 0.1em;
+            color: var(--text-main);
+            display: flex; align-items: center; gap: 12px;
+            font-weight: 600;
+        }
+        .logo span:first-child { font-size: 1.2em; filter: sepia(0.8); } /* 让Emoji也复古 */
 
-        /* 页面主体 */
-        .main-section { padding: 80px 50px; max-width: 1200px; margin: 0 auto; }
-        .section-title { font-family:'Cinzel',serif; font-size:2.2em; color:var(--accent); text-align:center; margin-bottom: 30px; }
+        .nav-links { display: flex; gap: 32px; list-style: none; }
+        .nav-links a {
+            font-family: var(--font-display);
+            font-size: 0.8em;
+            text-transform: uppercase;
+            letter-spacing: 0.1em;
+            color: var(--text-muted);
+            padding: 8px 0;
+            position: relative;
+        }
+        .nav-links a::after {
+            content: "✶"; /* 装饰符号 */
+            position: absolute; bottom: -10px; left: 50%; transform: translateX(-50%) scale(0);
+            color: var(--accent-brass); font-size: 12px; transition: transform 0.3s ease;
+        }
+        .nav-links a:hover, .nav-links a.active { color: var(--accent-brass); }
+        .nav-links a:hover::after, .nav-links a.active::after { transform: translateX(-50%) scale(1); }
 
-        .grid { display:grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); gap:24px; }
-        .card { background: #ffffff; box-shadow: 0 6px 20px rgba(0,0,0,.06); border:1px solid rgba(0,0,0,.06); border-radius:16px; padding:30px 24px; transition: transform .35s ease, box-shadow .35s ease, opacity .35s ease; opacity:.98; }
-        .card:hover { transform: translateY(-4px); box-shadow: 0 10px 24px rgba(0,0,0,.08); }
-        .card h3 { color:var(--accent); margin-bottom:12px; font-size:1.25em; }
-        .muted { opacity:.85; line-height:1.8; font-size: 0.96em; }
+        /* 主题切换按钮 */
+        .theme-toggle {
+            cursor: pointer; background: none; border: 1px solid var(--border-wood);
+            color: var(--accent-brass); padding: 8px; border-radius: 50%;
+            display: flex; align-items: center; justify-content: center;
+            transition: all 0.3s;
+        }
+        .theme-toggle:hover { background: var(--accent-brass); color: var(--bg-paper); }
 
-        .badges { display:flex; flex-wrap:wrap; gap:10px; margin-top:12px; }
-        .badge { background: rgba(255, 215, 0, 0.08); border: 1px solid rgba(184,134,11,.25); padding:6px 14px; border-radius:20px; color:#8d6e00; font-size:.92em; }
+        /* Hero 区域 */
+        .hero {
+            min-height: 85vh;
+            display: flex; flex-direction: column; justify-content: center; align-items: center;
+            text-align: center; position: relative;
+            padding: 160px 20px 80px;
+        }
+        /* 拱形装饰边框 - 模拟窗户/建筑 */
+        .hero::before {
+            content: ""; position: absolute;
+            top: 50%; left: 50%; transform: translate(-50%, -50%);
+            width: 80%; height: 80%;
+            border: 1px solid var(--border-wood);
+            border-radius: 40% 40% 0 0 / 20% 20% 0 0;
+            opacity: 0.3; pointer-events: none;
+            z-index: -1;
+        }
 
-        /* 代码块优化 */
-        .code-block { background: var(--code-bg); border-radius: 12px; padding: 48px 22px 22px; margin: 20px 0 0; font-family: 'JetBrains Mono', monospace; font-size: 0.9em; overflow-x: auto; border: 1px solid rgba(0,0,0,0.08); position: relative; line-height: 1.6; }
-        .code-lang { position: absolute; top: 12px; right: 14px; color: var(--accent); font-size: 0.8em; opacity: 0.7; font-weight: 600; }
-        .code-copy { position: absolute; top: 10px; left: 10px; background: rgba(184,134,11,.08); color: #8d6e00; border: 1px solid rgba(184,134,11,.25); border-radius: 6px; padding: 4px 10px; font-size: .8em; cursor: pointer; user-select: none; transition: all .2s; }
-        .code-copy:hover { background: rgba(184,134,11,.15); }
+        .hero h1 {
+            font-size: clamp(3rem, 8vw, 5.5rem);
+            line-height: 1;
+            margin-bottom: 30px;
+            color: transparent;
+            /* 黄铜渐变字 */
+            background: linear-gradient(180deg, #D4B872 0%, var(--accent-brass) 50%, #B8953F 100%);
+            -webkit-background-clip: text;
+            background-clip: text;
+            /* 雕刻阴影 */
+            text-shadow: 1px 1px 1px rgba(0,0,0,0.2), -1px -1px 0 rgba(255,255,255,0.05);
+            letter-spacing: -0.02em;
+        }
+        
+        .hero-subtitle {
+            font-family: var(--font-display);
+            color: var(--accent-brass);
+            font-size: 1.1em; letter-spacing: 0.25em; text-transform: uppercase;
+            margin-bottom: 24px;
+        }
 
-        /* 时间线优化 */
-        .timeline { position:relative; margin: 10px 0 0 0; padding-left: 22px; border-left: 2px solid rgba(184,134,11,.15); }
-        .tl-item { position:relative; margin: 20px 0; padding-left: 15px; transition: transform 0.3s ease; }
-        .tl-item:hover { transform: translateX(5px); }
-        .tl-item::before { content:""; position:absolute; left:-28px; top:6px; width:10px; height:10px; border-radius:50%; background: #ffffff; border: 2px solid #8d6e00; box-shadow: 0 0 8px var(--glow); }
-        .tl-date { font-family:'JetBrains Mono',monospace; opacity:.7; font-size:.85em; color: var(--accent); margin-bottom: 2px; }
-        .tl-title { color: var(--light); margin: 4px 0; font-weight:600; font-size: 1.1em; }
-        .tl-desc { opacity:.85; line-height:1.6; font-size: 0.95em; }
+        .hero-description {
+            max-width: 700px;
+            font-size: 1.25em;
+            color: var(--text-muted);
+            position: relative;
+        }
+        /* 首字母下沉 */
+        .hero-description::first-letter {
+            float: left; font-family: var(--font-display);
+            font-size: 3.5em; line-height: 0.8;
+            padding-right: 12px; padding-top: 4px;
+            color: var(--accent-brass);
+            text-shadow: 2px 2px 0 rgba(0,0,0,0.2);
+        }
+
+        /* 章节通用 */
+        .main-section { max-width: 1100px; margin: 0 auto; padding: 100px 24px; position: relative; }
+        
+        /* 装饰分割线 */
+        .ornate-divider {
+            height: 1px; width: 100%; margin: 60px 0 80px;
+            background: linear-gradient(90deg, transparent 0%, var(--border-wood) 20%, var(--accent-brass) 50%, var(--border-wood) 80%, transparent 100%);
+            position: relative; display: flex; justify-content: center; align-items: center;
+        }
+        .ornate-divider::after {
+            content: "❦"; /* 装饰符号 */
+            background: var(--bg-paper);
+            padding: 0 16px; color: var(--accent-brass);
+            font-size: 20px;
+        }
+
+        .section-header { text-align: center; margin-bottom: 60px; }
+        .volume-label {
+            font-family: var(--font-display);
+            font-size: 0.75rem; color: var(--accent-brass);
+            letter-spacing: 0.3em; text-transform: uppercase;
+            display: block; margin-bottom: 8px;
+        }
+        .section-title { font-size: 3rem; color: var(--text-main); margin-bottom: 16px; }
+
+        /* 卡片网格 */
+        .grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 32px; }
+        
+        .card {
+            background: var(--bg-overlay);
+            border: 1px solid var(--border-wood);
+            border-radius: 2px;
+            padding: 40px 32px;
+            position: relative;
+            transition: all 0.4s ease;
+        }
+        /* 卡片悬停效果：边框变色，微上浮 */
+        .card:hover {
+            border-color: var(--accent-brass);
+            transform: translateY(-4px);
+            box-shadow: var(--shadow-lift);
+        }
+        /* 角落花纹 (Corner Flourish) */
+        .card::before, .card::after {
+            content: ""; position: absolute; width: 12px; height: 12px;
+            border: 1px solid var(--accent-brass);
+            transition: all 0.4s ease; opacity: 0.3;
+        }
+        .card::before { top: 6px; left: 6px; border-right: none; border-bottom: none; }
+        .card::after { bottom: 6px; right: 6px; border-left: none; border-top: none; }
+        .card:hover::before, .card:hover::after { opacity: 1; width: 20px; height: 20px; }
+
+        .card h3 {
+            font-size: 1.8rem; color: var(--text-main); margin-bottom: 16px;
+            font-family: var(--font-heading);
+        }
+        .card p { font-size: 1.05rem; color: var(--text-muted); }
+
+        /* 标签 */
+        .badges { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 20px; }
+        .badge {
+            font-family: var(--font-display); font-size: 0.7em;
+            letter-spacing: 0.1em; text-transform: uppercase;
+            color: var(--accent-brass);
+            border: 1px solid var(--border-wood);
+            padding: 6px 12px;
+            border-radius: 20px; /* 唯一保留圆角的地方，像火漆印的边缘 */
+        }
+
+        /* 代码块 - 账本风格 */
+        .code-block {
+            background: rgba(0,0,0,0.2); /* 无论日夜都稍微加深 */
+            border: 1px double var(--border-wood);
+            padding: 40px 24px 24px;
+            margin-top: 24px;
+            position: relative;
+            font-family: var(--font-code);
+            font-size: 0.9em;
+            color: var(--text-muted);
+            overflow-x: auto;
+        }
+        .code-lang {
+            position: absolute; top: 0; right: 0;
+            background: var(--border-wood); color: var(--bg-paper);
+            padding: 4px 12px; font-family: var(--font-display); font-size: 0.7em;
+        }
+        .code-copy {
+            position: absolute; top: 12px; left: 12px;
+            background: transparent; border: 1px solid var(--accent-brass);
+            color: var(--accent-brass);
+            font-family: var(--font-display);
+            font-size: 0.7em; padding: 4px 12px;
+            cursor: pointer; transition: all 0.2s;
+        }
+        .code-copy:hover { background: var(--accent-brass); color: var(--bg-paper); }
+
+        /* 时间线 - 编年史风格 */
+        .timeline { 
+            border-left: 2px solid var(--border-wood); 
+            margin-left: 20px; padding-left: 40px; 
+            margin-top: 40px;
+        }
+        .tl-item { position: relative; margin-bottom: 50px; }
+        /* 时间节点 - 黄铜铆钉 */
+        .tl-item::before {
+            content: ""; position: absolute; left: -46px; top: 6px;
+            width: 10px; height: 10px; background: var(--bg-paper);
+            border: 2px solid var(--accent-brass); transform: rotate(45deg); /* 菱形节点 */
+            transition: background 0.3s;
+        }
+        .tl-item:hover::before { background: var(--accent-brass); }
+        
+        .tl-date {
+            font-family: var(--font-display); color: var(--accent-brass);
+            font-size: 0.9em; letter-spacing: 0.1em; margin-bottom: 4px;
+        }
+        .tl-title { font-family: var(--font-heading); font-size: 1.6em; color: var(--text-main); }
 
         /* 页脚 */
-        footer { padding: 60px 20px; background: #fafafa; text-align:center; border-top:1px solid rgba(0,0,0,.06); }
-        .footer-title { font-family:'Cinzel',serif; font-size:1.5em; color:#8d6e00; margin-bottom:12px; }
-        .footer-text { opacity:.8; font-size: 0.95em; }
-
-        /* 进场动画 */
-        .reveal { opacity: 0; transform: translateY(14px); }
-        .reveal.show { opacity: 1; transform: translateY(0); transition: opacity .6s ease, transform .6s ease; }
+        footer {
+            padding: 100px 20px 40px;
+            text-align: center;
+            border-top: 1px solid var(--border-wood);
+            position: relative;
+        }
+        /* 页脚装饰 */
+        footer::before {
+            content: "✦"; position: absolute; top: -12px; left: 50%; transform: translateX(-50%);
+            background: var(--bg-paper); padding: 0 20px; color: var(--border-wood); font-size: 24px;
+        }
+        .footer-logo {
+            font-family: var(--font-display); font-size: 2em;
+            color: var(--accent-brass); margin-bottom: 20px; display: block;
+        }
 
         /* 响应式 */
         @media (max-width: 768px) {
-            nav { padding: 15px 20px; }
-            .nav-links { display: none; } /* 移动端隐藏菜单，保持简洁 */
-            .hero { padding: 100px 20px 50px; min-height: 60vh; }
+            .nav-links { display: none; } /* 移动端简化：隐藏菜单，只留Logo和主题开关 */
+            .hero h1 { font-size: 2.5rem; }
+            .hero-description::first-letter { font-size: 3em; }
             .main-section { padding: 60px 20px; }
-            .timeline { margin-left: 10px; }
+            .card { padding: 24px; }
+            .timeline { padding-left: 24px; }
+            .tl-item::before { left: -30px; }
         }
 
-        /* 降低动效 */
-        @media (prefers-reduced-motion: reduce) {
-            .hero { animation: none; }
-            .card, .reveal, .reveal.show, .tl-item:hover { transition: none !important; transform: none !important; }
-        }
+        /* 进场动画 */
+        .reveal { opacity: 0; transform: translateY(20px); transition: all 0.8s ease-out; }
+        .reveal.show { opacity: 1; transform: translateY(0); }
+
+        /* 粒子画布 */
+        #particles-bg { position: fixed; top: 0; left: 0; width: 100%; height: 100%; z-index: -1; pointer-events: none; }
     </style>
 </head>
-<body id="top">
-    <!-- 粒子背景 -->
+<body id="top" class="dark-mode"> <!-- 默认为古典深色模式 -->
     <canvas id="particles-bg"></canvas>
 
-    <!-- 导航栏 -->
     <nav id="navbar">
         <div class="nav-content">
             <a href="#top" class="logo">
@@ -110,40 +381,54 @@
                 <span>HOLO AI</span>
             </a>
             <ul class="nav-links">
-                <li><a class="active" href="#origin">缘起</a></li>
-                <li><a href="#overview">概览</a></li>
-                <li><a href="#oath">约定</a></li>
-                <li><a href="#journey">里程碑</a></li>
-                <li><a href="#traveler">致旅人</a></li>
+                <li><a href="#origin" class="active">I. 缘起</a></li>
+                <li><a href="#overview">II. 概览</a></li>
+                <li><a href="#oath">III. 约定</a></li>
+                <li><a href="#journey">IV. 里程碑</a></li>
+                <li><a href="#traveler">V. 致旅人</a></li>
             </ul>
+            <button class="theme-toggle" id="themeBtn" aria-label="切换日夜模式">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <circle cx="12" cy="12" r="5"></circle>
+                    <line x1="12" y1="1" x2="12" y2="3"></line>
+                    <line x1="12" y1="21" x2="12" y2="23"></line>
+                    <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line>
+                    <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line>
+                    <line x1="1" y1="12" x2="3" y2="12"></line>
+                    <line x1="21" y1="12" x2="23" y2="12"></line>
+                    <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line>
+                    <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>
+                </svg>
+            </button>
         </div>
     </nav>
 
-    <!-- Hero -->
     <section class="hero">
-        <div class="hero-content">
-            <h1>风与麦香之间</h1>
-            <p class="hero-subtitle">一段从麦田出发的故事</p>
-            <p class="hero-description">
-                若你在风里听见麦穗彼此碰触的声响，那便是旅途开始的暗语。
-                我们愿把拾来的智慧切成可分的片：
-                统一接口、免费开放，涵盖 GPT-5、Claude-Opus、Gemini-3 等最新模型，供旅人取用。
-            </p>
-        </div>
+        <div class="hero-subtitle">Volume I : The Beginning</div>
+        <h1>风与麦香之间</h1>
+        <p class="hero-description">
+            若你在风里听见麦穗彼此碰触的声响，那便是旅途开始的暗语。
+            我们愿把拾来的智慧切成可分的片：
+            统一接口、免费开放，涵盖 GPT-5、Claude-Opus、Gemini-3 等最新模型，供旅人取用。
+        </p>
     </section>
 
-    <!-- 主体内容 -->
-    <main class="main-section">
-        <h2 id="origin" class="section-title">缘起</h2>
+    <div class="ornate-divider"></div>
 
-        <div class="grid reveal" style="margin-bottom:40px;">
+    <main class="main-section">
+        <div class="section-header reveal">
+            <span class="volume-label">Volume I</span>
+            <h2 id="origin" class="section-title">缘起</h2>
+        </div>
+
+        <div class="grid reveal">
             <div class="card">
                 <h3>麦田之语</h3>
-                <p class="muted">风说：谷粒熟了。月说：颜色正好。我们不过依着季节行事，把见过的好东西留下一些，摆在篝火旁。若你伸手，便能取走一捧金色的光。</p>
+                <p>风说：谷粒熟了。月说：颜色正好。我们不过依着季节行事，把见过的好东西留下一些，摆在篝火旁。若你伸手，便能取走一捧金色的光。</p>
             </div>
             <div class="card">
                 <h3>月下的约定</h3>
-                <p class="muted">智慧如酒，须细品；如火，亦须节制。我们不喧哗，不争抢，只在合适的时辰里点亮一盏灯，照亮脚边的路。</p>
+                <p>智慧如酒，须细品；如火，亦须节制。我们不喧哗，不争抢，只在合适的时辰里点亮一盏灯，照亮脚边的路。</p>
                 <div class="badges">
                     <span class="badge">麦香</span>
                     <span class="badge">琥珀色月光</span>
@@ -153,31 +438,35 @@
             </div>
             <div class="card">
                 <h3>路上的见闻</h3>
-                <p class="muted">见过雷雨后的麦田，也见过清晨的薄雾。偶尔有好心人添了木柴，也有旅人留下箴言。我们把它们记下，待有人问起，便一一讲给他听。</p>
+                <p>见过雷雨后的麦田，也见过清晨的薄雾。偶尔有好心人添了木柴，也有旅人留下箴言。我们把它们记下，待有人问起，便一一讲给他听。</p>
             </div>
         </div>
 
-        <h2 id="overview" class="section-title">概览</h2>
-        <div class="grid reveal" style="margin-bottom:30px;">
+        <div class="ornate-divider"></div>
+
+        <div class="section-header reveal">
+            <span class="volume-label">Volume II</span>
+            <h2 id="overview" class="section-title">概览</h2>
+        </div>
+        
+        <div class="grid reveal">
             <div class="card">
                 <h3>全模型支持</h3>
-                <p class="muted" style="margin-bottom: 10px;">
-                    我们已同步更新至市面最前沿的模型版本：
-                </p>
-                <ul style="padding-left: 20px; opacity: 0.85; line-height: 1.8; font-size: 0.95em;">
-                    <li><strong>ChatGPT：</strong>gpt-5.2 / 5.1 / 5 全系列、chatgpt-4o</li>
-                    <li><strong>Claude：</strong>Opus / Sonnet / Haiku 全系列</li>
-                    <li><strong>Gemini：</strong>Gemini 3 / 2.5 全系列、Nano-Banana</li>
-                    <li><strong>Others：</strong>Grok, DeepSeek, Qwen, GLM 等</li>
+                <p style="margin-bottom: 16px;">我们已同步更新至市面最前沿的模型版本：</p>
+                <ul style="list-style: none; padding-left: 0; color: var(--text-muted);">
+                    <li style="margin-bottom:8px"><strong>✦ ChatGPT：</strong> gpt-5.2 / 5.1 / 5 全系列</li>
+                    <li style="margin-bottom:8px"><strong>✦ Claude：</strong> Opus / Sonnet / Haiku 全系列</li>
+                    <li style="margin-bottom:8px"><strong>✦ Gemini：</strong> Gemini 3 / 2.5 全系列</li>
+                    <li><strong>✦ Others：</strong> Grok, DeepSeek, Qwen 等</li>
                 </ul>
             </div>
             <div class="card">
                 <h3>极简接入</h3>
-                <p class="muted">完全兼容 OpenAI 接口规范。只需更改 <code>base_url</code> 和 <code>api_key</code>，即可无缝切换所有模型。</p>
+                <p>完全兼容 OpenAI 接口规范。只需更改 <code>base_url</code> 和 <code>api_key</code>，即可无缝切换所有模型。</p>
                 
                 <div class="code-block">
-                    <span class="code-lang">Python</span>
-                    <button class="code-copy" onclick="copyCode(this)">复制</button>
+                    <span class="code-lang">Python Scroll</span>
+                    <button class="code-copy" onclick="copyCode(this)">COPY</button>
 from openai import OpenAI
 
 # 配置接入点
@@ -196,115 +485,171 @@ print(resp.choices[0].message.content)
             </div>
         </div>
 
-        <h2 id="oath" class="section-title" style="margin-top:20px;">约定</h2>
-        <div class="grid reveal" style="margin-bottom:40px;">
+        <div class="ornate-divider"></div>
+
+        <div class="section-header reveal">
+            <span class="volume-label">Volume III</span>
+            <h2 id="oath" class="section-title">约定</h2>
+        </div>
+        
+        <div class="grid reveal">
             <div class="card">
                 <h3>静默的约定</h3>
-                <p class="muted">我们不夺取不属于自己的东西；不以喧嚣求名；不以贪欲伤人。若有余力，便添一束柴；若感温暖，便留下足迹。</p>
+                <p>我们不夺取不属于自己的东西；不以喧嚣求名；不以贪欲伤人。若有余力，便添一束柴；若感温暖，便留下足迹。</p>
             </div>
             <div class="card">
                 <h3>温柔的边界</h3>
-                <p class="muted">火堆很小，风却很大。请收敛夸张的火舌，莫让夜行者失了方向。节制本就是对旅途的敬意。</p>
+                <p>火堆很小，风却很大。请收敛夸张的火舌，莫让夜行者失了方向。节制本就是对旅途的敬意。</p>
             </div>
         </div>
 
-        <div class="card reveal" id="journey" style="margin-bottom:40px;">
-            <h3>里程碑</h3>
+        <div class="ornate-divider"></div>
+
+        <div class="section-header reveal">
+            <span class="volume-label">Volume IV</span>
+            <h2 id="journey" class="section-title">里程碑</h2>
+        </div>
+
+        <div class="card reveal" style="max-width: 800px; margin: 0 auto;">
             <div class="timeline">
                 <div class="tl-item">
-                    <div class="tl-date">2025 Q3</div>
+                    <div class="tl-date">MMXXVI · Q3 (2026)</div>
                     <div class="tl-title">公共节点稳定上线</div>
                     <div class="tl-desc">完成 OpenAI、Anthropic、Google 核心模型接入与统一鉴权，小范围试用运行稳定。</div>
                 </div>
                 <div class="tl-item">
-                    <div class="tl-date">2025 Q4</div>
+                    <div class="tl-date">MMXXVI · Q4 (2026)</div>
                     <div class="tl-title">全系模型迭代</div>
                     <div class="tl-desc">同步跟进 GPT-5.2、Claude Opus、Gemini 3 等最新一代模型，扩充 API 容量。</div>
                 </div>
                 <div class="tl-item">
-                    <div class="tl-date">Future</div>
+                    <div class="tl-date">AETERNUM (Future)</div>
                     <div class="tl-title">社区共建</div>
                     <div class="tl-desc">如赫萝的旅途一般，我们期待更多旅人加入，贡献示例、节点与智慧。</div>
                 </div>
             </div>
         </div>
 
+        <div class="ornate-divider"></div>
+
+        <div class="section-header reveal">
+            <span class="volume-label">Volume V</span>
+            <h2 id="traveler" class="section-title">致旅人</h2>
+        </div>
+
         <div class="grid reveal">
             <div class="card">
                 <h3>在篝火旁</h3>
-                <p class="muted">有人讲交易，有人谈远方；也有人静静看着火光，把心事烤得暖一点。所有的温柔与善意，都值得被认真收藏。</p>
+                <p>有人讲交易，有人谈远方；也有人静静看着火光，把心事烤得暖一点。所有的温柔与善意，都值得被认真收藏。</p>
             </div>
-            <div class="card" id="traveler">
-                <h3>致旅人</h3>
-                <p class="muted">若你路过此处，便取一捧金色装进兜里。别着急告诉别人它从何来，只在需要时分一点给身旁的人。愿你脚下有风，心里有光。</p>
+            <div class="card">
+                <h3>赠言</h3>
+                <p>若你路过此处，便取一捧金色装进兜里。别着急告诉别人它从何来，只在需要时分一点给身旁的人。愿你脚下有风，心里有光。</p>
             </div>
         </div>
     </main>
 
-    <!-- 页脚 -->
     <footer>
-        <div class="footer-title">WolfHolo</div>
-        <p class="footer-text">风起麦浪，月照林间；愿你的旅途总有金色相伴。</p>
-        <div style="margin-top: 25px; opacity: .7; font-size: 0.9em;">© 2025 Holo AI Share | 纯公益项目</div>
+        <span class="footer-logo">WolfHolo</span>
+        <p class="footer-text" style="font-family: var(--font-heading); font-style: italic; font-size: 1.2em; color: var(--text-muted);">
+            "风起麦浪，月照林间；愿你的旅途总有金色相伴。"
+        </p>
+        <div style="margin-top: 30px; font-family: var(--font-display); font-size: 0.8em; letter-spacing: 0.1em; color: var(--text-muted); opacity: 0.7;">
+            © 2026 HOLO AI SHARE | EST. MMXXVI
+        </div>
     </footer>
 
     <script>
-        // 粒子背景
+        // === 粒子背景逻辑 (适配日/夜) ===
         const canvas = document.getElementById('particles-bg');
         const ctx = canvas.getContext('2d');
-        function resizeCanvas(){ canvas.width = window.innerWidth; canvas.height = window.innerHeight; }
-        resizeCanvas();
+        let particles = [];
+        
+        // 颜色配置
+        const COLORS = {
+            dark: 'rgba(201, 169, 98, 0.6)', // 黄铜色 (夜间)
+            light: 'rgba(43, 34, 27, 0.4)'   // 墨水尘埃 (日间)
+        };
 
-        const isDark = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches;
-        let PARTICLE_COLOR = isDark ? '#ffd666' : '#c9a227';
-        let PARTICLE_BLUR = isDark ? 10 : 6;
-
+        function resizeCanvas(){ 
+            canvas.width = window.innerWidth; 
+            canvas.height = window.innerHeight; 
+        }
+        
         class Particle {
-            constructor(){ this.x = Math.random()*canvas.width; this.y = Math.random()*canvas.height; this.size = Math.random()*2+1; this.speedX = Math.random()*0.8-0.4; this.speedY = Math.random()*0.8-0.4; this.opacity = Math.random()*0.3+0.2; }
-            update(){ this.x += this.speedX; this.y += this.speedY; if(this.x>canvas.width) this.x=0; if(this.x<0) this.x=canvas.width; if(this.y>canvas.height) this.y=0; if(this.y<0) this.y=canvas.height; }
-            draw(){ ctx.save(); ctx.globalAlpha = this.opacity; ctx.fillStyle = PARTICLE_COLOR; ctx.shadowColor = PARTICLE_COLOR; ctx.shadowBlur = PARTICLE_BLUR; ctx.beginPath(); ctx.arc(this.x,this.y,this.size,0,Math.PI*2); ctx.fill(); ctx.restore(); }
-        }
-        const particles = Array.from({length: isDark ? 90 : 50}, () => new Particle());
-        let scrollOffset = 0;
-        function animateParticles(){
-            ctx.clearRect(0,0,canvas.width,canvas.height);
-            const off = (scrollOffset % canvas.height);
-            ctx.save();
-            ctx.translate(0, -off);
-            particles.forEach(p=>{ p.update(); p.draw(); });
-            ctx.translate(0, canvas.height);
-            particles.forEach(p=>{ p.draw(); });
-            ctx.restore();
-            // 为标题区域挖空，避免萤火虫覆盖造成闪动
-            const title = document.querySelector('.hero h1');
-            if (title) {
-                const r = title.getBoundingClientRect();
-                const pad = 12;
-                const x = Math.max(0, r.left - pad);
-                const y = Math.max(0, r.top - pad);
-                const w = Math.min(canvas.width, r.width + pad * 2);
-                const h = Math.min(canvas.height, r.height + pad * 2);
-                ctx.clearRect(x, y, w, h);
+            constructor() { this.reset(); }
+            reset() {
+                this.x = Math.random() * canvas.width;
+                this.y = Math.random() * canvas.height;
+                this.size = Math.random() * 2 + 0.5;
+                this.speedX = Math.random() * 0.4 - 0.2;
+                this.speedY = Math.random() * 0.4 - 0.2;
+                this.opacity = Math.random() * 0.5 + 0.2;
             }
-            requestAnimationFrame(animateParticles);
-        }
-        animateParticles();
-        window.addEventListener('resize', resizeCanvas);
-        window.addEventListener('scroll', ()=>{ scrollOffset = window.scrollY * 0.15; });
-        if (window.matchMedia) {
-            const mq = window.matchMedia('(prefers-color-scheme: dark)');
-            mq.addEventListener('change', (e)=>{
-                const dark = e.matches; PARTICLE_COLOR = dark ? '#ffd666' : '#c9a227'; PARTICLE_BLUR = dark ? 10 : 6; 
-            });
+            update() {
+                this.x += this.speedX; this.y += this.speedY;
+                if(this.x > canvas.width || this.x < 0) this.speedX *= -1;
+                if(this.y > canvas.height || this.y < 0) this.speedY *= -1;
+            }
+            draw(isDark) {
+                ctx.fillStyle = isDark ? COLORS.dark : COLORS.light;
+                ctx.globalAlpha = this.opacity;
+                ctx.beginPath();
+                ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2);
+                ctx.fill();
+            }
         }
 
-        // 导航栏滚动效果
-        window.addEventListener('scroll', () => {
-            const navbar = document.getElementById('navbar');
-            if (window.scrollY > 100) navbar.classList.add('scrolled'); else navbar.classList.remove('scrolled');
+        function initParticles() {
+            particles = Array.from({length: 60}, () => new Particle());
+        }
+
+        function animate() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            const isDark = document.body.classList.contains('dark-mode');
+            particles.forEach(p => { p.update(); p.draw(isDark); });
+            requestAnimationFrame(animate);
+        }
+
+        resizeCanvas();
+        initParticles();
+        animate();
+        window.addEventListener('resize', () => { resizeCanvas(); initParticles(); });
+
+        // === 主题切换逻辑 ===
+        const themeBtn = document.getElementById('themeBtn');
+        themeBtn.addEventListener('click', () => {
+            document.body.classList.toggle('dark-mode');
+            document.body.classList.toggle('light-mode');
         });
 
-        // 平滑滚动
+        // === 导航栏滚动逻辑 ===
+        window.addEventListener('scroll', () => {
+            const navbar = document.getElementById('navbar');
+            if (window.scrollY > 100) navbar.classList.add('scrolled');
+            else navbar.classList.remove('scrolled');
+            
+            // 滚动激活链接
+            const sections = ['origin', 'overview', 'oath', 'journey', 'traveler'];
+            let current = '';
+            sections.forEach(id => {
+                const section = document.getElementById(id);
+                const sectionTop = section.offsetTop;
+                if (scrollY >= sectionTop - 200) current = id;
+            });
+            document.querySelectorAll('.nav-links a').forEach(a => {
+                a.classList.remove('active');
+                if (a.getAttribute('href') === '#' + current) a.classList.add('active');
+            });
+        });
+
+        // === 滚动显隐动画 ===
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(e => { if (e.isIntersecting) e.target.classList.add('show'); });
+        }, { threshold: 0.1 });
+        document.querySelectorAll('.reveal').forEach(el => observer.observe(el));
+
+        // === 平滑滚动 ===
         document.querySelectorAll('a[href^="#"]').forEach(anchor => {
             anchor.addEventListener('click', function (e) {
                 e.preventDefault();
@@ -313,51 +658,15 @@ print(resp.choices[0].message.content)
             });
         });
 
-        // 滚动显隐
-        const observer = new IntersectionObserver((entries) => {
-            entries.forEach(e => { if (e.isIntersecting) { e.target.classList.add('show'); } });
-        }, { threshold: 0.12 });
-        document.querySelectorAll('.reveal').forEach(el => observer.observe(el));
-
-        // 复制代码（带不安全上下文回退）
-        function writeClipboard(text, onDone){
-            const ok = () => { if (onDone) onDone(); };
-            if (navigator.clipboard && window.isSecureContext) {
-                navigator.clipboard.writeText(text).then(ok).catch(() => fallback());
-            } else { fallback(); }
-            function fallback(){
-                const ta = document.createElement('textarea');
-                ta.value = text; ta.setAttribute('readonly','');
-                ta.style.position='fixed'; ta.style.left='-9999px';
-                document.body.appendChild(ta); ta.select();
-                try { document.execCommand('copy'); } catch(e) {}
-                document.body.removeChild(ta); ok();
-            }
-        }
-
-        function copyCode(btn){
-            const block = btn.parentElement;
-            const cloned = block.cloneNode(true);
-            cloned.querySelectorAll('.code-copy, .code-lang').forEach(el => el.remove());
-            const text = cloned.innerText.trim();
-            writeClipboard(text, ()=>{
-                const t = btn.textContent; btn.textContent = '已复制'; setTimeout(()=> btn.textContent = t, 1800);
+        // === 复制功能 ===
+        function copyCode(btn) {
+            const code = btn.parentElement.innerText.replace('COPY', '').replace('Python Scroll', '').trim();
+            navigator.clipboard.writeText(code).then(() => {
+                const original = btn.textContent;
+                btn.textContent = "COPIED";
+                setTimeout(() => btn.textContent = original, 2000);
             });
         }
-
-        // 滚动激活导航
-        const navLinks = Array.from(document.querySelectorAll('.nav-links a'));
-        const anchors = ['#origin','#overview','#oath','#journey','#traveler'];
-        function setActive() {
-            let active = '#origin';
-            anchors.forEach(id => {
-                const el = document.querySelector(id);
-                if (el && el.getBoundingClientRect().top - 120 < 0) active = id;
-            });
-            navLinks.forEach(a => a.classList.toggle('active', a.getAttribute('href') === active));
-        }
-        window.addEventListener('scroll', setActive);
-        setActive();
     </script>
 </body>
 </html>
